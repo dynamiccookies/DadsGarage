@@ -4,11 +4,7 @@
 	include($_SERVER['DOCUMENT_ROOT']."/".$site."/files/header.php");
 	$success = 'noscreen ';
 	$logout = "secure.php?logout=1&index=".$site;
-	try {
-		$db = new PDO('mysql:dbname=DadsGarageLLC;host=DadsGarageLLC.db.11736473.hostedresource.com', 'DadsGarageLLC', 'Progr@mmer8164');
-	} catch (Exception $e) {
-		echo 'Caught exception: ',  $e->getMessage(), "\n";
-	}
+	include($_SERVER['DOCUMENT_ROOT']."/".$site."/files/conn.php");
 	if ($_GET['id']) {
 		$where = "WHERE ID=".$_GET['id'];
 		$pwhere = "WHERE vehicle=".$_GET['id'];
