@@ -14,10 +14,21 @@
 		echo "<meta http-equiv=refresh content=\"3; URL=".$_SERVER['REQUEST_URI']."\">";
 	}
 ?>
-<body class='bg'>
+<body class='' style="background-color:black !important;">
 	<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
-	<div class="huge bold u center">Admin Page</div><br />
+<!--	
+		<div class="huge bold center">Admin Page<p></p>
+		<button>Vehicles</button>
+		<button>Customers</button>
+	</div><br />-->
+	<div class='bgblue bord5 p15 b-rad15 m-lrauto center m-top25' style='width:33%; max-width:66%;display:table;'>
+<!--
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center' style='width:33%;min-width:410px;'>
+-->
+		<div class="huge bold center">Admin Page</div>
+		<div id='page'><span>Vehicles</span> | <span>Customers</span></div>
+		<div id='category'><span>For Sale</span> | <span>Sold</span></div>
+		<hr />
 		<form action="" method="post">
 				<div class="med bold">Add Vehicle:</div>
 				<center><table class='m-bottom15'><tr><td>Year</td><td>Make</td><td>Model</td><td>Trim</td></tr>
@@ -28,8 +39,10 @@
 				<input type="submit" name="submit" value="Add"></td></tr></td></tr></table>
 				<span id='success' class='<?php echo $success;?>red bold'>Vehicle Added Successfully!</span></center>
 		</form>
+<!--
 	</div>
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center m-top25' style='width:33%; max-width:66%;display:table;'>
+-->
 		<table class='viewing m-lrauto center'><tr>
 			<td>Currently viewing:</td>
 			<td><span id='lblSale' class='bold'>For Sale&nbsp;&nbsp;&nbsp;&nbsp;</span><span id='lblSold' class='bold'>Sold&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
@@ -37,7 +50,7 @@
 			<button class='block' type='button' id='hidden1' onclick="viewSale()">View For Sale</button></td>
 		</tr></table>
 		<p></p>
-		<table class='m-lrauto center'><tr id='sale' style='display:block;'><td><table class='tbl-align htmlTable'>
+		<table class='m-lrauto center'><tr id='sale' class='category' style='display:block;'><td><table class='tbl-align htmlTable'>
 		<?php
 			foreach ($rows as $row) {
 				if ($row['status'] != 'Delete' && $row['status'] != 'Sold') {
@@ -52,7 +65,7 @@
 			}
 		?>
 		</table></td></tr>
-		<tr id='hidden' style='display:none;'><td><table class='tbl-align htmlTable'>
+		<tr id='hidden' class='category' style='display:none;'><td><table class='tbl-align htmlTable'>
 		<?php
 			foreach ($rows as $row) {
 				if ($row['status'] == 'Sold') {
@@ -70,6 +83,23 @@
 	</div>
 	<script type="text/javascript">
 		<?php if(isset($_SESSION['view'])) {if ($_SESSION['view']=='sold') {echo 'viewSold();';} else {echo 'viewSale();';}} else {echo 'viewSale();';}?>
+/*
+ 		'$("div > span").click(function(e) {
+		$(document).on('click','span',function(e){
+			$("span.active").not(this).removeClass('active');    
+			$(this).addClass('active');
+			e.preventDefault();
+		});
+ */
+		$('#page span').click(function () {
+			$(this).siblings().css({"fontWeight":"normal","cursor":"pointer"});
+			$(this).css({"fontWeight":"bold","cursor":"pointer"});
+		});
+		$('#category span').click(function () {
+			$(this).siblings().css({"fontWeight":"normal","cursor":"pointer"});
+			$(this).css({"fontWeight":"bold","cursor":"pointer"});
+		});
+		
 		function viewSold() {
 			document.getElementById('hidden').style.display = 'block';document.getElementById('sale').style.display = 'none';
 			document.getElementById('hidden1').style.display = 'block';document.getElementById('sale1').style.display = 'none';
