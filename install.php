@@ -1,6 +1,7 @@
 <?php 
-$project = "https://github.com/dynamiccookies/DadsGarage/"; //URL to repository
+$project = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to repository
 $source = 'DadsGarage-master'; //RepositoryName-Branch
+$redirectURL = 'files/settings.php' //Redirect URL - Leave blank for no redirect
 if ($_GET['run']) {
 	$file = file_put_contents("install.zip", fopen($project."archive/master.zip", 'r'), LOCK_EX);
 	if($file === FALSE) die("Error Writing to File: Please <a href=\"".$project."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
@@ -25,7 +26,7 @@ if ($_GET['run']) {
 		unlink('install.zip');
 		unlink('.gitignore');
 		unlink(__FILE__);
-		echo "<meta http-equiv=refresh content=\"3; URL=files/settings.php\">";
+		if (!$redirectURL) echo "<meta http-equiv=refresh content=\"3; URL=".$redirectURL."\">";
 	} else {echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";}
 }
 ?>
