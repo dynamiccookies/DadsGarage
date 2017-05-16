@@ -218,6 +218,7 @@ pip-log.txt
 #############
 ## PHP
 #############
+<<<<<<< HEAD
 conn.php
 config.php
 config.ini
