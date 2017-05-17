@@ -26,7 +26,7 @@ if ($_GET['run']) {
 		unlink('install.zip');
 		unlink('.gitignore');
 		unlink(__FILE__);
-		if (!$redirectURL) echo "<meta http-equiv=refresh content=\"3; URL=".$redirectURL."\">";
+		if ($redirectURL) echo "<meta http-equiv=refresh content=\"3; URL=".$redirectURL."\">";
 	} else {echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";}
 }
 ?>
