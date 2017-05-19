@@ -1,6 +1,6 @@
 <?php
-	if (!file_exists("config.ini.php") {
-		$str="&lt;?php /*;Commented line start with ';'\r\n[connection]\r\ndbname = \r\nhost = \r\nusername = \r\npassword = \r\nbranch = \r\n*/?&gt;";
+	if (!file_exists("config.ini.php")) {
+		$str="<?php \n/*;Commented line start with ';'\n[connection]\ndbname = \nhost = \nusername = \npassword = \nbranch = \n*/\n?>";
 		file_put_contents("config.ini.php", $str);
 	} 
 	$ini = parse_ini_file("config.ini.php");
