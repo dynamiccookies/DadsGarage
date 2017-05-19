@@ -2,10 +2,10 @@
 $repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
 $repBranch = 'master'; //Change this to the branch you'd like to use - master is default
 $source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
-$redirectURL = 'files/settings.php' //Redirect URL - Leave blank for no redirect
+$redirectURL = 'files/settings.php'; //Redirect URL - Leave blank for no redirect
 //-------------------------------------------
 if ($_GET['run']) {
-	$file = file_put_contents("install.zip", fopen($repository."archive/master.zip", 'r'), LOCK_EX);
+	$file = file_put_contents("install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
 	if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
 	$zip = new ZipArchive;
 	$res = $zip->open('install.zip');
