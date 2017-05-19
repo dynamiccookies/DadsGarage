@@ -1,10 +1,12 @@
 <?php 
-$project = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to repository
-$source = 'DadsGarage-master'; //RepositoryName-Branch
+$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
+$repBranch = 'master'; //Change this to the branch you'd like to use - master is default
+$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
 $redirectURL = 'files/settings.php' //Redirect URL - Leave blank for no redirect
+//-------------------------------------------
 if ($_GET['run']) {
-	$file = file_put_contents("install.zip", fopen($project."archive/master.zip", 'r'), LOCK_EX);
-	if($file === FALSE) die("Error Writing to File: Please <a href=\"".$project."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
+	$file = file_put_contents("install.zip", fopen($repository."archive/master.zip", 'r'), LOCK_EX);
+	if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
 	$zip = new ZipArchive;
 	$res = $zip->open('install.zip');
 	if ($res === TRUE) {
@@ -26,7 +28,7 @@ if ($_GET['run']) {
 		unlink('install.zip');
 		unlink('.gitignore');
 		unlink(__FILE__);
-		if ($redirectURL) echo "<meta http-equiv=refresh content=\"3; URL=".$redirectURL."\">";
+		if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
 	} else {echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";}
 }
 ?>
