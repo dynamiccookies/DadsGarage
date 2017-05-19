@@ -1,4 +1,8 @@
 <?php
+	if (!file_exists("config.ini.php")) {
+		$str="<?php \n/*;Commented line start with ';'\n[connection]\ndbname = \nhost = \nusername = \npassword = \nbranch = \n*/\n?>";
+		file_put_contents("config.ini.php", $str);
+	} 
 	$ini = parse_ini_file("config.ini.php");
 	if(isset($_POST['Submit'])) {
 		$str=file_get_contents("config.ini.php");
