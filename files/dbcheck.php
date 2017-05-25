@@ -10,22 +10,25 @@
 	$array = array();
 
 	// chech server connectivity
-	$handle = fsockopen($server, $port);
-	if ($handle) {$array['connTest'] = '<font style="font-weight:bold;color:green;">Pass </font>';} 
-	else {$array['connTest'] = '<font style="font-weight:bold;color:red;">Fail - Cannot connect to ' . $server . ':' . $port . '</font>';}
-	fclose($handle);
+	try {
+		$handle = fsockopen($server, $port);
+		if ($handle) {$array['connTest'] = 'Pass';} 
+		else {$array['connTest'] = 'Fail - Cannot connect to ' . $server . ':' . $port;}
+		fclose($handle);
+	}
+	catch(PDOException $e){$array['connTest'] = 'Fail - Cannot connect to ' . $server . ':' . $port;}
 	// check Username/Password 
 	try {
-		$conn = new PDO("mysql:host=$server", $dbUsername, $dbPassword);
+		$conn = new PDO("mysql:host=".$server, $dbUsername, $dbPassword);
 		// set the PDO error mode to exception
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		$link = true; 
 	}
 	catch(PDOException $e){$link = false;}
 	if ($link) {
-		$array['credTest'] = '<font style="font-weight:bold;color:green;">Pass</font>';
+		$array['credTest'] = 'Pass';
 	} else {
-		$array['credTest'] = '<font style="font-weight:bold;color:red;">Fail -  Could not connect to Database Server. Check your settings!</font>';
+		$array['credTest'] = 'Fail -  Could not connect to Database Server. Check your settings!';
 	}
 	//check if DB exists
 	if(isset($dbName)){
@@ -47,15 +50,14 @@
 			$sqlError = $e->getMessage();
 		}    
 		if ($db_selected == 1) {
-			$array['dbTest'] = '<font style="font-weight:bold;color:green;">Pass</font>';
+			$array['dbTest'] = 'Pass';
 		} elseif ($db_selected == 0) {
-			$array['dbTest'] = '<font style="font-weight:bold;color:red;">Fail - '.$dbName.' does not exist</font>';
+			$array['dbTest'] = 'Fail - '.$dbName.' does not exist';
 		}
-	   
 	} else {
-		$array['dbTest'] = '<font style="font-weight:bold;color:red;">Fail - Database Name was not entered</font>';
+		$array['dbTest'] = 'Fail - Database Name was not entered</font>';
 	}
 	if($sqlError && $e->getCode() != '1049' && $e->getCode() != '1045') {// here we expect the Count query above to fail, as a zero value should be returned. But we still want other errors to appear if needed. 
-		$array['dbTest'] = '<font style="font-weight:bold;color:red;">Fail - '.$sqlError.'</font>';	
+		$array['dbTest'] = 'Fail - '.$sqlError;	
 	}
 	$conn = null;
