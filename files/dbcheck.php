@@ -116,8 +116,8 @@
 		PRIMARY KEY (`id`)
 		);
 		CREATE TABLE IF NOT EXISTS `users` (
-		`id` int(11) NOT NULL,
-		`username` varchar(255) AUTO_INCREMENT NOT NULL,
+		`id` int(11) AUTO_INCREMENT NOT NULL,
+		`username` varchar(255) NOT NULL,
 		`hash` varchar(255) NOT NULL,
 		`fname` varchar(40) NOT NULL,
 		`lname` varchar(40) NOT NULL,
