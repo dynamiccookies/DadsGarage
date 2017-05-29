@@ -1,10 +1,10 @@
 <?php 
 $repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
-$repBranch = 'master'; //Change this to the branch you'd like to use - master is default
+$repBranch = $_POST['repo']?:"";
 $source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
 $redirectURL = 'files/settings.php'; //Redirect URL - Leave blank for no redirect
 //-------------------------------------------
-if ($_GET['run']) {
+if ($_POST['repo']) {
 	$file = file_put_contents("install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
 	if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
 	$zip = new ZipArchive;
@@ -32,8 +32,12 @@ if ($_GET['run']) {
 	} else {echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";}
 }
 ?>
-<div style="text-align:center;font-weight:bold;">
-Welcome to the Dad's Garage Installer!<br/>
-Make sure this file is saved to the root of your install directory.<br/>
-<button onclick="location.href='<?php $_SERVER['PHP_SELF']?>?run=true';">Install</button>
+<div style="text-align:center;">
+	<span style="font-weight:bold;font-size:24px;">Welcome to the Dad's Garage Management System Installer!</span><br/><br/>
+	<span style="font-size:18px;">Make sure this file is saved to the root of your install directory.<br/><br/>
+	If you'd like to install a non-default repository, enter it here:</span><br/>
+	<form action="" method="post">
+		<input name="repo" type=textbox style="text-align:center;" value="master"/><br/>
+		<input type="Submit" name="Submit" value="Install">
+	</form>
 </div>
