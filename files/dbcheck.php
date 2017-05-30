@@ -1,9 +1,4 @@
 <?php
-	session_start();
-	if(!defined('included')) {
-		header('HTTP/1.0 403 Forbidden');
-		exit;
-	}
 	//The code on this page was borrowed and tweaked from: https://github.com/rconfig/rconfig/blob/master/www/install/lib/ajaxHandlers/ajaxDbTests.php
 	ini_set('display_errors', 0);
 	$server = $ini["host"];

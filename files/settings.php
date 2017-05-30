@@ -1,9 +1,6 @@
 <?php
-	session_start();
-	define('included', TRUE);
-
 	//Create/update config.ini.php
-	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
+	if (!file_exists("config.ini.php") || isset($_POST['Submit'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".($_POST["branch"]?:"")."\"\n*/\n?>";
 		file_put_contents("config.ini.php", $file);
@@ -29,7 +26,7 @@
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
  		if (!tableExists("customers") || !tableExists("expenses") || !tableExists("files") || 
 			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) { 
-			if ($_POST['createTables']){
+			if($_POST['createTables']){
 				$created_tables = create_tables();
 			} else {
 				$button = " <input type=\"Submit\" name=\"createTables\" value=\"Create Table(s)\">";
@@ -38,56 +35,11 @@
 			}
 		}
 	}
-
-	//Update Application from GitHub
-	if (isset($_POST['Update'])) {
-  		try {
-			$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
-			$repBranch = $_POST['branch']?:"master";
-			$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
-			$redirectURL = 'settings.php'; //Redirect URL - Leave blank for no redirect
-			$file = file_put_contents(dirname(__DIR__)."/install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
-			if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
-			$zip = new ZipArchive;
-			$res = $zip->open(dirname(__DIR__).'/install.zip');
-			if ($res === TRUE) {
-				for($i=0; $i<$zip->numFiles; $i++) {
-					$name = $zip->getNameIndex($i);
-					if (strpos($name, "{$source}/") !== 0) continue;
-					$file = dirname(__DIR__).'/'.substr($name, strlen($source)+1);
-					if (substr($file,-1)!='/') {
-						$dir = dirname($file);
-						if (!is_dir($dir)) mkdir($dir, 0777, true);
-						$fread = $zip->getStream($name);
-						$fwrite = fopen($file, 'w');
-						while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
-						fclose($fread);
-						fclose($fwrite);
-					}
-				}
-				$zip->close();
-				unlink(dirname(__DIR__).'/install.zip');
-				unlink(dirname(__DIR__).'/.gitignore');
-				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
-				$_SESSION['results'] = 'Application Updated Successfully!';
-			} else {
-				echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
-				$_SESSION['results'] = 'Something went wrong!';
-			}
-		} catch (Exception $e){$_SESSION['results'] = 'Something went wrong!<br/>'.$e;}
-	}
-	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
-		$_SESSION['run']=1;
-	} elseif (isset($_SESSION['run']) && $_SESSION['run']==3) {
-		unset($_SESSION['results']);
-		unset($_SESSION['run']);
-	}
-
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
-		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
+		$mkDB="<form action=\"\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
 	}
-	if ($_POST['mkDB']) {
+	if($_POST['mkDB']) {
 		try {
 			$conn = new PDO("mysql:host=".$ini['host'].";dbname=".$ini['dbname'], $ini["username"], $ini["password"]);
 			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -95,14 +47,14 @@
 			// use exec() because no results are returned
 			$conn->exec($sql);
 			echo "Database created successfully<br>";
-		} catch(PDOException $e){echo $sql."<br>".$e->getMessage();}
+		} catch(PDOException $e){echo $sql . "<br>" . $e->getMessage();}
 	} */
 ?>
 <head>
 	<style>
 		body {text-align:center;}
 		div {font-size:36px;font-weight:bold;}
-		table {margin:auto;border-top:2px solid;border-bottom:2px solid;padding:15px;}
+		table {margin:auto;}
 		td:first-child {text-align:right;font-weight:bold;}
 		input[type=textbox], input[type=password] {width:350px;border-radius:4px;outline:none;}
 		.required {box-shadow:0 0 5px #ff0000;border:2px solid #ff0000;}
@@ -112,25 +64,15 @@
 </head>
 <body>
 	<div>Settings Page</div><br/>
-	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+	<form action="" method="post">
 		<table>
 			<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
 			<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-			<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
-			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
+			<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?>" value="<?php echo $ini["username"];?>"></td></tr>
+			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?>" value="<?php echo $ini["password"];?>"></td></tr>
 			<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
 		</table>
-		<br/>
-		<?php 
-			if (isset($_SESSION['run'])) {
-				echo $_SESSION['results']."<br/>";
-				$_SESSION['run']+=1;
-			}
-			echo ($created_tables?($created_tables===true?
-				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
-		?>
-		<input type="Submit" name="Save" value="Save">&nbsp;
-		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
-		<?php echo $button?:"";?>
+		<br/><?php echo ($created_tables?($created_tables===true?"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");?>
+		<input type="Submit" name="Submit" value="Submit"><?php echo $button?:"";?>
 	</form>
 </body>
