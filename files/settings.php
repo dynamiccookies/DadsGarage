@@ -72,20 +72,20 @@
 				unlink(dirname(__DIR__).'/install.zip');
 				unlink(dirname(__DIR__).'/.gitignore');
 				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
-				$results = 'Application Updated Successfully!';
+				$_SESSION['results'] = 'Application Updated Successfully!';
 			} else {
 				echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
-				$results = 'Something went wrong!';
+				$_SESSION['results'] = 'Something went wrong!';
 			}
-		} catch (Exception $e){$results = 'Something went wrong!<br/>'.$e;}
+		} catch (Exception $e){$_SESSION['results'] = 'Something went wrong!<br/>'.$e;}
 	}
-	if (isset($results) && !isset($run)) {
-		$run=1;
-	} elseif (isset($run) && $run==5) {
-		unset($results);
-		unset($run);
+	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
+		$_SESSION['run']=1;
+	} elseif (isset($_SESSION['run']) && $_SESSION['run']==5) {
+		unset($_SESSION['results']);
+		unset($_SESSION['run']);
 	}
-	echo "Results: ".$results."<br/>Run: ".$run."<br/>POST: ".$_POST['Update'];
+	echo "Session ID: ".session_id()."<br/>Results: ".$_SESSION['results']."<br/>Run: ".$_SESSION['run']."<br/>POST: ".$_POST['Update'];
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
 		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
@@ -125,10 +125,10 @@
 		</table>
 		<br/>
 		<?php 
-//			echo ($run?$results."<br/>":"");
-			if (isset($run)) {
-				echo $results."<br/>";
-				$run+=1;
+//			echo ($_SESSION['run']?$_SESSION['results']."<br/>":"");
+			if (isset($_SESSION['run'])) {
+				echo $_SESSION['results']."<br/>";
+				$_SESSION['run']+=1;
 			}
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
