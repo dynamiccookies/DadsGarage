@@ -41,17 +41,51 @@
 
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
-		require_once('update.php');
-		//$results = update($_POST["branch"]);
-		update($_POST["branch"]);
+//		require_once('update.php');
+//		update($_POST["branch"]);
+  		try {
+			$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
+			//$repBranch = $repo;
+			$repBranch = $_POST['branch']?:"master";
+			$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
+			$redirectURL = 'settings.php'; //Redirect URL - Leave blank for no redirect
+			$file = file_put_contents(dirname(__DIR__)."/install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
+			if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
+			$zip = new ZipArchive;
+			$res = $zip->open(dirname(__DIR__).'/install.zip');
+			if ($res === TRUE) {
+				for($i=0; $i<$zip->numFiles; $i++) {
+					$name = $zip->getNameIndex($i);
+					if (strpos($name, "{$source}/") !== 0) continue;
+					$file = dirname(__DIR__).'/'.substr($name, strlen($source)+1);
+					if (substr($file,-1)!='/') {
+						$dir = dirname($file);
+						if (!is_dir($dir)) mkdir($dir, 0777, true);
+						$fread = $zip->getStream($name);
+						$fwrite = fopen($file, 'w');
+						while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
+						fclose($fread);
+						fclose($fwrite);
+					}
+				}
+				$zip->close();
+				unlink(dirname(__DIR__).'/install.zip');
+				unlink(dirname(__DIR__).'/.gitignore');
+				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
+				$results = 'Application Updated Successfully!';
+			} else {
+				echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
+				$results = 'Something went wrong!';
+			}
+		} catch (Exception $e){$results = 'Something went wrong!<br/>'.$e;}
 	}
-	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
-		$_SESSION['run']=1;
-	} elseif (isset($_SESSION['run'])==5) {
-		unset($_SESSION['results']);
-		unset($_SESSION['run']);
+	if (isset($results) && !isset($run)) {
+		$run=1;
+	} elseif (isset($run) && $run==5) {
+		unset($results);
+		unset($run);
 	}
-	echo "Results: ".$_SESSION['results']."<br/>Run: ".$_SESSION['run'];
+	echo "Results: ".$results."<br/>Run: ".$run."<br/>POST: ".$_POST['Update'];
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
 		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
@@ -91,10 +125,10 @@
 		</table>
 		<br/>
 		<?php 
-//			echo ($_SESSION['run']?$_SESSION['results']."<br/>":"");
-			if (isset($_SESSION['run'])) {
-				echo $_SESSION['results']."<br/>";
-				$_SESSION['run']+=1;
+//			echo ($run?$results."<br/>":"");
+			if (isset($run)) {
+				echo $results."<br/>";
+				$run+=1;
 			}
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
