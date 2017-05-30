@@ -1,6 +1,8 @@
 <?php
+	define('included', TRUE);
+
 	//Create/update config.ini.php
-	if (!file_exists("config.ini.php") || isset($_POST['Submit'])) {
+	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".($_POST["branch"]?:"")."\"\n*/\n?>";
 		file_put_contents("config.ini.php", $file);
@@ -26,7 +28,7 @@
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
  		if (!tableExists("customers") || !tableExists("expenses") || !tableExists("files") || 
 			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) { 
-			if($_POST['createTables']){
+			if ($_POST['createTables']){
 				$created_tables = create_tables();
 			} else {
 				$button = " <input type=\"Submit\" name=\"createTables\" value=\"Create Table(s)\">";
@@ -35,11 +37,18 @@
 			}
 		}
 	}
+
+	//Update Application from GitHub
+	if (isset($_POST['Update'])) {
+		require_once('update.php');
+		update($_POST["branch"]);
+	}
+
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
-		$mkDB="<form action=\"\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
+		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
 	}
-	if($_POST['mkDB']) {
+	if ($_POST['mkDB']) {
 		try {
 			$conn = new PDO("mysql:host=".$ini['host'].";dbname=".$ini['dbname'], $ini["username"], $ini["password"]);
 			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -47,14 +56,14 @@
 			// use exec() because no results are returned
 			$conn->exec($sql);
 			echo "Database created successfully<br>";
-		} catch(PDOException $e){echo $sql . "<br>" . $e->getMessage();}
+		} catch(PDOException $e){echo $sql."<br>".$e->getMessage();}
 	} */
 ?>
 <head>
 	<style>
 		body {text-align:center;}
 		div {font-size:36px;font-weight:bold;}
-		table {margin:auto;}
+		table {margin:auto;border-top:2px solid;border-bottom:2px solid;padding:15px;}
 		td:first-child {text-align:right;font-weight:bold;}
 		input[type=textbox], input[type=password] {width:350px;border-radius:4px;outline:none;}
 		.required {box-shadow:0 0 5px #ff0000;border:2px solid #ff0000;}
@@ -64,15 +73,18 @@
 </head>
 <body>
 	<div>Settings Page</div><br/>
-	<form action="" method="post">
+	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 		<table>
 			<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
 			<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-			<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?>" value="<?php echo $ini["username"];?>"></td></tr>
-			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?>" value="<?php echo $ini["password"];?>"></td></tr>
+			<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
+			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
 			<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
 		</table>
 		<br/><?php echo ($created_tables?($created_tables===true?"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");?>
-		<input type="Submit" name="Submit" value="Submit"><?php echo $button?:"";?>
+		<?php echo ($_POST['results']?:"");?>
+		<input type="Submit" name="Save" value="Save">&nbsp;
+		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
+		<?php echo $button?:"";?>
 	</form>
 </body>
