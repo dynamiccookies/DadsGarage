@@ -1,6 +1,6 @@
 <?php
 	define('included', TRUE);
-
+	$results = null;
 	//Create/update config.ini.php
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
