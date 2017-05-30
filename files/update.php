@@ -1,4 +1,5 @@
 <?php
+	session_start();
 	if(!defined('included')) {
 		header('HTTP/1.0 403 Forbidden');
 		exit;
@@ -31,11 +32,11 @@
 			unlink(dirname(__DIR__).'/install.zip');
 			unlink(dirname(__DIR__).'/.gitignore');
 			if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
-			$_POST['results'] = 'Application Updated Successfully!';
+			$_SESSION['results'] = 'Application Updated Successfully!';
 		} else {
 			echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
-			$_POST['results'] = 'Something when wrong!';
+			$_SESSION['results'] = 'Something when wrong!';
 		}
-		return $_POST['results'];
+		return $_SESSION['results'];
 	}
 ?>

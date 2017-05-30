@@ -1,4 +1,5 @@
 <?php
+	session_start();
 	define('included', TRUE);
 
 	//Create/update config.ini.php
@@ -82,7 +83,7 @@
 			<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
 		</table>
 		<br/><?php echo ($created_tables?($created_tables===true?"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");?>
-		<?php echo ($_POST['results']?:"");?>
+		<?php echo ($_SESSION['results']?:"");?>
 		<input type="Submit" name="Save" value="Save">&nbsp;
 		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
 		<?php echo $button?:"";?>
