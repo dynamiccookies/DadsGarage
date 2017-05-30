@@ -83,9 +83,9 @@
 		</table>
 		<br/>
 		<?php 
-			if isset($results) {
+			if (isset($results)) {
 				echo $results; 
-				unset $results;
+				unset($results);
 			}
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
