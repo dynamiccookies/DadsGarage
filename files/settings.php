@@ -45,13 +45,13 @@
 		//$results = update($_POST["branch"]);
 		update($_POST["branch"]);
 	}
-	if (isset($_SESSION['results']) && !isset($_SESSION['first_run'])) {
-		$_SESSION['first_run']=true;
-	} elseif (isset($_SESSION['first_run'])) {
+	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
+		$_SESSION['run']=1;
+	} elseif (isset($_SESSION['run'])=5) {
 		unset($_SESSION['results']);
-		unset($_SESSION['first_run']);
+		unset($_SESSION['run']);
 	}
-	echo "Results: ".$_SESSION['results']."<br/>First_Run: ".$_SESSION['first_run'];
+	echo "Results: ".$_SESSION['results']."<br/>Run: ".$_SESSION['run'];
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
 		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
@@ -91,7 +91,11 @@
 		</table>
 		<br/>
 		<?php 
-			echo ($_SESSION['first_run']?$_SESSION['results']."<br/>":"");
+//			echo ($_SESSION['run']?$_SESSION['results']."<br/>":"");
+			if (isset($_SESSION['run'])) {
+				echo $_SESSION['results']."<br/>";
+				$_SESSION['run']+=1;
+			}
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 		?>
