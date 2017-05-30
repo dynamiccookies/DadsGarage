@@ -82,8 +82,13 @@
 			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
 			<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
 		</table>
-		<br/><?php echo ($_SESSION['results']?:"");unset $_SESSION['results'];?>
-		<?php echo ($created_tables?($created_tables===true?"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");?>
+		<br/>
+		<?php 
+			echo ($_SESSION['results']?:""); 
+			unset ($_SESSION['results']);
+			echo ($created_tables?($created_tables===true?
+				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
+		?>
 		<input type="Submit" name="Save" value="Save">&nbsp;
 		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
 		<?php echo $button?:"";?>
