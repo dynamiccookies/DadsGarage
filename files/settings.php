@@ -81,11 +81,11 @@
 	}
 	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
 		$_SESSION['run']=1;
-	} elseif (isset($_SESSION['run']) && $_SESSION['run']==5) {
+	} elseif (isset($_SESSION['run']) && $_SESSION['run']==3) {
 		unset($_SESSION['results']);
 		unset($_SESSION['run']);
 	}
-	echo "Session ID: ".session_id()."<br/>Results: ".$_SESSION['results']."<br/>Run: ".$_SESSION['run']."<br/>POST: ".$_POST['Update'];
+//	echo "Session ID: ".session_id()."<br/>Results: ".$_SESSION['results']."<br/>Run: ".$_SESSION['run']."<br/>POST: ".$_POST['Update'];
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
 		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
