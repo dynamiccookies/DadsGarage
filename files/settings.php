@@ -43,6 +43,8 @@
 	if (isset($_POST['Update'])) {
 		require_once('update.php');
 		update($_POST["branch"]);
+	} elseif (isset($_SESSION['results'])) {
+		unset ($_SESSION['results']);
 	}
 
 /* Testing Database Creation - Future Release
@@ -85,7 +87,6 @@
 		<br/>
 		<?php 
 			echo ($_SESSION['results']?:""); 
-			unset ($_SESSION['results']);
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 		?>
