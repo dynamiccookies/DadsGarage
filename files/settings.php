@@ -1,5 +1,4 @@
 <?php
-	session_start();
 	define('included', TRUE);
 
 	//Create/update config.ini.php
@@ -42,9 +41,7 @@
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
 		require_once('update.php');
-		update($_POST["branch"]);
-	} elseif (isset($_SESSION['results'])) {
-		unset ($_SESSION['results']);
+		$results = update($_POST["branch"]);
 	}
 
 /* Testing Database Creation - Future Release
@@ -86,7 +83,8 @@
 		</table>
 		<br/>
 		<?php 
-			echo ($_SESSION['results']?:""); 
+			echo ($results?:""); 
+			if($results){unset $results);}
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 		?>
