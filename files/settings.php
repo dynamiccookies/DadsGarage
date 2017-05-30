@@ -47,7 +47,7 @@
 	}
 	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
 		$_SESSION['run']=1;
-	} elseif (isset($_SESSION['run'])=5) {
+	} elseif (isset($_SESSION['run'])==5) {
 		unset($_SESSION['results']);
 		unset($_SESSION['run']);
 	}
