@@ -1,6 +1,6 @@
 <?php
 	define('included', TRUE);
-	$results = null;
+
 	//Create/update config.ini.php
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
@@ -83,10 +83,7 @@
 		</table>
 		<br/>
 		<?php 
-			if (isset($results)) {
-				echo $results; 
-				unset($results);
-			}
+			echo ($results?$results."<br/>":"");
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 		?>

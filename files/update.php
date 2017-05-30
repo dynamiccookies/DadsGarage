@@ -4,7 +4,7 @@
 		exit;
 	}
 	function update($repo) {
-		try {
+ 		try {
 			$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
 			$repBranch = $repo;
 			$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
