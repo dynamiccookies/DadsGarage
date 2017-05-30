@@ -18,7 +18,7 @@
 	<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
 	<div class="huge bold u center">Admin Page</div><br />
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center' style='width:33%;min-width:410px;'>
-		<form action="" method="post">
+		<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 				<div class="med bold">Add Vehicle:</div>
 				<center><table class='m-bottom15'><tr><td>Year</td><td>Make</td><td>Model</td><td>Trim</td></tr>
 				<tr><td><input type='textbox' style='width:40px' name='year' value=''></td><td>

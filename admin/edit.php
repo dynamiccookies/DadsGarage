@@ -247,7 +247,7 @@
 		  return str.slice(0, start) + replace.substr(0, length) + replace.slice(length) + str.slice(start + length);
 		}
 	</script>
-	<form action="" method="post" style="padding-bottom:20px;">
+	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" style="padding-bottom:20px;">
 		<div class='center huge bold'>
 			<div class='m-lrauto'>
 				You're editing <a href="../vehicle.php?id=<?php echo $rows[0]['id'];?>"><?php echo $vehicle;?></a>
@@ -407,12 +407,12 @@
 					if (!empty($eRows)) {
 						foreach ($eRows as $exp) {
 							$date = ($exp['date'] != '0000-00-00' && $exp['date'] != '1969-12-31'?date('m/d/Y',strtotime($exp['date'])):"");
-							echo "<tr><td nowrap colspan=3><form action='' method='post'><input type='hidden' name='eid' value='".$exp['id']."'><input style='width:75px;' type='textbox' name='date' value='".$date."'>&nbsp;<input style='width:200px;' type='textbox' name='desc' value=\"".$exp['description']."\">&nbsp;<input style='width:50px;' type='textbox' name='cost' value='".$exp['cost']."'>&nbsp;<input type='submit' name='eupdate' value='Update'></form></td></tr>";
+							echo "<tr><td nowrap colspan=3><form action='".htmlspecialchars($_SERVER['PHP_SELF'])."' method='post'><input type='hidden' name='eid' value='".$exp['id']."'><input style='width:75px;' type='textbox' name='date' value='".$date."'>&nbsp;<input style='width:200px;' type='textbox' name='desc' value=\"".$exp['description']."\">&nbsp;<input style='width:50px;' type='textbox' name='cost' value='".$exp['cost']."'>&nbsp;<input type='submit' name='eupdate' value='Update'></form></td></tr>";
 						}
 						echo "<tr><td nowrap colspan=2 align=right>Total: </td><td class='red'>$".$eTotal[0]['Total']."</td></tr>";
 					}
 				?>
-				<tr><td nowrap colspan=3><form action='' method='post'><input type='hidden' name='vehicle' value='<?php echo $_GET['id']?>'><input style='width:75px;' type='textbox' name='date' value=''>&nbsp;<input style='width:200px;' type='textbox' name='desc' value=''>&nbsp;<input style='width:50px;' type='textbox' name='cost' value=''>&nbsp;<input type='submit' name='einsert' value='Insert'></form></td></tr>
+				<tr><td nowrap colspan=3><form action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>' method='post'><input type='hidden' name='vehicle' value='<?php echo $_GET['id']?>'><input style='width:75px;' type='textbox' name='date' value=''>&nbsp;<input style='width:200px;' type='textbox' name='desc' value=''>&nbsp;<input style='width:50px;' type='textbox' name='cost' value=''>&nbsp;<input type='submit' name='einsert' value='Insert'></form></td></tr>
 				</table></center>
 			</div>
 			<div class='bgblue p15 b-rad15 bord5' style="margin-bottom:50px;">
@@ -430,7 +430,7 @@
 							echo "<table class='photos'>";
 							foreach ($fRows as $file) {
 								$path="../vehicles/".$id."/".$file['filename'];
-								echo "\n<tr><td nowrap align='right'><form action='' method='post'><a class='show' href='".$path."' target='_blank'>".$file['filename']."</a><input type='hidden' name='fullFile' value='".$path."'><input type='hidden' name='oldFile' value='".$file['filename']."'><input class='noscreen' type='textbox' style='width:150px' name='filename' value='".$file['filename']."''><input type='hidden' name='fid' value='".$file['id']."'>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='show fedit hide'>Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;<input class='noscreen' type='submit' name='updateFile' value='Update'></form></td>\n<td><form action='' method='post'><input type='hidden' name='file' value='".$path."'><input type='hidden' name='fid' value='".$file['id']."'><input type='submit' name='delFile' value='Delete'></form></td></tr>\n";
+								echo "\n<tr><td nowrap align='right'><form action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='post'><a class='show' href='".$path."' target='_blank'>".$file['filename']."</a><input type='hidden' name='fullFile' value='".$path."'><input type='hidden' name='oldFile' value='".$file['filename']."'><input class='noscreen' type='textbox' style='width:150px' name='filename' value='".$file['filename']."''><input type='hidden' name='fid' value='".$file['id']."'>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='show fedit hide'>Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;<input class='noscreen' type='submit' name='updateFile' value='Update'></form></td>\n<td><form action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='post'><input type='hidden' name='file' value='".$path."'><input type='hidden' name='fid' value='".$file['id']."'><input type='submit' name='delFile' value='Delete'></form></td></tr>\n";
 								
 							}
 							echo "</table>";
@@ -454,7 +454,7 @@
 						echo "<table class='photos'>";
 						foreach ($pRows as $image) {
 							$path="../vehicles/".$id."/".$image['filename'];
-							echo "\n<tr><td><a href='".$path."' target='_blank' id='".$image['filename']."'><img src='".$path."' width=200px /></a></td>\n<td nowrap><form action='' method='post'><input type='hidden' name='fullpic' value='".$path."'><input type='hidden' name='oldpic' value='".$image['filename']."'><input type='textbox' style='width:150px' name='picname' value='".$image['filename']."''><input type='hidden' name='pid' value='".$image['id']."'><input type='submit' name='updatepic' value='Update'></form></td>\n<td><form action='' method='post'><input type='hidden' name='pic' value='".$path."'><input type='hidden' name='pid' value='".$image['id']."'><input type='submit' name='delPic' value='Delete'></form></td></tr>\n";
+							echo "\n<tr><td><a href='".$path."' target='_blank' id='".$image['filename']."'><img src='".$path."' width=200px /></a></td>\n<td nowrap><form action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='post'><input type='hidden' name='fullpic' value='".$path."'><input type='hidden' name='oldpic' value='".$image['filename']."'><input type='textbox' style='width:150px' name='picname' value='".$image['filename']."''><input type='hidden' name='pid' value='".$image['id']."'><input type='submit' name='updatepic' value='Update'></form></td>\n<td><form action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='post'><input type='hidden' name='pic' value='".$path."'><input type='hidden' name='pid' value='".$image['id']."'><input type='submit' name='delPic' value='Delete'></form></td></tr>\n";
 						}
 						echo "</table>";
 					} else {echo ("\nThere are no photos for this vehicle.");}
