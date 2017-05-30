@@ -41,11 +41,8 @@
 
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
-//		require_once('update.php');
-//		update($_POST["branch"]);
   		try {
 			$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
-			//$repBranch = $repo;
 			$repBranch = $_POST['branch']?:"master";
 			$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
 			$redirectURL = 'settings.php'; //Redirect URL - Leave blank for no redirect
@@ -85,7 +82,7 @@
 		unset($_SESSION['results']);
 		unset($_SESSION['run']);
 	}
-//	echo "Session ID: ".session_id()."<br/>Results: ".$_SESSION['results']."<br/>Run: ".$_SESSION['run']."<br/>POST: ".$_POST['Update'];
+
 /* Testing Database Creation - Future Release
 	if (substr_count($dbChk,"does not exist.")>0) {
 		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
@@ -125,7 +122,6 @@
 		</table>
 		<br/>
 		<?php 
-//			echo ($_SESSION['run']?$_SESSION['results']."<br/>":"");
 			if (isset($_SESSION['run'])) {
 				echo $_SESSION['results']."<br/>";
 				$_SESSION['run']+=1;
