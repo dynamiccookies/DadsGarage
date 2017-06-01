@@ -1,7 +1,7 @@
 <?php
 	$site = "forsale";
 	ini_set('memory_limit', '128M');
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/admin/secure.php");
+	include("secure.php");
 
 	function rearrange($arr){foreach($arr as $key => $all){foreach($all as $i => $val){$new[$i][$key] = $val;}}return $new;}
 	function resize($photo){

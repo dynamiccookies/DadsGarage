@@ -1,6 +1,6 @@
 <?php
-	require($_SERVER['DOCUMENT_ROOT']."/forsale/files/password.php");
-	require($_SERVER['DOCUMENT_ROOT']."/forsale/files/include.php");
+	require("../files/password.php");
+	require("../files/include.php");
 	if(isset($_GET['logout'])) {
 		(isset($_GET['index'])?$index=$_GET['index']:$index='');
 		echo "<meta http-equiv=refresh content=\"0; URL=http://".$_SERVER['SERVER_NAME']."/".$index."/".($_SESSION['isadmin']?"admin":"portal.php")."\">";

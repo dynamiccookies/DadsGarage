@@ -1,10 +1,9 @@
 <?php
 	session_start();
 	$site = "forsale";
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/admin/secure.php");
+	include("secure.php");
 	$id = $_GET['id']; 
-	$home = "http://".$_SERVER['SERVER_NAME']."/".$site;
-	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=".$home."/portal.php\">");}
+//	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=../portal.php\">");}
 	$reload = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."\">";
 	$reloadPic = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."#pscroll\">"; //Need to test
 	$vehicle = ($rows[0]["year"]==0000?'':$rows[0]["year"])." ".$rows[0]['make']." ".$rows[0]['model']." ".$rows[0]['trim'];
@@ -31,7 +30,6 @@
 		unlink($_POST["pic"]);						//Delete photo
 		$pDelete->bindParam(':pid',$_POST["pid"]);	//Delete database entry
 		$pDelete->execute();
-//		echo $reloadPic;
 		echo "<script> window.location.replace('".$_SERVER['REQUEST_URI']."#".$_POST["oldpic"]."'); </script>";
 	}
 	if(isset($_POST['updatepic'])) {				//Update photo name
@@ -60,7 +58,7 @@
 			} catch (Exception $e) {
 				echo 'An error occurred. Please take note of the following line(s) and click the link below.<br>';
 				echo 'Caught exception: ',  $e->getMessage(), "\n";
-				echo "<p><a href='http://".$_SERVER['SERVER_NAME']."/".$site."/admin'>http://".$_SERVER['SERVER_NAME']."/".$site."/admin</a></p>";
+				echo "<p><a href='.'>Admin Home</a></p>";
 			}
 		}
 		$pUpdate->bindParam(':pid',$_POST["pid"]);
@@ -191,13 +189,7 @@
 				document.getElementById("lname").className = "";
 				document.getElementById("lblsaledate").className = "";
 				document.getElementById("saledate").className = "";
-/* 				var a = document.getElementById("payment");
-				var pay = a.options[a.selectedIndex].value;
-				if (pay != "Cash") {
-					document.getElementById("soldnotes").className = "";
-					document.getElementById("lblsoldnotes").className = "";
-				}
- */			}else{
+			}else{
 				document.getElementById("lblsaledate").className = "noscreen";
 				document.getElementById("saledate").className = "noscreen";
 				document.getElementById("buyer").className = "noscreen";
@@ -206,23 +198,10 @@
 				document.getElementById("lblinsured").className = "";
 				document.getElementById("insured").className = "";
 				document.getElementById("payment").className = "noscreen";
-/* 				document.getElementById("soldnotes").className = "noscreen";
-				document.getElementById("lblsoldnotes").className = "noscreen";
- */			}
+			}
 
 		}
-/* 		function paymentType() {
-			var e = document.getElementById("payment");
-			var stat = e.options[e.selectedIndex].value;
-			if (stat != "Cash") {
-				document.getElementById("soldnotes").className = "";
-				document.getElementById("lblsoldnotes").className = "";
-			} else {
-				document.getElementById("soldnotes").className = "noscreen";
-				document.getElementById("lblsoldnotes").className = "noscreen";
-			}
-		}
- */		function loading1() {
+		function loading1() {
 			document.getElementById("loading1").style.display = 'block';
 		}
 		function loading2() {
@@ -301,7 +280,7 @@
 				<td><span id='phonenum' class='show'></span><input id='oPhone' type="text" class="noscreen" /></td>
 				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 				<td>&nbsp;</td>
-				<td nowrap><center><a href='<?php echo $home;?>'>For Sale</a></center></td>
+				<td nowrap><center><a href='../'>For Sale</a></center></td>
 			</tr>
 			<tr>																	<!-- Row 3 -->
 				<td nowrap>Status:</td>
@@ -332,7 +311,7 @@
 				<td>Email:</td>
 				<td><span id='emailadd' class='show'></span><input id='oEmail' type="text" class="noscreen" /></td>
 				<td colspan=3>&nbsp;</td>
-				<td nowrap><center><a href='<?php echo $home;?>/admin'>Admin Home</a></center></td>
+				<td nowrap><center><a href='.'>Admin Home</a></center></td>
 			</tr>
 			<tr>																	<!-- Row 4 -->
 				<td>
@@ -351,8 +330,6 @@
 				<td colspan=3>&nbsp;</td>
 			</tr>
 			<tr>																	<!-- Row 5 -->
-				<!--<td><span id='lblsoldnotes' class="noscreen">Sold Notes:</span></td>
-				<td><input type="textbox" style="width:150px;" class="noscreen" id='soldnotes' name='soldnotes' value="<?php echo $rows[0]['paynotes'];?>"></td>-->
 				<td><span id="lblsaledate" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">Sale Date:</span></td>
 				<td><input type="date" id="saledate" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>" style="width:167px;" name="saledate"></td>
 				<td>&nbsp;</td>

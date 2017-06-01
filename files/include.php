@@ -1,10 +1,17 @@
 <?php
 	session_start();
-	$site = "forsale";
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/files/header.php");
+	$files=substr(getcwd(), strrpos(getcwd(), '/') + 1);
+	if ($files=="admin") {$files="../files/";} 
+	elseif ($files=="files") {$files="";} 
+	else {$files="files/";}
+
+	require_once($files."header.php");
+	require($files."conn.php");
+
 	$success = 'noscreen ';
+	$site = "forsale";
 	$logout = "secure.php?logout=1&index=".$site;
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/files/conn.php");
+
 	if ($_GET['id']) {
 		$where = "WHERE ID=".$_GET['id'];
 		$pwhere = "WHERE vehicle=".$_GET['id'];

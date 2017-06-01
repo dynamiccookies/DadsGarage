@@ -4,7 +4,8 @@
 		header('HTTP/1.0 403 Forbidden');
 		exit;
 	}
-	//The code on this page was borrowed and tweaked from: https://github.com/rconfig/rconfig/blob/master/www/install/lib/ajaxHandlers/ajaxDbTests.php
+	//The code on this page was borrowed and tweaked from: 
+	//https://github.com/rconfig/rconfig/blob/master/www/install/lib/ajaxHandlers/ajaxDbTests.php
 	ini_set('display_errors', 0);
 	$server = $ini["host"];
 	$port = 3306;
@@ -84,73 +85,33 @@
 	}
 	function create_tables() {
 		$sql = "
-		CREATE TABLE IF NOT EXISTS `expenses` (
-		`id` bigint(11) AUTO_INCREMENT NOT NULL,
-		`vehicle` int(11) NOT NULL,
-		`date` date DEFAULT NULL,
-		`description` mediumtext NOT NULL,
-		`cost` decimal(10,2) NOT NULL,
-		PRIMARY KEY (`id`)
-		);
-		CREATE TABLE IF NOT EXISTS `customers` (
-		`id` int(11) AUTO_INCREMENT NOT NULL,
-		`username` varchar(255) NOT NULL,
-		`hash` varchar(255) NOT NULL,
-		PRIMARY KEY (`id`),
-		UNIQUE KEY `username` (`username`)
-		);
-		CREATE TABLE IF NOT EXISTS `files` (
-		`id` mediumint(9) AUTO_INCREMENT NOT NULL,
-		`vehicle` mediumint(9) NOT NULL,
-		`filename` varchar(255) NOT NULL,
-		`order` tinyint(4) NOT NULL,
-		PRIMARY KEY (`id`)
-		);
-		CREATE TABLE IF NOT EXISTS `owners` (
-		`id` int(11) AUTO_INCREMENT NOT NULL,
-		`name` varchar(255) NOT NULL,
-		`email` varchar(255) DEFAULT NULL,
-		`phone` varchar(14) DEFAULT NULL,
-		PRIMARY KEY (`id`)
-		);
-		CREATE TABLE IF NOT EXISTS `photos` (
-		`id` mediumint(9) AUTO_INCREMENT NOT NULL,
-		`vehicle` mediumint(9) NOT NULL,
-		`filename` varchar(255) NOT NULL,
-		`order` tinyint(4) NOT NULL,
-		PRIMARY KEY (`id`)
-		);
-		CREATE TABLE IF NOT EXISTS `users` (
-		`id` int(11) AUTO_INCREMENT NOT NULL,
-		`username` varchar(255) NOT NULL,
-		`hash` varchar(255) NOT NULL,
-		`fname` varchar(40) NOT NULL,
-		`lname` varchar(40) NOT NULL,
-		`isadmin` tinyint(1) NOT NULL DEFAULT 0,
-		PRIMARY KEY (`id`),
-		UNIQUE KEY `username` (`username`)
-		);
-		CREATE TABLE IF NOT EXISTS `vehicles` (
-		`id` int(11) AUTO_INCREMENT NOT NULL,
-		`vin` varchar(17) DEFAULT NULL,
-		`year` year(4) NOT NULL,
-		`make` mediumtext NOT NULL,
-		`model` mediumtext NOT NULL,
-		`trim` mediumtext,
-		`miles` int(6) DEFAULT NULL,
-		`owner` tinyint(4) DEFAULT NULL,
-		`purchdate` date DEFAULT NULL,
-		`purchprice` decimal(10,0) DEFAULT NULL,
-		`askprice` decimal(10,0) DEFAULT NULL,
-		`intnotes` longtext COMMENT 'Internal-Only Notes',
-		`pubnotes` longtext COMMENT 'Public Notes',
-		`status` varchar(255) NOT NULL DEFAULT 'Draft',
-		`insured` tinyint(1) NOT NULL DEFAULT 0,
-		`payment` varchar(12) DEFAULT NULL,
-		`paynotes` varchar(255) DEFAULT NULL,
-		`buyer` int(11) DEFAULT NULL,
-		PRIMARY KEY (`id`)
-		);";
+		CREATE TABLE IF NOT EXISTS `expenses` (`id` bigint(11) AUTO_INCREMENT NOT NULL,`vehicle` int(11) NOT NULL,
+		`date` date DEFAULT NULL,`description` mediumtext NOT NULL,`cost` decimal(10,2) NOT NULL,PRIMARY KEY (`id`));
+
+		CREATE TABLE IF NOT EXISTS `customers` (`id` int(11) AUTO_INCREMENT NOT NULL,`username` varchar(255) NOT NULL,
+		`hash` varchar(255) NOT NULL,PRIMARY KEY (`id`),UNIQUE KEY `username` (`username`));
+
+		CREATE TABLE IF NOT EXISTS `files` (`id` mediumint(9) AUTO_INCREMENT NOT NULL,`vehicle` mediumint(9) NOT NULL,
+		`filename` varchar(255) NOT NULL,`order` tinyint(4) NOT NULL,PRIMARY KEY (`id`));
+
+		CREATE TABLE IF NOT EXISTS `owners` (`id` int(11) AUTO_INCREMENT NOT NULL,`name` varchar(255) NOT NULL,
+		`email` varchar(255) DEFAULT NULL,`phone` varchar(14) DEFAULT NULL,PRIMARY KEY (`id`));
+
+		CREATE TABLE IF NOT EXISTS `photos` (`id` mediumint(9) AUTO_INCREMENT NOT NULL,`vehicle` mediumint(9) NOT NULL,
+		`filename` varchar(255) NOT NULL,`order` tinyint(4) NOT NULL,PRIMARY KEY (`id`));
+
+		CREATE TABLE IF NOT EXISTS `users` (`id` int(11) AUTO_INCREMENT NOT NULL,`username` varchar(255) NOT NULL,
+		`hash` varchar(255) NOT NULL,`fname` varchar(40) NOT NULL,`lname` varchar(40) NOT NULL,
+		`isadmin` tinyint(1) NOT NULL DEFAULT 0,PRIMARY KEY (`id`),UNIQUE KEY `username` (`username`));
+
+		CREATE TABLE IF NOT EXISTS `vehicles` (`id` int(11) AUTO_INCREMENT NOT NULL,`vin` varchar(17) DEFAULT NULL,
+		`year` year(4) NOT NULL,`make` mediumtext NOT NULL,`model` mediumtext NOT NULL,`trim` mediumtext,
+		`miles` int(6) DEFAULT NULL,`owner` tinyint(4) DEFAULT NULL,`purchdate` date DEFAULT NULL,
+		`purchprice` decimal(10,0) DEFAULT NULL,`askprice` decimal(10,0) DEFAULT NULL,
+		`intnotes` longtext COMMENT 'Internal-Only Notes',`pubnotes` longtext COMMENT 'Public Notes',
+		`status` varchar(255) NOT NULL DEFAULT 'Draft',`insured` tinyint(1) NOT NULL DEFAULT 0,
+		`payment` varchar(12) DEFAULT NULL,`paynotes` varchar(255) DEFAULT NULL,`buyer` int(11) DEFAULT NULL,
+		PRIMARY KEY (`id`));";
 
 		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
 		// Set options
