@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	define('included', TRUE);
+	$userMessage = "";
 
 	//Create/update config.ini.php
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
@@ -28,7 +29,7 @@
 	//Check existence/create database tables
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
  		if (!tableExists("customers") || !tableExists("expenses") || !tableExists("files") || 
-			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) { 
+			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) {
 			if ($_POST['createTables']){
 				$created_tables = create_tables();
 			} else {
@@ -37,6 +38,12 @@
 				$dbChk = str_replace('Database Connection Successful','One or more tables are missing from the database.',$dbChk);
 			}
 		}
+		//Check existence/create default Admin user
+		$userExists=usersExist();
+ 		if ($userExists===TRUE) {
+			$userMessage = "The default username and password are 'admin'.<br/>
+			<a href='../admin'>Click here to change the password.</a><br/><br/>";
+		} elseif (!$userExists===FALSE) {$userMessage = $userExists;} 
 	}
 
 	//Update Application from GitHub
@@ -128,6 +135,7 @@
 			}
 			echo ($created_tables?($created_tables===true?
 				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
+			echo $userMessage;
 		?>
 		<input type="Submit" name="Save" value="Save">&nbsp;
 		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">

@@ -6,6 +6,7 @@
 	}
 	//The code on this page was borrowed and tweaked from: 
 	//https://github.com/rconfig/rconfig/blob/master/www/install/lib/ajaxHandlers/ajaxDbTests.php
+	require("password.php");
 	ini_set('display_errors', 0);
 	$server = $ini["host"];
 	$port = 3306;
@@ -63,6 +64,36 @@
 		elseif ($db_selected == 0 && $array['credTest'] != 'Pass') {$array['dbTest'] = 'Fail - Double check host address.';}
 	}
 	$conn = null;
+
+	//check users exist
+ 	function usersExist() {
+		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
+		// Set options
+		$options = array(
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_PERSISTENT => true,
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+		);
+		//Create a new PDO instance
+		try {
+			$conn = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
+			$temp = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
+			$result = $temp->fetchColumn();
+			if($result==0) {
+ 				$createUser = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`isadmin`) VALUES ('admin','".password_hash('admin', PASSWORD_DEFAULT)."',1)");
+				$createUser->execute(); 
+				return TRUE;
+			} else {
+   				$selectUsers = $conn->prepare("SELECT * FROM users WHERE username='admin'");
+				$selectUsers->execute();
+				$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
+				if(password_verify("admin",$account[0]['hash'])) {return TRUE;}
+				else {return FALSE;}
+ 				return "How did you get here?";
+			}
+		}
+		catch (PDOException $e) {return "There was a problem: ".$e;}
+	}
 
 	function tableExists($table) {	//https://stackoverflow.com/questions/1717495/check-if-a-database-table-exists-using-php-pdo
 		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
