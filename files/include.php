@@ -4,7 +4,7 @@
 	if ($files=="admin") {$files="../files/";} 
 	elseif ($files=="files") {$files="";} 
 	else {$files="files/";}
-
+	define('included', TRUE);
 	require_once($files."header.php");
 	require($files."conn.php");
 

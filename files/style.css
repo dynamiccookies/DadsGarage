@@ -7,8 +7,23 @@
 		background-attachment: fixed;
 		padding-bottom:100px;
 	}
+	table.settings {
+		margin: auto;
+		border-top: 2px solid;
+		border-bottom: 2px solid;
+		padding: 15px;
+	}
+	table.settings td:first-child {
+		text-align:right;
+		font-weight:bold;
+	}
+	table.settings input[type=textbox], table.settings input[type=password] {
+		width:350px;
+		border-radius:4px;
+		outline:none;
+	}
 	button.active {
-		background-color:gray;
+		background-color: gray;
 		color: white;
 	}
 	div > button {
@@ -60,12 +75,32 @@
 		margin-left: auto;
 		margin-right: auto;
 	}
+	.darkbg {
+		background-color:black;
+	}
+	.settings-header {
+		font-size:36px;
+		font-weight:bold;
+	}
+	.required {
+		box-shadow:0 0 5px #ff0000;
+		border:2px solid #ff0000;
+	}
+	.warn {
+		box-shadow:0 0 5px #ffff00;
+		border:2px solid #ffff00;
+	}
+	.pass {
+		box-shadow:0 0 5px #00c600;
+		border:2px solid #00c600;
+	}
 	.htmlTable {
 		margin-top:5px;
 		text-align:left;
 		border-top:1px solid;
 		font-weight:normal;
 		margin: 0 auto;
+		border-collapse: collapse;
 	}
 	.tb-p15 {padding: 15px 0px;}
 	.tdcenter {
@@ -209,6 +244,9 @@
 	}
 	div#mainContainer {
 		margin-top: -50px;
+		width:33%; 
+		max-width:66%;
+		display:table;
 	}
 	
 	

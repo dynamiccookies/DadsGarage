@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	define('included', TRUE);
+	require_once($files."header.php");
 	$userMessage = "";
 
 	//Create/update config.ini.php
@@ -105,40 +106,45 @@
 		} catch(PDOException $e){echo $sql."<br>".$e->getMessage();}
 	} */
 ?>
-<head>
-	<style>
-		body {text-align:center;}
-		div {font-size:36px;font-weight:bold;}
-		table {margin:auto;border-top:2px solid;border-bottom:2px solid;padding:15px;}
-		td:first-child {text-align:right;font-weight:bold;}
-		input[type=textbox], input[type=password] {width:350px;border-radius:4px;outline:none;}
-		.required {box-shadow:0 0 5px #ff0000;border:2px solid #ff0000;}
-		.warn {box-shadow:0 0 5px #ffff00;border:2px solid #ffff00;}
-		.pass {box-shadow:0 0 5px #00c600;border:2px solid #00c600;}
-	</style>
-</head>
-<body>
-	<div>Settings Page</div><br/>
-	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
-		<table>
-			<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
-			<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-			<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
-			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
-			<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
-		</table>
-		<br/>
-		<?php 
-			if (isset($_SESSION['run'])) {
-				echo $_SESSION['results']."<br/>";
-				$_SESSION['run']+=1;
-			}
-			echo ($created_tables?($created_tables===true?
-				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
-			echo $userMessage;
-		?>
-		<input type="Submit" name="Save" value="Save">&nbsp;
-		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
-		<?php echo $button?:"";?>
-	</form>
+<body class="settings darkbg">
+	<div id="adminSidenav" class="adminsidenav"><?php require_once("menu.php");?></div>
+	<div id="adminMain">
+		<div class="adminContainer" onclick="myFunction(this)">
+		  <div class="bar1"></div>
+		  <div class="bar2"></div>
+		  <div class="bar3"></div>
+		</div>
+		<div id="mainContainer" class="bgblue bord5 p15 b-rad15 m-lrauto center m-top25">
+			<div class="settings-header">Settings Page</div><br/>
+			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+				<table class="settings">
+					<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
+					<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
+					<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
+					<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
+					<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
+				</table>
+				<br/>
+				<?php 
+					if (isset($_SESSION['run'])) {
+						echo $_SESSION['results']."<br/>";
+						$_SESSION['run']+=1;
+					}
+					echo ($created_tables?($created_tables===true?
+						"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
+					echo $userMessage;
+				?>
+				<input type="Submit" name="Save" value="Save">&nbsp;
+				<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
+				<?php echo $button?:"";?>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		function myFunction(x) {
+			x.classList.toggle("change");
+			document.getElementById("adminSidenav").classList.toggle("change");
+			document.getElementById("adminMain").classList.toggle("change");
+		}
+	</script>
 </body>

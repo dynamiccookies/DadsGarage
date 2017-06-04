@@ -15,11 +15,17 @@
 	$dbPassword = $ini["password"];
 	$array = array();
 
-/*	Testing create_conn function - Future Release
-	function create_conn() {
+/* //	Testing create_conn function - Future Release
+	function create_conn($sql) {
+		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
+		$options = array(
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_PERSISTENT => true,
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+		);
 		$conn = new PDO($dsn, $dbUsername, $dbPassword, $options);
-		$stmt = $conn->query(
-	} */
+		$stmt = $conn->query($sql);
+	}  */
 
 	// check server connectivity
 	try {

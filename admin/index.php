@@ -13,12 +13,13 @@
 		echo "<meta http-equiv=refresh content=\"3; URL=".$_SERVER['REQUEST_URI']."\">";
 	}
 ?>
-<body class='' style="background-color:black !important;">
+<body class='darkbg'>
 	<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
 
   <div id="adminSidenav" class="adminsidenav">
-    <a href="../files/settings.php">Settings</a>
-<!--    <a href="#">Services</a>
+<?php require_once("../files/menu.php");?>
+<!--    <a href="../files/settings.php">Settings</a>
+    <a href="#">Services</a>
     <a href="#">Clients</a>
     <a href="#">Contact</a>-->
   </div>
@@ -28,7 +29,7 @@
       <div class="bar2"></div>
       <div class="bar3"></div>
     </div>
-	<div id="mainContainer" class='bgblue bord5 p15 b-rad15 m-lrauto center m-top25' style='width:33%; max-width:66%;display:table;'>
+	<div id="mainContainer" class='bgblue bord5 p15 b-rad15 m-lrauto center m-top25'>
 		<div class="huge bold center">Admin Page</div>
 <!--		<div id='page'><span>Vehicles</span> | <span>Customers</span></div>
 		<div id='category'><span>For Sale</span> | <span>Sold</span></div>-->
