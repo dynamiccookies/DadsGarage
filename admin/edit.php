@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	$site = "forsale";
 	include("secure.php");
 	$id = $_GET['id']; 
 	$reload = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."\">";

@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	$site = "forsale";
 	include("secure.php");
 //	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=../portal.php\">");}
 	if(isset($_POST['submit'])) {
@@ -74,7 +73,6 @@
 				}
 			?>
 			</table></td></tr></table>
-			<p><a href="../">Home</a> | <a href="<?php echo $logout;?>">Logout</a></p>
 		</div>
 	</div>
 	<script src="../files/admin.js"></script>

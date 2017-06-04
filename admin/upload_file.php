@@ -1,5 +1,4 @@
 <?php
-	$site = "forsale";
 	ini_set('memory_limit', '128M');
 	include("secure.php");
 
