@@ -44,7 +44,12 @@
  		if ($userExists===TRUE) {
 			$userMessage = "The default username and password are 'admin'.<br/>
 			<a href='../admin'>Click here to change the password.</a><br/><br/>";
-		} elseif (!$userExists===FALSE) {$userMessage = $userExists;} 
+		} elseif (!$userExists===FALSE) {
+			if (strpos($userExists,"Base table or view not found")!==FALSE) {
+				$userMessage = "The Users table does not exist.<br/>
+				Please click the Create Table(s) button to create it.<br/><br/>";
+			} else {$userMessage = $userExists;}
+		} elseif($userExists===FALSE) {require("../admin/secure.php");}
 	}
 
 	//Update Application from GitHub
@@ -140,11 +145,5 @@
 			</form>
 		</div>
 	</div>
-	<script type="text/javascript">
-		function myFunction(x) {
-			x.classList.toggle("change");
-			document.getElementById("adminSidenav").classList.toggle("change");
-			document.getElementById("adminMain").classList.toggle("change");
-		}
-	</script>
+	<script src="admin.js"></script>
 </body>
