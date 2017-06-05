@@ -107,6 +107,7 @@
 		align: center;
 		padding-left: 10px;
 	}
+	.commit {position: fixed; bottom: 0; right: 0; color: white;}
 	.block {display: block;}
 	.p15 {padding: 15px;}
 	.clear {clear: both;}
@@ -117,7 +118,7 @@
 	.m-right {margin-right:25px;}
 	.viewing {border-collapse: collapse;border-spacing: 25px 0px;}
 	.bgblue {background-color:#daecee;}
-	.bord5 {border: solid 5px;}
+	.bord5 {border: 5px solid gray;}
 	.b-right1 {border-right: 1px solid;}
 	.b-rad15 {border-radius: 15px;}
 	.center {text-align: center;}
