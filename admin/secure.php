@@ -21,16 +21,15 @@
 		</script>
 		<style type="text/css">.hide {display:none;}</style>
 	</head>
-	<body class="bg">
-		<style>input {border: 1px solid black;}</style>
-		<div style="width:500px; margin-left:auto; margin-right:auto; text-align:center">
+	<body class="darkbg">
+		<div id="mainContainer" class="bgblue bord5 p15 b-rad15 m-lrauto center m-top25" style="margin-top:auto !important;">
 		  <form method="post">
 			<h3>Please enter password to access this page</h3>
 			<font color="red"><?php echo $error_msg; ?></font><br />
-			Login:<br /><input type="input" name="access_login" /><br />
-			Password:<br /><input type="password" name="access_password" /><br />
+			Login:<br /><input style="border: 1px solid black;" type="input" name="access_login" /><br />
+			Password:<br /><input style="border: 1px solid black;" type="password" name="access_password" /><br />
 			<div id="show" class="hide">
-				New Password:<br /><input type="password" name="new_password" /><br />
+				New Password:<br /><input style="border: 1px solid black;" type="password" name="new_password" /><br />
 				<a onclick="chgPass('hide','show')" href="javascript:void(0);">Cancel</a>
 			</div>
 			<a onclick="chgPass('show','hide')" class="show" id="hide" href="javascript:void(0);">Change Password</a>
@@ -51,7 +50,7 @@ if (isset($_POST['access_login'])) {
 	$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
 
 	if(!password_verify($_POST['access_password'],$account[0]['hash'])) {
-		showLoginPasswordProtect("Incorrect password.");
+		showLoginPasswordProtect("Incorrect username/password.");
 	} else {
 		if(isset($_POST['new_password']) && $_POST['new_password']<>'') {
 			$updateUsers->bindParam(':pass',password_hash($_POST['new_password'], PASSWORD_DEFAULT));

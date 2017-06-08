@@ -2,30 +2,44 @@
 	session_start();
 	define('included', TRUE);
 	require_once($files."header.php");
-	
-	//Pull list of branches from GitHub
 	ini_set("allow_url_fopen", 1);
-	$options  = array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT']));
-	$url = "https://api.github.com/repos/dynamiccookies/dadsgarage/branches";
-	$branches = json_decode(file_get_contents($url, false, stream_context_create($options)),true);
-
+	
+	//Pull branch info from GitHub
+	function getBranchInfo($commit = null,$branch = null) {
+		$json = getJSON("branches");
+		foreach($json as $item) {$info['branches'][$item['name']]=$item['commit']['sha'];}
+		if($commit) {
+			$json = getJSON("commits/".$commit);
+			$info['current']=array("commit"=>$json['sha'],"date"=>str_replace("Z","",str_replace("T"," ",$json['commit']['committer']['date'])),"notes"=>$json['commit']['message']);
+		}
+		if($branch) {
+			$json=getJSON("branches/".$branch);
+			$info['new']=array("name"=>$json['name'],"commit"=>$json['commit']['sha'],"date"=>str_replace("Z","",str_replace("T"," ",$json['commit']['commit']['committer']['date'])));
+		}
+		if (($commit) && ($branch) && ($info['current']['commit']!=$info['new']['commit'])) {
+			$json = getJSON("compare/".$info['current']['commit']."...".$info['new']['commit']);
+			if ($json['status']=="ahead") {
+				$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by']." commit(s) behind.</div><br/>";
+			}
+		}
+		return $info;
+	}
+	function getJSON($url) {
+		$url = "https://api.github.com/repos/dynamiccookies/dadsgarage/".$url;
+		return json_decode(file_get_contents($url, false, stream_context_create(array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT'])))),true);
+	}
 	$userMessage = "";
 	//Create/update config.ini.php
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
-//		if (!file_exists("config.ini.php")) {$commit=$branches[0]['commit']['sha'];} //Need to find a way to get the correct array item number
+		//if (isset($_POST['Save'])) {}
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
-		($_POST["branch"]?:"")."\"\ncommit = \"".($commit?:"")."\"\n*/\n?>";
+		($_POST["branch"]?:"")."\"\ncommit = \"".($ini['commit']?:"")."\"\n*/\n?>";
 		file_put_contents("config.ini.php", $file);
 	}
 
 	//Read config.ini.php
 	$ini = parse_ini_file("config.ini.php");
-
-	//Test for GitHub updates
-	foreach($branches as $branch) {
-		if ($branch['name']==$ini['branch']) {if ($branch['commit']['sha']!=$ini['commit']) {$updateAvailable=TRUE;}}
-	}
 	
 	//Test validity of database, host, & credentials
 	require_once("dbcheck.php");
@@ -98,12 +112,9 @@
 				unlink(dirname(__DIR__).'/install.zip');
 				unlink(dirname(__DIR__).'/.gitignore');
 	
-				for($i=0,$size=count($branches);$i<$size;++$i) {
-					if($branches[$i]['name']==$_POST['branch']){$commit=$branches[$i]['commit']['sha'];}
-				}
 				$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 				"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
-				($_POST["branch"]?:"")."\"\ncommit = \"".$commit."\"\n*/\n?>";
+				($_POST["branch"]?:"")."\"\ncommit = \"".getBranchInfo(null,$_POST['branch'])['new']['commit']."\"\n*/\n?>";
 				file_put_contents("config.ini.php", $file);
 	
 				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
@@ -154,10 +165,12 @@
 					<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
 					<tr><td>Git Branch:</td><td style="text-align:left;">
 						<select name="branch">
-							<?php foreach ($branches as $branch) {
-								$branch = $branch['name'];
-								if($ini["branch"]=="") {$ini["branch"]="master";}
-								echo "<option value'$branch'".($branch==$ini["branch"]?" selected":"").">$branch</option>";}?>
+							<?php 
+								foreach(getBranchInfo()['branches'] as $branch=>$value) {
+									if(!$ini["branch"]) {$ini["branch"]="master";}
+									echo "<option value'$branch'".($branch==$ini["branch"]?" selected":"").">$branch</option>";
+								}
+							?>
 						</select>
 					</td></tr>
 				</table>
@@ -170,7 +183,7 @@
 					echo ($created_tables?($created_tables===true?
 						"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 					echo $userMessage;
-					echo ($updateAvailable?"<div class='red bold'>Update Available</div><br/>":"");
+					echo (getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"");
 					echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
 					echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
 					if (dbExists) {echo $button?:"";}
