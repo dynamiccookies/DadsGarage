@@ -1,16 +1,29 @@
 @media screen {
 	.noscreen {display: none;}
-	/**body {background-color: #FFCCFF;}  Pink for Testing    **/
-	/**body {background-color: #daecee;}  Blue for Production **/
-	html, body { min-height: 100%; }
+	html, body { min-height: 100%;}
 	body.bg {
 		background-image: url("green.jpg"); /*wood.jpg*/
 		background-repeat: no-repeat;
 		background-attachment: fixed;
 		padding-bottom:100px;
 	}
+	table.settings {
+		margin: auto;
+		border-top: 2px solid;
+		border-bottom: 2px solid;
+		padding: 15px;
+	}
+	table.settings td:first-child {
+		text-align:right;
+		font-weight:bold;
+	}
+	table.settings input[type=textbox], table.settings input[type=password] {
+		width:350px;
+		border-radius:4px;
+		outline:none;
+	}
 	button.active {
-		background-color:gray;
+		background-color: gray;
 		color: white;
 	}
 	div > button {
@@ -62,18 +75,39 @@
 		margin-left: auto;
 		margin-right: auto;
 	}
+	.darkbg {
+		background-color:black;
+	}
+	.settings-header {
+		font-size:36px;
+		font-weight:bold;
+	}
+	.required {
+		box-shadow:0 0 5px #ff0000;
+		border:2px solid #ff0000;
+	}
+	.warn {
+		box-shadow:0 0 5px #ffff00;
+		border:2px solid #ffff00;
+	}
+	.pass {
+		box-shadow:0 0 5px #00c600;
+		border:2px solid #00c600;
+	}
 	.htmlTable {
 		margin-top:5px;
 		text-align:left;
 		border-top:1px solid;
 		font-weight:normal;
 		margin: 0 auto;
+		border-collapse: collapse;
 	}
 	.tb-p15 {padding: 15px 0px;}
 	.tdcenter {
 		align: center;
 		padding-left: 10px;
 	}
+	.commit {position: fixed; bottom: 0; right: 0; color: white;}
 	.block {display: block;}
 	.p15 {padding: 15px;}
 	.clear {clear: both;}
@@ -84,7 +118,7 @@
 	.m-right {margin-right:25px;}
 	.viewing {border-collapse: collapse;border-spacing: 25px 0px;}
 	.bgblue {background-color:#daecee;}
-	.bord5 {border: solid 5px;}
+	.bord5 {border: 5px solid gray;}
 	.b-right1 {border-right: 1px solid;}
 	.b-rad15 {border-radius: 15px;}
 	.center {text-align: center;}
@@ -125,6 +159,99 @@
        -moz-box-sizing: border-box;
             box-sizing: border-box;
 	}
+/* TESTING Admin Left Navigation */	
+	.adminsidenav {
+		height: 100%;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		opacity:.75;
+		background-color: white;
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+	}
+
+	.adminsidenav a {
+		padding: 8px 8px 8px 32px;
+		text-decoration: none;
+		font-size: 25px;
+		color: #818181;
+		display: block;
+		transition: 0.3s;
+	}
+
+	.adminsidenav a:hover, .offcanvas a:focus{
+		font-weight:bold;
+	}
+
+	.adminsidenav .closebtn {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+	}
+
+	#adminMain {
+		transition: margin-left .5s;
+		padding: 16px;
+		margin-left: 0px;
+	}
+
+	#adminSidenav {
+		width: 0px;
+		transition: width .5s;
+	}
+
+	@media screen and (max-height: 450px) {
+	  .sidenav {padding-top: 15px;}
+	  .sidenav a {font-size: 18px;}
+	}
+	.adminContainer {
+		display: inline-block;
+		cursor: pointer;
+	}
+
+	.bar1, .bar2, .bar3 {
+		width: 35px;
+		height: 5px;
+		background-color: white;
+		margin: 6px 0;
+		transition: 0.6s;
+	}
+
+	.change .bar1 {
+		-webkit-transform: rotate(-45deg) translate(-9px, 6px) ;
+		transform: rotate(-45deg) translate(-9px, 6px) ;
+	}
+
+	.change .bar2 {opacity: 0;}
+
+	.change .bar3 {
+		-webkit-transform: rotate(45deg) translate(-8px, -8px) ;
+		transform: rotate(45deg) translate(-8px, -8px) ;
+	}
+
+	#adminSidenav.change {
+		width:250px;
+		transition: width .5s;
+	}
+
+	#adminMain.change {
+		margin-left:250px;
+		transition: margin-left .5s;
+	}
+	div#mainContainer {
+		margin-top: -50px;
+		width:33%; 
+		max-width:66%;
+		display:table;
+	}
+	
+	
+/* End of TESTING Admin Left Navigation */	
 }
 @media print {
 	.noprint {display: none;}

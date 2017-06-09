@@ -1,15 +1,12 @@
 <?php
 	session_start();
-	$site = "forsale";
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/admin/secure.php");
+	include("secure.php");
 	$id = $_GET['id']; 
-	$home = "http://".$_SERVER['SERVER_NAME']."/".$site;
-	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=".$home."/portal.php\">");}
 	$reload = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."\">";
 	$reloadPic = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."#pscroll\">"; //Need to test
-	$vehicle = ($rows[0]["year"]==0000?'':$rows[0]["year"])." ".$rows[0]['make']." ".$rows[0]['model']." ".$rows[0]['trim'];
+	$vehicle = trim(($rows[0]["year"]==0000?'':$rows[0]["year"])." ".$rows[0]['make']." ".$rows[0]['model']." ".$rows[0]['trim']);
 
-	if(isset($_POST['SubmitAll'])) {													//Submit data for top half of page, including notes sections
+	if(isset($_POST['SubmitAll'])) {	//Submit data for top half of page, including notes sections
 		$update->bindParam(':vin',$_POST['vin']); 
 		$update->bindParam(':year',$_POST['year']); 
 		$update->bindParam(':make',$_POST['make']); 
@@ -31,7 +28,6 @@
 		unlink($_POST["pic"]);						//Delete photo
 		$pDelete->bindParam(':pid',$_POST["pid"]);	//Delete database entry
 		$pDelete->execute();
-//		echo $reloadPic;
 		echo "<script> window.location.replace('".$_SERVER['REQUEST_URI']."#".$_POST["oldpic"]."'); </script>";
 	}
 	if(isset($_POST['updatepic'])) {				//Update photo name
@@ -60,7 +56,7 @@
 			} catch (Exception $e) {
 				echo 'An error occurred. Please take note of the following line(s) and click the link below.<br>';
 				echo 'Caught exception: ',  $e->getMessage(), "\n";
-				echo "<p><a href='http://".$_SERVER['SERVER_NAME']."/".$site."/admin'>http://".$_SERVER['SERVER_NAME']."/".$site."/admin</a></p>";
+				echo "<p><a href='.'>Admin Home</a></p>";
 			}
 		}
 		$pUpdate->bindParam(':pid',$_POST["pid"]);
@@ -100,162 +96,21 @@
 		echo $reloadPic;
 	}
 ?>
-<body onload="updateOwner()" class='bg'>
+<body onload="updateOwner()" class='darkbg'>
 	<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
-	<script language="JavaScript" type="text/javascript">
+	<script src="../files/edit.js"></script>
+	<script language="JavaScript" type="text/javascript"><!--
 		var ownersArray = <?php echo json_encode($oRows); ?>;
-		var thissite = 'http://<?php echo $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];?>';
-		$(document).ready(function () {
-			$('#oEdit').click(function (e) {
-				e.preventDefault();
-				var dad = $(this).parent().parent().parent();
-				dad.find('.show').hide();
-				dad.find('.noscreen').show();
-				document.getElementById("oPhone").value = document.getElementById("phonenum").innerHTML;
-				document.getElementById("oEmail").value = document.getElementById("emailadd").innerHTML;
-				document.getElementById("SubmitAll").disabled = true;
-				document.getElementById("ownerdd").disabled = true;
-			});
-			$('#oSave').click(function (e) {
-				e.preventDefault();
-				var e = document.getElementById("ownerdd");
-				var owner = e.options[e.selectedIndex].value;
-				var dad = $(this).parent().parent().parent();
-				dad.find('.show').show();
-				dad.find('.noscreen').hide();
-				document.getElementById("phonenum").innerHTML = valPhone(document.getElementById("oPhone").value);
-				document.getElementById("emailadd").innerHTML = document.getElementById("oEmail").value;
-				document.getElementById("SubmitAll").disabled = false;
-				document.getElementById("ownerdd").disabled = false;
-				if (document.getElementById("phonenum").innerHTML != ownersArray[owner-1]['phone'] || document.getElementById("emailadd").innerHTML != ownersArray[owner-1]['email']) {
-					window.location.href = thissite + '&ophone=' + valPhone(document.getElementById("phonenum").innerHTML) + '&oemail=' + document.getElementById("emailadd").innerHTML;
-				}
-			});
-			$('.fedit').click(function (e) {
-				e.preventDefault();
-				var dad = $(this).parent();
-				dad.find('.show').hide();
-				dad.parent().parent().parent().find('.hide').hide();
-				dad.find('.noscreen').show();
-			});
-		});
-		function oSubmit() {
-			var dad = $(this).parent().parent();
-			dad.find('.show').show();
-			dad.find('.noscreen').hide();
-			document.getElementById("phonenum").innerHTML = document.getElementById("oPhone").value;
-			document.getElementById("emailadd").innerHTML = document.getElementById("oEmail").value;
-			document.getElementByName('SubmitAll').disabled = false;
-		}
-		
-		function updateOwner() {
-			var e = document.getElementById("ownerdd");
-			var owner = e.options[e.selectedIndex].value;
-			if (owner !=0) {
-				document.getElementById("phonenum").innerHTML = ownersArray[owner-1]['phone'];
-				document.getElementById("emailadd").innerHTML = ownersArray[owner-1]['email'];
-				document.getElementById("oPhone").value = ownersArray[owner-1]['phone'];
-				document.getElementById("oEmail").value = ownersArray[owner-1]['email'];
-			} else {
-				document.getElementById("phonenum").innerHTML = '';
-				document.getElementById("emailadd").innerHTML = '';
-				document.getElementById("oPhone").value = '';
-				document.getElementById("oEmail").value = '';
-			}
-			statusChange();
-		}
-		function statusChange() {
-			var txt = '';
-			var e = document.getElementById("status");
-			var stat = e.options[e.selectedIndex].value;
-			switch(stat) {
-				case 'Draft':
-					txt = 'Vehicle is in DRAFT mode.';
-					break;
-				case 'Sold':
-					txt = 'Vehicle has been SOLD.';
-					break;
-				case 'Delete':
-					txt = 'Vehicle has been marked for DELETION.';
-					break;
-				default:
-					txt = '';
-			}
-			document.getElementById("notice").innerHTML = txt;
-			if (stat == 'Sold') {
-				document.getElementById("payment").className = "";
-				document.getElementById("lblinsured").className = "noscreen";
-				document.getElementById("insured").className = "noscreen";
-				document.getElementById("buyer").className = "";
-				document.getElementById("fname").className = "";
-				document.getElementById("lname").className = "";
-				document.getElementById("lblsaledate").className = "";
-				document.getElementById("saledate").className = "";
-/* 				var a = document.getElementById("payment");
-				var pay = a.options[a.selectedIndex].value;
-				if (pay != "Cash") {
-					document.getElementById("soldnotes").className = "";
-					document.getElementById("lblsoldnotes").className = "";
-				}
- */			}else{
-				document.getElementById("lblsaledate").className = "noscreen";
-				document.getElementById("saledate").className = "noscreen";
-				document.getElementById("buyer").className = "noscreen";
-				document.getElementById("fname").className = "noscreen";
-				document.getElementById("lname").className = "noscreen";
-				document.getElementById("lblinsured").className = "";
-				document.getElementById("insured").className = "";
-				document.getElementById("payment").className = "noscreen";
-/* 				document.getElementById("soldnotes").className = "noscreen";
-				document.getElementById("lblsoldnotes").className = "noscreen";
- */			}
-
-		}
-/* 		function paymentType() {
-			var e = document.getElementById("payment");
-			var stat = e.options[e.selectedIndex].value;
-			if (stat != "Cash") {
-				document.getElementById("soldnotes").className = "";
-				document.getElementById("lblsoldnotes").className = "";
-			} else {
-				document.getElementById("soldnotes").className = "noscreen";
-				document.getElementById("lblsoldnotes").className = "noscreen";
-			}
-		}
- */		function loading1() {
-			document.getElementById("loading1").style.display = 'block';
-		}
-		function loading2() {
-			document.getElementById("loading2").style.display = 'block';
-		}
-		function valPhone(num) {
-			var arr = num.match(/\d+/g);
-			var str = '';
-			for (var i = 0, len = arr.length; i < len; i++) {str += arr[i];}
-			str = substr_replace(str,'(',0,0);
-			str = substr_replace(str,') ',4,0);
-			str = substr_replace(str,'-',9,0);
-			if (str.length != 14) {str = ''}
-			return str;
-		}
-		
-		function substr_replace(str, replace, start, length) {		//php substr_replace in js
-		  // discuss at: http://phpjs.org/functions/substr_replace/ // original by: Brett Zamir (http://brett-zamir.me)
-		  if (start < 0) {start = start + str.length;}
-		  length = length !== undefined ? length : str.length;
-		  if (length < 0) {length = length + str.length - start;}
-		  return str.slice(0, start) + replace.substr(0, length) + replace.slice(length) + str.slice(start + length);
-		}
+		var thissite = 'http://<?php echo $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];?>';-->
 	</script>
 	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" style="padding-bottom:20px;">
-		<div class='center huge bold'>
-			<div class='m-lrauto'>
-				You're editing <a href="../vehicle.php?id=<?php echo $rows[0]['id'];?>"><?php echo $vehicle;?></a>
-			</div>
-		</div>
-		<br>
 		<table class='bgblue bord5 p15 b-rad15 clear m-lrauto m-bottom25 bold'>
-			<tr>																	<!-- Row 1 -->
+			<tr><!-- Row 0 -->
+				<td colspan="12" class='center huge bold'>
+					<a href="../vehicle.php?id=<?php echo $rows[0]['id'];?>"><?php echo $vehicle;?></a><br/><hr size="3px"/>
+				</td>
+			</tr>
+			<tr><!-- Row 1 -->
 				<td>VIN: <?php
 						echo (strlen($rows[0]['vin'])==17? "(<a href='http://www.vindecoder.net/?vin=".$rows[0]['vin']."&submit=Decode' target='_blank'>Decode</a>)":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 					?>
@@ -286,7 +141,7 @@
 				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 				<td><center>Links:</center></td>
 			</tr>
-			<tr>																	<!-- Row 2 -->
+			<tr><!-- Row 2 -->
 				<td nowrap><?php echo ($rows[0]['status']=='Sold'?'Sale':'Asking');?> Price:</td>
 				<td><input style="width:165px;" type="textbox" tabindex=2 name="askprice" value="<?php 
 					if (strpos($rows[0]['askprice'], '$') === FALSE && trim($rows[0]['askprice']) !== "") {
@@ -301,9 +156,9 @@
 				<td><span id='phonenum' class='show'></span><input id='oPhone' type="text" class="noscreen" /></td>
 				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 				<td>&nbsp;</td>
-				<td nowrap><center><a href='<?php echo $home;?>'>For Sale</a></center></td>
+				<td nowrap><center><a href='../'>For Sale</a></center></td>
 			</tr>
-			<tr>																	<!-- Row 3 -->
+			<tr><!-- Row 3 -->
 				<td nowrap>Status:</td>
 				<td nowrap>
 					<select name="status" id="status" onchange="statusChange()" style="min-width:84px;" tabindex=3>
@@ -332,9 +187,9 @@
 				<td>Email:</td>
 				<td><span id='emailadd' class='show'></span><input id='oEmail' type="text" class="noscreen" /></td>
 				<td colspan=3>&nbsp;</td>
-				<td nowrap><center><a href='<?php echo $home;?>/admin'>Admin Home</a></center></td>
+				<td nowrap><center><a href='.'>Admin Home</a></center></td>
 			</tr>
-			<tr>																	<!-- Row 4 -->
+			<tr><!-- Row 4 -->
 				<td>
 					<span id='buyer' class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">Buyer:</span>
 					<span id="lblinsured" class="block" name="lblinsured"><a href="mailto:info@insurancecenterofbuffalo.com?subject=Auto%20Insurance&body=<?php echo $vehicle;?>%20-%20VIN:%20<?php echo strtoupper($rows[0]['vin'])?>" title="Send Email to Insurance Center of Buffalo">Insured?</a>:</span>
@@ -350,9 +205,7 @@
 				<td colspan=4><center><font class='red' id='notice'>&nbsp;</font></center></td>
 				<td colspan=3>&nbsp;</td>
 			</tr>
-			<tr>																	<!-- Row 5 -->
-				<!--<td><span id='lblsoldnotes' class="noscreen">Sold Notes:</span></td>
-				<td><input type="textbox" style="width:150px;" class="noscreen" id='soldnotes' name='soldnotes' value="<?php echo $rows[0]['paynotes'];?>"></td>-->
+			<tr><!-- Row 5 -->
 				<td><span id="lblsaledate" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">Sale Date:</span></td>
 				<td><input type="date" id="saledate" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>" style="width:167px;" name="saledate"></td>
 				<td>&nbsp;</td>

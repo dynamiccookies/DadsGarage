@@ -1,10 +1,26 @@
 <?php
 	session_start();
-	$site = "forsale";
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/files/header.php");
+
+	//Set path to 'files'
+	$files=substr(getcwd(), strrpos(getcwd(), '/') + 1);
+	if ($files=="admin") {$files="../files/";} 
+	elseif ($files=="files") {$files="";} 
+	else {$files="files/";}
+
+	//Set path to 'admin'
+	$admin=substr(getcwd(), strrpos(getcwd(), '/') + 1);
+	if ($admin=="files") {$admin="../admin/";} 
+	elseif ($admin=="admin") {$admin="";} 
+	else {$admin="admin/";}
+	
+	define('included', TRUE);
+
+	require_once($files."header.php");
+	require($files."conn.php");
+
 	$success = 'noscreen ';
-	$logout = "secure.php?logout=1&index=".$site;
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/files/conn.php");
+	$logout = $admin."secure.php?logout=1";
+
 	if ($_GET['id']) {
 		$where = "WHERE ID=".$_GET['id'];
 		$pwhere = "WHERE vehicle=".$_GET['id'];

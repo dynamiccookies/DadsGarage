@@ -1,7 +1,6 @@
 <?php
-	$site = "forsale";
 	ini_set('memory_limit', '128M');
-	include($_SERVER['DOCUMENT_ROOT']."/".$site."/admin/secure.php");
+	include("secure.php");
 
 	function rearrange($arr){foreach($arr as $key => $all){foreach($all as $i => $val){$new[$i][$key] = $val;}}return $new;}
 	function resize($photo){
@@ -36,7 +35,7 @@
 
 	$allowedExts = array("gif", "jpeg", "jpg", "png");
 	$types = array("image/gif","image/jpeg","image/jpg","image/pjpeg","image/x-png","image/png");
-	echo "<body class='bg'><div class='bgblue bord5 p15 b-rad15 m-lrauto center m-top25' style='width:33%;max-width:66%;'>";
+	echo "<body class='darkbg'><div id=\"mainContainer\" class=\"bgblue bord5 p15 b-rad15 m-lrauto center m-top25\" style=\"margin-top:auto !important;\">";
 	echo "<h2><b>File Upload Summary:</b></h2>";
 	try {
 		if (isset($_FILES["photos"])) {
@@ -46,6 +45,7 @@
 				resize($photo);
 				$ext = strtolower(end(explode(".",$photo["name"])));
 				if (in_array($ext,$allowedExts) && in_array($photo["type"],$types) && $photo["size"] < 10000000 && $photo["error"] == 0) {
+					if (!file_exists("../vehicles")) {mkdir("../vehicles");}										//Check if folder exists - create if false
 					if (!file_exists("../vehicles/".$id)) {mkdir("../vehicles/".$id);}								//Check if folder exists - create if false
 					if (file_exists("../vehicles/" . $id . "/" . $photo["name"])) {									//Check if photo exists
 						echo $inc . ". <b>File Already Exists</b>: " . $photo["name"] . "<br><br>";					//Notify if true

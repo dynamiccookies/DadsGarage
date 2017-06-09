@@ -1,7 +1,6 @@
 <?php
-	$site = "forsale";
-	require($_SERVER['DOCUMENT_ROOT']."/".$site."/files/include.php");
-	date_default_timezone_set("America/Chicago");
+	require("files/include.php");
+	date_default_timezone_set("America/Chicago"); //What is this for??
 
 	$id=$_GET['id'];	//Vehicle ID
 	$oSelect1->bindParam(":oid",$rows[0]['owner']);
@@ -12,9 +11,8 @@
 	$phone=$owner[0]['phone'];
 	(trim($rows[0]['askprice']) !== ""?$price='$'.$rows[0]['askprice']:$price='');
 	$status = $rows[0]['status'];
-	//(!$rows[0]["year"]==0000?$year=$rows[0]["year"]:$year='');
 	
-	$base_url = "http://" . $_SERVER['SERVER_NAME'];	//http://dynamiccookies.com
+	$base_url = "http://" . $_SERVER['SERVER_NAME'];
 	$base_name = trim(($rows[0]["year"]==0000?'':$rows[0]["year"])." ".$rows[0]["make"]." ".$rows[0]["model"]." ".$rows[0]["trim"]);
 	$txt = $rows[0]['pubnotes'];
 	$img = $pRows;
@@ -26,7 +24,7 @@
 	$qr = $_GET["qr"];	//get 'qr' param for qr code
 	if ($qr == 1) {		//if qr scanned
 		$qrlog = date('Y-m-d H:i:s') . "," . $base_name . "," . $_SERVER['REMOTE_ADDR'] . ($loc ? ',' . $loc : "") . "\n";	//get date/time and IP qr code scanned on
-		file_put_contents($_SERVER['DOCUMENT_ROOT'] . "/".$site."/files/qr.log",$qrlog,FILE_APPEND);	//log date/time and IP data
+		file_put_contents("files/qr.log",$qrlog,FILE_APPEND);	//log date/time and IP data
 	}
 	//bit.ly variables-Used for short URL on QR code.--------------
 	$login = o_31ku8f5rm;
@@ -47,7 +45,7 @@
 	}
 ?>
 <script>function clickpic ($inc){return document.getElementById('preview').src=document.getElementById('img' + $inc).src;}</script>
-<link rel="stylesheet" type="text/css" href="http://<?php echo $_SERVER['SERVER_NAME']."/".$site?>/files/slider.css">
+<link rel="stylesheet" type="text/css" href="files/slider.css">
 <body class="center bg">
 								<!-- START OF ON SCREEN -->
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center noprint' style='width:66%;max-width:80%;'>

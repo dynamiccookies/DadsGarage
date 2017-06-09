@@ -1,17 +1,46 @@
 <?php
 	session_start();
 	define('included', TRUE);
-
+	require_once($files."header.php");
+	ini_set("allow_url_fopen", 1);
+	
+	//Pull branch info from GitHub
+	function getBranchInfo($commit = null,$branch = null) {
+		$json = getJSON("branches");
+		foreach($json as $item) {$info['branches'][$item['name']]=$item['commit']['sha'];}
+		if($commit) {
+			$json = getJSON("commits/".$commit);
+			$info['current']=array("commit"=>$json['sha'],"date"=>str_replace("Z","",str_replace("T"," ",$json['commit']['committer']['date'])),"notes"=>$json['commit']['message']);
+		}
+		if($branch) {
+			$json=getJSON("branches/".$branch);
+			$info['new']=array("name"=>$json['name'],"commit"=>$json['commit']['sha'],"date"=>str_replace("Z","",str_replace("T"," ",$json['commit']['commit']['committer']['date'])));
+		}
+		if (($commit) && ($branch) && ($info['current']['commit']!=$info['new']['commit'])) {
+			$json = getJSON("compare/".$info['current']['commit']."...".$info['new']['commit']);
+			if ($json['status']=="ahead") {
+				$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by']." commit(s) behind.</div><br/>";
+			}
+		}
+		return $info;
+	}
+	function getJSON($url) {
+		$url = "https://api.github.com/repos/dynamiccookies/dadsgarage/".$url;
+		return json_decode(file_get_contents($url, false, stream_context_create(array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT'])))),true);
+	}
+	$userMessage = "";
 	//Create/update config.ini.php
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
+		//if (isset($_POST['Save'])) {}
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
-		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".($_POST["branch"]?:"")."\"\n*/\n?>";
+		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
+		($_POST["branch"]?:"")."\"\ncommit = \"".($ini['commit']?:"")."\"\n*/\n?>";
 		file_put_contents("config.ini.php", $file);
 	}
 
 	//Read config.ini.php
 	$ini = parse_ini_file("config.ini.php");
-
+	
 	//Test validity of database, host, & credentials
 	require_once("dbcheck.php");
 	$hostChk = (!$ini["host"]?"Required Field":($array["connTest"]?($array["connTest"]!="Pass"?$array["connTest"]:""):""));
@@ -27,8 +56,9 @@
 
 	//Check existence/create database tables
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
- 		if (!tableExists("customers") || !tableExists("expenses") || !tableExists("files") || 
-			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) { 
+		$dbExists = TRUE;
+		if (!tableExists("customers") || !tableExists("expenses") || !tableExists("files") || 
+			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) {
 			if ($_POST['createTables']){
 				$created_tables = create_tables();
 			} else {
@@ -37,6 +67,19 @@
 				$dbChk = str_replace('Database Connection Successful','One or more tables are missing from the database.',$dbChk);
 			}
 		}
+		//Check existence/create default Admin user
+		$userExists=usersExist();
+ 		if ($userExists===TRUE) {
+			$userMessage = "The default username and password are 'admin'.<br/>
+			<a href='../admin'>Click here to change the password.</a><br/><br/>";
+		} elseif (!$userExists===FALSE) {
+			if (strpos($userExists,"Base table or view not found")!==FALSE) {
+				$userMessage = "The Users table does not exist.<br/>
+				Please click the Create Table(s) button to create it.<br/><br/>";
+			} elseif (strpos($userExists,"Access denied for user '".$_POST['username']."'")) {
+				$userMessage = "The username or password is incorrect.<br/><br/>";
+			} else {$userMessage = $userExists;}
+		} elseif($userExists===FALSE) {require("../admin/secure.php");}
 	}
 
 	//Update Application from GitHub
@@ -68,6 +111,12 @@
 				$zip->close();
 				unlink(dirname(__DIR__).'/install.zip');
 				unlink(dirname(__DIR__).'/.gitignore');
+	
+				$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
+				"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
+				($_POST["branch"]?:"")."\"\ncommit = \"".getBranchInfo(null,$_POST['branch'])['new']['commit']."\"\n*/\n?>";
+				file_put_contents("config.ini.php", $file);
+	
 				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
 				$_SESSION['results'] = 'Application Updated Successfully!';
 			} else {
@@ -98,39 +147,50 @@
 		} catch(PDOException $e){echo $sql."<br>".$e->getMessage();}
 	} */
 ?>
-<head>
-	<style>
-		body {text-align:center;}
-		div {font-size:36px;font-weight:bold;}
-		table {margin:auto;border-top:2px solid;border-bottom:2px solid;padding:15px;}
-		td:first-child {text-align:right;font-weight:bold;}
-		input[type=textbox], input[type=password] {width:350px;border-radius:4px;outline:none;}
-		.required {box-shadow:0 0 5px #ff0000;border:2px solid #ff0000;}
-		.warn {box-shadow:0 0 5px #ffff00;border:2px solid #ffff00;}
-		.pass {box-shadow:0 0 5px #00c600;border:2px solid #00c600;}
-	</style>
-</head>
-<body>
-	<div>Settings Page</div><br/>
-	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
-		<table>
-			<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
-			<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-			<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
-			<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
-			<tr><td>Git Branch:</td><td><input name="branch" type="textbox" value="<?php echo $ini["branch"];?>"></td></tr>
-		</table>
-		<br/>
-		<?php 
-			if (isset($_SESSION['run'])) {
-				echo $_SESSION['results']."<br/>";
-				$_SESSION['run']+=1;
-			}
-			echo ($created_tables?($created_tables===true?
-				"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
-		?>
-		<input type="Submit" name="Save" value="Save">&nbsp;
-		<input type="Submit" name="Update" value="Update Application" title="Install updates from GitHub">
-		<?php echo $button?:"";?>
-	</form>
+<body class="settings darkbg">
+	<div id="adminSidenav" class="adminsidenav"><?php require_once("menu.php");?></div>
+	<div id="adminMain">
+		<div class="adminContainer" onclick="myFunction(this)">
+		  <div class="bar1"></div>
+		  <div class="bar2"></div>
+		  <div class="bar3"></div>
+		</div>
+		<div id="mainContainer" class="bgblue bord5 p15 b-rad15 m-lrauto center m-top25">
+			<div class="settings-header">Settings Page</div><br/>
+			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+				<table class="settings">
+					<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
+					<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
+					<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
+					<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
+					<tr><td>Git Branch:</td><td style="text-align:left;">
+						<select name="branch">
+							<?php 
+								foreach(getBranchInfo()['branches'] as $branch=>$value) {
+									if(!$ini["branch"]) {$ini["branch"]="master";}
+									echo "<option value'$branch'".($branch==$ini["branch"]?" selected":"").">$branch</option>";
+								}
+							?>
+						</select>
+					</td></tr>
+				</table>
+				<br/>
+				<?php 
+					if (isset($_SESSION['run'])) {
+						echo $_SESSION['results']."<br/>";
+						$_SESSION['run']+=1;
+					}
+					echo ($created_tables?($created_tables===true?
+						"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
+					echo $userMessage;
+					echo (getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"");
+					echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
+					echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
+					if (dbExists) {echo $button?:"";}
+				?>
+			</form>
+		</div>
+	</div>
+	<div class="commit"><?php echo $ini['commit'];?></div>
+	<script src="admin.js"></script>
 </body>
