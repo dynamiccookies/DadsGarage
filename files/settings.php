@@ -155,42 +155,50 @@
 		  <div class="bar2"></div>
 		  <div class="bar3"></div>
 		</div>
-		<div id="mainContainer" class="bgblue bord5 p15 b-rad15 m-lrauto center m-top25">
+		<div id="mainContainer" class="bgblue bord5 b-rad15 m-lrauto center m-top25">
 			<div class="settings-header">Settings Page</div><br/>
-			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
-				<table class="settings">
-					<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
-					<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-					<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
-					<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
-					<tr><td>Git Branch:</td><td style="text-align:left;">
-						<select name="branch">
-							<?php 
-								foreach(getBranchInfo()['branches'] as $branch=>$value) {
-									if(!$ini["branch"]) {$ini["branch"]="master";}
-									echo "<option value'$branch'".($branch==$ini["branch"]?" selected":"").">$branch</option>";
-								}
-							?>
-						</select>
-					</td></tr>
-				</table>
-				<br/>
-				<?php 
-					if (isset($_SESSION['run'])) {
-						echo $_SESSION['results']."<br/>";
-						$_SESSION['run']+=1;
-					}
-					echo ($created_tables?($created_tables===true?
-						"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
-					echo $userMessage;
-					echo (getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"");
-					echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
-					echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
-					if (dbExists) {echo $button?:"";}
-				?>
-			</form>
+			<button class="tablink" onclick="openTab('Database', this)" id="defaultOpen">Database</button>
+			<button class="tablink" onclick="openTab('Owners', this)">Owners</button>
+			<button class="tablink" onclick="openTab('Users', this)">Users</button>
+			<div id="Database" class="tabcontent">
+				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+					<table class="settings">
+						<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
+						<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
+						<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
+						<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
+						<tr><td>Git Branch:</td><td style="text-align:left;">
+							<select name="branch">
+								<?php 
+									foreach(getBranchInfo()['branches'] as $branch=>$value) {
+										if(!$ini["branch"]) {$ini["branch"]="master";}
+										echo "<option value='$branch'".($branch==$ini["branch"]?" selected":"").">$branch</option>";
+									}
+								?>
+							</select>
+						</td></tr>
+					</table>
+					<br/>
+					<?php 
+						if (isset($_SESSION['run'])) {
+							echo $_SESSION['results']."<br/>";
+							$_SESSION['run']+=1;
+						}
+						echo ($created_tables?($created_tables===true?
+							"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
+						echo $userMessage;
+						echo (getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"");
+						echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
+						echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
+						if (dbExists) {echo $button?:"";}
+					?>
+				</form>
+			</div>
+			<div id="Owners" class="tabcontent">Owners Content</div>
+			<div id="Users" class="tabcontent">Users Content</div>
 		</div>
 	</div>
 	<div class="commit"><?php echo $ini['commit'];?></div>
 	<script src="admin.js"></script>
+	<script>document.getElementById("defaultOpen").click();</script>
 </body>
