@@ -33,9 +33,11 @@
 
 	//Users Table
 	$selectUsers = $db->prepare("SELECT * FROM users WHERE username=:name");
-	//$insert = $db->prepare("INSERT INTO users (username,hash) VALUES (:user,:hash)");
+	$selectAllUsers = $db->prepare("SELECT * FROM users ORDER BY fname ASC");
+	$insertUsers = $db->prepare("INSERT INTO users (username,hash,fname,lname,isadmin) VALUES (:user,:pass,:fname,:lname,:isadmin)");
 	$updateUsers = $db->prepare("UPDATE users SET hash = :pass WHERE username = :name");
-	
+	$deleteUser = $db->prepare("DELETE FROM users WHERE id=:id");
+
 	//Vehicles - Prepare query to insert year, make, model, & trim as new record into database
 	$insert = $db->prepare("INSERT INTO vehicles (year,make,model,trim) VALUES (:year,:make,:model,:trim)");
 	
@@ -50,8 +52,10 @@
 
 	//Owners Table
 	$oFields = array('name', 'email', 'phone');														//Used for Insert/Update
+	$oInsert = $db->prepare("INSERT INTO owners (name,email,phone) VALUES(:name,:email,:phone)");	//Add owners
 	$oSelect = $db->prepare("SELECT * FROM owners");												//Create query to select all owners
 	$oSelect1 = $db->prepare("SELECT * FROM owners WHERE id=:oid");
+	$deleteOwner = $db->prepare("DELETE FROM owners WHERE id=:id");
 	$oSelect->execute();																			//Execute query
 	$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);													//Fill array with results
 
