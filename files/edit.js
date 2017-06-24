@@ -120,3 +120,12 @@ function substr_replace(str, replace, start, length) {		//php substr_replace in 
   if (length < 0) {length = length + str.length - start;}
   return str.slice(0, start) + replace.substr(0, length) + replace.slice(length) + str.slice(start + length);
 }
+//Testing Textarea Char Limit ( onkeyup="countChar(this)")
+/* function countChar(val) {
+	var len = val.value.length;
+	if (len >= 700) {
+		val.value = val.value.substring(0, 700);
+	} else {
+		$('#charNum').text(700 - len);
+	}
+} */

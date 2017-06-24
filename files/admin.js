@@ -24,7 +24,7 @@ function myFunction(x) {
 	document.getElementById("adminSidenav").classList.toggle("change");
 	document.getElementById("adminMain").classList.toggle("change");
 }
-function openTab(tabName,elmnt) {
+function openTab(tabName,elmnt,position) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -44,6 +44,8 @@ function openTab(tabName,elmnt) {
 	elmnt.style.fontWeight = 'bold';
 	elmnt.style.borderBottom = 'none';
 	elmnt.style.borderTop = '3px solid blue';
-	if (tabName == 'Database' || tabName == 'Owners') {elmnt.style.borderRight = '1px solid';}
+	if (position == 'left' || position == 'middle') {elmnt.style.borderRight = '1px solid';}
+	if (position == 'right' || position == 'middle') {elmnt.style.borderLeft = '1px solid';}
+/* 	if (tabName == 'Database' || tabName == 'Owners' || tabName == 'Description') {elmnt.style.borderRight = '1px solid';}
 	if (tabName == 'Users' || tabName == 'Owners') {elmnt.style.borderLeft = '1px solid';}
-}
+ */}

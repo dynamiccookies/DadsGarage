@@ -21,7 +21,7 @@
 	$success = 'noscreen ';
 	$logout = $admin."secure.php?logout=1";
 
-	if ($_GET['id']) {
+	if ($_GET['id']) {							//This is not needed. Use ternary operators on each statement and remove this if/else.
 		$where = "WHERE ID=".$_GET['id'];
 		$pwhere = "WHERE vehicle=".$_GET['id'];
 		$ewhere = "WHERE ID=".$_SESSION['eid'];
@@ -43,6 +43,9 @@
 	
 	//Vehicles - Prepare query to update all fields (except purchprice and purchdate) where ID=$_GET['ID']
 	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, intnotes=:intnotes, pubnotes=:pubnotes, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
+
+	$updateDesc = $db->prepare("UPDATE vehicles SET pubnotes=:pubnotes WHERE ID=".$_GET['id']);
+	$updateInternal = $db->prepare("UPDATE vehicles SET intnotes=:intnotes WHERE ID=".$_GET['id']);
 	
 	//Vehicles - Prepare query to select (if $_GET[;ID;] exists, return all info for only that vehicle; else return all info for all vehicles) [may want to break into two 
 	//select statements for efficiency]

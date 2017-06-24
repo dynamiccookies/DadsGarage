@@ -186,9 +186,9 @@
 		</div>
 		<div id="mainContainer" class="bgblue bord5 b-rad15 m-lrauto center m-top25">
 			<div class="settings-header">Settings Page</div><br/>
-			<button class="tablink" onclick="openTab('Database', this)"<?php echo (!$_SESSION['settings']?" id=\"defaultOpen\"":"");?>>Database</button>
-			<button class="tablink" onclick="openTab('Owners', this)"<?php echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");?>>Owners</button>
-			<button class="tablink" onclick="openTab('Users', this)"<?php echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");?>>Users</button>
+			<button class="tablink width33" onclick="openTab('Database', this, 'left')"<?php echo (!$_SESSION['settings']?" id=\"defaultOpen\"":"");?>>Database</button>
+			<button class="tablink width33" onclick="openTab('Owners', this, 'middle')"<?php echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");?>>Owners</button>
+			<button class="tablink width33" onclick="openTab('Users', this, 'right')"<?php echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");?>>Users</button>
 			<div id="Database" class="tabcontent">
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
@@ -209,7 +209,7 @@
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {
-							echo $_SESSION['results']."<br/>";
+							echo $_SESSION['results']."<br/><br/>";
 							$_SESSION['run']+=1;
 						}
 						echo ($created_tables?($created_tables===true?
