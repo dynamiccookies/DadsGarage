@@ -1,5 +1,9 @@
 <?php
 	session_start();
+	if(!$_GET['id']) {
+		header('Location: index.php');
+		exit;
+	}
 	include("../admin/secure.php");
 	$id = $_GET['id']; 
 	$reload = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."\">";
