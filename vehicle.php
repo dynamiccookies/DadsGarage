@@ -1,4 +1,8 @@
 <?php
+	if(!$_GET['id']) {
+		header('Location: index.php');
+		exit;
+	}
 	require("files/include.php");
 	date_default_timezone_set("America/Chicago"); //What is this for??
 

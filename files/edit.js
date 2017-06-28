@@ -45,15 +45,16 @@ function updateOwner() {
 	var e = document.getElementById("ownerdd");
 	var owner = e.options[e.selectedIndex].value;
 	if (owner !=0) {
-		document.getElementById("phonenum").innerHTML = ownersArray[owner-1]['phone'];
-		document.getElementById("emailadd").innerHTML = ownersArray[owner-1]['email'];
-		document.getElementById("oPhone").value = ownersArray[owner-1]['phone'];
-		document.getElementById("oEmail").value = ownersArray[owner-1]['email'];
+		for (var i = 0, len = ownersArray.length; i < len; i++) {
+			if (owner == ownersArray[i].id) {
+				document.getElementById("phonenum").innerHTML = ownersArray[i].phone;
+				document.getElementById("emailadd").innerHTML = ownersArray[i].email;
+				break;
+			}
+		}
 	} else {
 		document.getElementById("phonenum").innerHTML = '';
 		document.getElementById("emailadd").innerHTML = '';
-		document.getElementById("oPhone").value = '';
-		document.getElementById("oEmail").value = '';
 	}
 	statusChange();
 }
@@ -120,3 +121,12 @@ function substr_replace(str, replace, start, length) {		//php substr_replace in 
   if (length < 0) {length = length + str.length - start;}
   return str.slice(0, start) + replace.substr(0, length) + replace.slice(length) + str.slice(start + length);
 }
+//Testing Textarea Char Limit ( onkeyup="countChar(this)")
+/* function countChar(val) {
+	var len = val.value.length;
+	if (len >= 700) {
+		val.value = val.value.substring(0, 700);
+	} else {
+		$('#charNum').text(700 - len);
+	}
+} */

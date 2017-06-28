@@ -66,9 +66,66 @@
 	}
 	#main .vehicle img {height: 200px;}
 	#main .red {border-color: red;}
+	table#users, table#owners {
+		margin-left:auto;
+		margin-right:auto;
+		border-collapse: collapse;
+		box-shadow: 10px 10px 10px grey;
+	}
+	table#owners tr:nth-child(odd) {
+		background-color: #daecee;
+	}
+	table#owners tr:nth-child(even) {
+		background-color: white;
+	}
+	table#users tr:nth-child(odd){
+		background-color: #daecee;
+	}
+	table#users tr:nth-child(even){
+		background-color: white;
+	}
+	table#users th, table#owners th {
+		font-weight:bold;
+	}
+	table#owners td, table#owners th {
+		border: 1px solid silver;
+		padding: 5px;
+	}
+	table#users td, table#users th {
+		border: 1px solid silver;
+		padding: 5px;
+	}
+	#SubmitInternal,#SubmitDesc {
+		float:right;
+		margin:25px;
+		margin-right:100px;
+	}
+	.tablink {
+		float: left;
+		border: none;
+		outline: none;
+		cursor: pointer;
+		padding: 14px 16px;
+		font-size: 17px;
+	}
+	.tablink:hover {font-weight:bold !important;}
+	.width20 {width: 20%;}
+	.width25 {width: 25%;}
+	.width33 {width: 33.333333%;}
+	.tabcontent {
+		color: black;
+		display: none;
+		padding: 20px;
+		padding-top:75px;
+		padding-bottom:71px;
+		text-align: center;
+		background-color: silver;
+		border-radius: 0px 0px 10px 10px;
+	}
 	.bb, table.photos td, .tbl-align td  {
 		border-bottom: 1px solid black!important;
 	}
+	.photos {border-collapse:collapse;}
 	.td-align {padding-left:10px;text-align:left !important;}
 	.content {
 		width: 80%;
@@ -81,6 +138,7 @@
 	.settings-header {
 		font-size:36px;
 		font-weight:bold;
+		padding-top: 15px;
 	}
 	.required {
 		box-shadow:0 0 5px #ff0000;
@@ -118,9 +176,9 @@
 	.m-right {margin-right:25px;}
 	.viewing {border-collapse: collapse;border-spacing: 25px 0px;}
 	.bgblue {background-color:#daecee;}
-	.bord5 {border: 5px solid gray;}
+	.bord5, textarea {border: 5px solid gray;}
 	.b-right1 {border-right: 1px solid;}
-	.b-rad15 {border-radius: 15px;}
+	.b-rad15, textarea {border-radius: 15px;}
 	.center {text-align: center;}
 	.fleft {float: left;}
 	.fright {float: right;}
@@ -235,17 +293,17 @@
 	}
 
 	#adminSidenav.change {
-		width:250px;
+		width:175px;
 		transition: width .5s;
 	}
 
 	#adminMain.change {
-		margin-left:250px;
+		margin-left:175px;
 		transition: margin-left .5s;
 	}
 	div#mainContainer {
 		margin-top: -50px;
-		width:33%; 
+		min-width: 609px;
 		max-width:66%;
 		display:table;
 	}

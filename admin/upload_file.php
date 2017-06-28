@@ -1,4 +1,5 @@
 <?php
+	session_start();
 	ini_set('memory_limit', '128M');
 	include("secure.php");
 
@@ -40,6 +41,7 @@
 	try {
 		if (isset($_FILES["photos"])) {
 			$photos = rearrange($_FILES["photos"]);
+			$_SESSION['edit']='photos';
 			foreach ($photos as $photo) {
 				$inc += 1;
 				resize($photo);
@@ -71,6 +73,7 @@
 			}
 		} elseif (isset($_FILES["files"])) {
 			$files = rearrange($_FILES["files"]);
+			$_SESSION['edit']='files';
 			foreach ($files as $file) {
 				$inc += 1; 
 				if ($file["size"] < 10000000 && $file["error"] == 0) {

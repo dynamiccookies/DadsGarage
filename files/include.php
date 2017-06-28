@@ -21,7 +21,7 @@
 	$success = 'noscreen ';
 	$logout = $admin."secure.php?logout=1";
 
-	if ($_GET['id']) {
+	if ($_GET['id']) {							//This is not needed. Use ternary operators on each statement and remove this if/else.
 		$where = "WHERE ID=".$_GET['id'];
 		$pwhere = "WHERE vehicle=".$_GET['id'];
 		$ewhere = "WHERE ID=".$_SESSION['eid'];
@@ -33,14 +33,19 @@
 
 	//Users Table
 	$selectUsers = $db->prepare("SELECT * FROM users WHERE username=:name");
-	//$insert = $db->prepare("INSERT INTO users (username,hash) VALUES (:user,:hash)");
+	$selectAllUsers = $db->prepare("SELECT * FROM users ORDER BY fname ASC");
+	$insertUsers = $db->prepare("INSERT INTO users (username,hash,fname,lname,isadmin) VALUES (:user,:pass,:fname,:lname,:isadmin)");
 	$updateUsers = $db->prepare("UPDATE users SET hash = :pass WHERE username = :name");
-	
+	$deleteUser = $db->prepare("DELETE FROM users WHERE id=:id");
+
 	//Vehicles - Prepare query to insert year, make, model, & trim as new record into database
 	$insert = $db->prepare("INSERT INTO vehicles (year,make,model,trim) VALUES (:year,:make,:model,:trim)");
 	
 	//Vehicles - Prepare query to update all fields (except purchprice and purchdate) where ID=$_GET['ID']
-	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, intnotes=:intnotes, pubnotes=:pubnotes, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
+	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
+
+	$updateDesc = $db->prepare("UPDATE vehicles SET pubnotes=:pubnotes WHERE ID=".$_GET['id']);
+	$updateInternal = $db->prepare("UPDATE vehicles SET intnotes=:intnotes WHERE ID=".$_GET['id']);
 	
 	//Vehicles - Prepare query to select (if $_GET[;ID;] exists, return all info for only that vehicle; else return all info for all vehicles) [may want to break into two 
 	//select statements for efficiency]
@@ -50,8 +55,10 @@
 
 	//Owners Table
 	$oFields = array('name', 'email', 'phone');														//Used for Insert/Update
+	$oInsert = $db->prepare("INSERT INTO owners (name,email,phone) VALUES(:name,:email,:phone)");	//Add owners
 	$oSelect = $db->prepare("SELECT * FROM owners");												//Create query to select all owners
 	$oSelect1 = $db->prepare("SELECT * FROM owners WHERE id=:oid");
+	$deleteOwner = $db->prepare("DELETE FROM owners WHERE id=:id");
 	$oSelect->execute();																			//Execute query
 	$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);													//Fill array with results
 
