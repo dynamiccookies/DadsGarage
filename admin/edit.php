@@ -9,7 +9,7 @@
 	$reload = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."\">";
 	$vehicle = trim(($rows[0]["year"]==0000?'':$rows[0]["year"])." ".$rows[0]['make']." ".$rows[0]['model']." ".$rows[0]['trim']);
 
-	if(isset($_POST['SubmitAll'])) {
+	if(isset($_POST['SubmitTop'])) {
 		$update->bindParam(':vin',$_POST['vin']); 
 		$update->bindParam(':year',$_POST['year']); 
 		$update->bindParam(':make',$_POST['make']); 
@@ -87,14 +87,10 @@
 		echo $reload;
 	}
 ?>
-<body class='darkbg'>
+<body class='darkbg' onLoad="updateOwner()">
 	<div id="adminSidenav" class="adminsidenav"><?php require_once("../files/menu.php");?></div>
 	<div id="adminMain">
-		<div class="adminContainer" onclick="myFunction(this)">
-		  <div class="bar1"></div>
-		  <div class="bar2"></div>
-		  <div class="bar3"></div>
-		</div>
+		<div class="adminContainer" onclick="myFunction(this)"><div class="bar1"></div><div class="bar2"></div><div class="bar3"></div></div>
 		<div id="mainContainer" class="bgblue bord5 b-rad15 clear m-lrauto m-bottom25 bold">
 			<form action="<?php echo htmlspecialchars($_SERVER["REQUEST_URI"]);?>" method="post">
 				<table style="padding:15px;">
@@ -114,7 +110,7 @@
 						<td><input style="width:90px;" type="textbox" tabindex=4 name="year" value="<?php echo ($rows[0]["year"]==0000?"":$rows[0]["year"]);?>"></td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 						<td>Owner:</td>
-						<td colspan=2 nowrap>
+						<td nowrap>
 							<select id="ownerdd" tabindex=9 name="owner" onchange="updateOwner()">
 								<option value=0>Select Owner...</option>
 								<?php
@@ -124,12 +120,8 @@
 									}
 								?>
 							</select>
-							<?php
-								if (!empty($rows[0]['owner'])) {
-									echo "<a id='oEdit' class='show' href=''>Edit</a><a id='oSave' class='noscreen' href=''>Save</a>";
-								}
-							?>
 						</td>
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 						<td rowspan=5><?php echo ($pRows[0]['filename']?"<img src='../vehicles/".$id."/".$pRows[0]['filename']."' width=200px />":'');?></td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 					</tr>
@@ -145,7 +137,7 @@
 						<td><input style="width:90px;" type="textbox" name="make" tabindex=5 value="<?php echo $rows[0]['make']?>"></td>
 						<td>&nbsp;</td>
 						<td>Phone:</td>
-						<td><span id='phonenum' class='show'></span><input id='oPhone' type="text" class="noscreen" /></td>
+						<td><span id='phonenum' class='show'></span></td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 						<td>&nbsp;</td>
 					</tr>
@@ -176,7 +168,7 @@
 						<td><input style="width:90px;" type="textbox" tabindex=6 name="model" value="<?php echo $rows[0]['model']?>"></td>
 						<td>&nbsp;</td>
 						<td>Email:</td>
-						<td><span id='emailadd' class='show'></span><input id='oEmail' type="text" class="noscreen" /></td>
+						<td><span id='emailadd' class='show'></span></td>
 						<td colspan=3>&nbsp;</td>
 					</tr>
 					<tr><!-- Row 5 -->
@@ -202,7 +194,7 @@
 						<td>Miles:</td>
 						<td><input style="width:90px;" type="textbox" name="miles" tabindex=8 value="<?php echo number_format($rows[0]['miles'])?>"></td>
 						<td>&nbsp;</td>
-						<td colspan=2><center><input type="Submit" tabindex=12 name="SubmitAll" id="SubmitAll" value="Submit All Changes"></center></td>
+						<td colspan=2><center><input type="Submit" tabindex=12 name="SubmitTop" id="SubmitTop" value="Save"></center></td>
 						<td colspan=3>&nbsp;</td>
 					</tr>
 				</table>
@@ -246,7 +238,7 @@
 					Files:<br>
 					<div>
 						<form action="upload_file.php?id=<?php echo $rows[0]['id'];?>" method="post" enctype="multipart/form-data">
-						  <input name="files[]" type="file" multiple /><input type="submit" value="Send files" />
+						  <input name="files[]" type="file" multiple /><input type="submit" value="Upload files" />
 						</form>
 						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading1' width=100px></center>
 					</div>
@@ -284,7 +276,7 @@
 					Photos:<br>
 					<div>
 						<form action="upload_file.php?id=<?php echo $rows[0]['id'];?>" method="post" enctype="multipart/form-data">
-						  <input name="photos[]" type="file" multiple accept="image/*" /><input type="submit" onclick='loading2()' value="Send files" />
+						  <input name="photos[]" type="file" multiple accept="image/*" /><input type="submit" onclick='loading2()' value="Upload photos" />
 						</form>
 						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading2' width=100px></center>
 					</div>
@@ -324,6 +316,10 @@
 	<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
 	<script src="../files/admin.js"></script>
 	<script src="../files/edit.js"></script>
-	<script language="JavaScript" type="text/javascript">document.getElementById("defaultTab").click();</script>
+	<script language="JavaScript" type="text/javascript">
+		var ownersArray = <?php echo json_encode($oRows); ?>;
+		var thissite = 'http://<?php echo $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];?>';
+		document.getElementById("defaultTab").click();
+	</script>
 </body>
 </html>

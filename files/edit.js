@@ -45,15 +45,16 @@ function updateOwner() {
 	var e = document.getElementById("ownerdd");
 	var owner = e.options[e.selectedIndex].value;
 	if (owner !=0) {
-		document.getElementById("phonenum").innerHTML = ownersArray[owner-1]['phone'];
-		document.getElementById("emailadd").innerHTML = ownersArray[owner-1]['email'];
-		document.getElementById("oPhone").value = ownersArray[owner-1]['phone'];
-		document.getElementById("oEmail").value = ownersArray[owner-1]['email'];
+		for (var i = 0, len = ownersArray.length; i < len; i++) {
+			if (owner == ownersArray[i].id) {
+				document.getElementById("phonenum").innerHTML = ownersArray[i].phone;
+				document.getElementById("emailadd").innerHTML = ownersArray[i].email;
+				break;
+			}
+		}
 	} else {
 		document.getElementById("phonenum").innerHTML = '';
 		document.getElementById("emailadd").innerHTML = '';
-		document.getElementById("oPhone").value = '';
-		document.getElementById("oEmail").value = '';
 	}
 	statusChange();
 }

@@ -42,7 +42,7 @@
 	$insert = $db->prepare("INSERT INTO vehicles (year,make,model,trim) VALUES (:year,:make,:model,:trim)");
 	
 	//Vehicles - Prepare query to update all fields (except purchprice and purchdate) where ID=$_GET['ID']
-	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, intnotes=:intnotes, pubnotes=:pubnotes, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
+	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
 
 	$updateDesc = $db->prepare("UPDATE vehicles SET pubnotes=:pubnotes WHERE ID=".$_GET['id']);
 	$updateInternal = $db->prepare("UPDATE vehicles SET intnotes=:intnotes WHERE ID=".$_GET['id']);

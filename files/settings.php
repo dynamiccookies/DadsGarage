@@ -9,13 +9,13 @@
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
-		($_POST["branch"]?:"")."\"\ncommit = \"".($ini['commit']?:"")."\"\n*/\n?>";
+		($_POST["branch"]?:"")."\"\ncommit = \"".($_SESSION['inicommit']?:"")."\"\n*/\n?>";
 		file_put_contents("config.ini.php", $file);
 	}
 
 	//Read config.ini.php
 	$ini = parse_ini_file("config.ini.php");
-	
+	$_SESSION['inicommit']=$ini['commit'];
 	//Test validity of database, host, & credentials
 	require_once("dbcheck.php");
 	$hostChk = (!$ini["host"]?"Required Field":($array["connTest"]?($array["connTest"]!="Pass"?$array["connTest"]:""):""));
