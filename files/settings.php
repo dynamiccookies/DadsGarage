@@ -187,8 +187,22 @@
 		<div id="mainContainer" class="bgblue bord5 b-rad15 m-lrauto center m-top25">
 			<div class="settings-header">Settings Page</div><br/>
 			<button class="tablink width33" onclick="openTab('Database', this, 'left')"<?php echo (!$_SESSION['settings']?" id=\"defaultOpen\"":"");?>>Database</button>
-			<button class="tablink width33" onclick="openTab('Owners', this, 'middle')"<?php echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");?>>Owners</button>
-			<button class="tablink width33" onclick="openTab('Users', this, 'right')"<?php echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");?>>Users</button>
+			<button class="tablink width33" 
+				<?php 
+					if($dbExists){
+						echo "onclick=\"openTab('Owners', this, 'middle')\"";
+						echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");
+					} else { echo "title=\"The Database information is required first.\"";}
+				?> 
+			>Owners</button>
+			<button class="tablink width33"	
+				<?php 
+					if($dbExists){
+						echo "onclick=\"openTab('Users', this, 'right')\"";
+						echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");
+					} else { echo "title=\"The Database information is required first.\"";}
+				?>
+			>Users</button>
 			<div id="Database" class="tabcontent">
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
@@ -250,7 +264,7 @@
 				</table>
 			</div>
 			<div id="Users" class="tabcontent">
-				<?php $selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);?>
+				<?php if($dbExists){$selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);}?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
 						<tr><td>Username:</td><td><input name="user" type="textbox" value=""></td></tr>
