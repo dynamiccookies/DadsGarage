@@ -264,7 +264,6 @@
 				</table>
 			</div>
 			<div id="Users" class="tabcontent">
-				<?php if($dbExists){$selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);}?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
 						<tr><td>Username:</td><td><input name="user" type="textbox" value=""></td></tr>
