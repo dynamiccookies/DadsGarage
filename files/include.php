@@ -1,6 +1,17 @@
 <?php
 	session_start();
-
+	ini_set("display_errors", 0);
+	register_shutdown_function(function(){
+		$last_error = error_get_last();
+		if (!empty($last_error) && $last_error['type'] & (E_ERROR | E_COMPILE_ERROR | E_PARSE | E_CORE_ERROR | E_USER_ERROR)){
+			$path = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], "/"));
+			$path = substr($path, strrpos($path, "/")+1);
+			if ($path=="admin") {$path="../files/settings.php";} elseif ($path=="files") {$path="settings.php";} else {$path="files/settings.php";}
+			echo "<meta http-equiv=refresh content=\"5; URL=".$path."\">";
+			echo "<p style=\"font-weight:bold;font-size:24px;color:red;\">Settings are missing!<br/>Redirecting there now.</p>";
+			exit(1);
+		}
+	});
 	//Set path to 'files'
 	$files=substr(getcwd(), strrpos(getcwd(), '/') + 1);
 	if ($files=="admin") {$files="../files/";} 
@@ -97,4 +108,5 @@
 	$eTots = $db->prepare("SELECT SUM(cost) as 'Total' FROM expenses ".$pwhere);
 	$eTots->execute();
 	$eTotal = $eTots->fetchAll(PDO::FETCH_ASSOC);
-?>
+	?>
+

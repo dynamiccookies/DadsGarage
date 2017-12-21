@@ -9,7 +9,7 @@
 	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
-		($_POST["branch"]?:"")."\"\ncommit = \"".($_SESSION['inicommit']?:"")."\"\n*/\n?>";
+		($_POST["branch"]?:($_SESSION["branch"]?:""))."\"\ncommit = \"".($_SESSION['inicommit']?:"")."\"\n*/\n?>";
 		file_put_contents("config.ini.php", $file);
 	}
 
@@ -126,7 +126,7 @@
 				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
 				$_SESSION['results'] = 'Application Updated Successfully!';
 			} else {
-				echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
+				echo "Error Extracting Zip: Please <a href=\"".$repository."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
 				$_SESSION['results'] = 'Something went wrong!';
 			}
 		} catch (Exception $e){$_SESSION['results'] = 'Something went wrong!<br/>'.$e;}
@@ -152,7 +152,7 @@
 		}
 		if (($commit) && ($branch) && ($info['current']['commit']!=$info['new']['commit'])) {
 			$json = getJSON("compare/".$info['current']['commit']."...".$info['new']['commit']);
-			if ($json['status']=="ahead") {$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by']." commit(s) behind.</div><br/>";}
+			if ($json['status']=="ahead" || $json['status']=="diverged") {$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by']." commit(s) behind.</div><br/>";}
 		}
 		return $info;
 	}
@@ -187,8 +187,22 @@
 		<div id="mainContainer" class="bgblue bord5 b-rad15 m-lrauto center m-top25">
 			<div class="settings-header">Settings Page</div><br/>
 			<button class="tablink width33" onclick="openTab('Database', this, 'left')"<?php echo (!$_SESSION['settings']?" id=\"defaultOpen\"":"");?>>Database</button>
-			<button class="tablink width33" onclick="openTab('Owners', this, 'middle')"<?php echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");?>>Owners</button>
-			<button class="tablink width33" onclick="openTab('Users', this, 'right')"<?php echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");?>>Users</button>
+			<button class="tablink width33" 
+				<?php 
+					if($dbExists){
+						echo "onclick=\"openTab('Owners', this, 'middle')\"";
+						echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");
+					} else { echo "title=\"The Database information is required first.\" style=\"cursor:not-allowed;\"";}
+				?> 
+			>Owners</button>
+			<button class="tablink width33"	
+				<?php 
+					if($dbExists){
+						echo "onclick=\"openTab('Users', this, 'right')\"";
+						echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");
+					} else { echo "title=\"The Database information is required first.\" style=\"cursor:not-allowed;\"";}
+				?>
+			>Users</button>
 			<div id="Database" class="tabcontent">
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
@@ -215,7 +229,7 @@
 						echo ($created_tables?($created_tables===true?
 							"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 						echo $userMessage;
-						echo (getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"");
+						echo getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"";
 						echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
 						echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
 						if (dbExists) {echo $button?:"";}
@@ -250,7 +264,7 @@
 				</table>
 			</div>
 			<div id="Users" class="tabcontent">
-				<?php $selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);?>
+				<?php if($dbExists){if(tableExists("users")){$selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);}}?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
 						<tr><td>Username:</td><td><input name="user" type="textbox" value=""></td></tr>

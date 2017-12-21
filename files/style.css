@@ -66,16 +66,16 @@
 	}
 	#main .vehicle img {height: 200px;}
 	#main .red {border-color: red;}
-	table#users, table#owners {
+	table#users, table#owners, .tabcontent table.table {
 		margin-left:auto;
 		margin-right:auto;
 		border-collapse: collapse;
 		box-shadow: 10px 10px 10px grey;
 	}
-	table#owners tr:nth-child(odd) {
+	table#owners tr:nth-child(odd), .tabcontent table.table tr:nth-child(odd) {
 		background-color: #daecee;
 	}
-	table#owners tr:nth-child(even) {
+	table#owners tr:nth-child(even), .tabcontent table.table tr:nth-child(even) {
 		background-color: white;
 	}
 	table#users tr:nth-child(odd){
@@ -100,6 +100,13 @@
 		margin:25px;
 		margin-right:100px;
 	}
+	#ForSale td, #Sold td {
+		padding: 10px;
+		font-weight: bold;
+	}
+	#ForSale table.tbl-align.htmlTable.table, #Sold table.tbl-align.htmlTable.table {
+		border: 1px solid;
+	}
 	.tablink {
 		float: left;
 		border: none;
@@ -112,15 +119,18 @@
 	.width20 {width: 20%;}
 	.width25 {width: 25%;}
 	.width33 {width: 33.333333%;}
+	.width50 {width: 50%;}
 	.tabcontent {
 		color: black;
 		display: none;
 		padding: 20px;
 		padding-top:75px;
-		padding-bottom:71px;
 		text-align: center;
 		background-color: silver;
 		border-radius: 0px 0px 10px 10px;
+	}
+	#Description, #Internal {
+		padding-bottom:71px;
 	}
 	.bb, table.photos td, .tbl-align td  {
 		border-bottom: 1px solid black!important;

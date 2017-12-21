@@ -50,15 +50,15 @@
 ?>
 <script>function clickpic ($inc){return document.getElementById('preview').src=document.getElementById('img' + $inc).src;}</script>
 <link rel="stylesheet" type="text/css" href="files/slider.css">
-<body class="center bg">
+<body class="darkbg">
 								<!-- START OF ON SCREEN -->
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center noprint' style='width:66%;max-width:80%;'>
 		<div id="main">
-			<div class='big bold center prtblue'><?php echo $base_name?> - <?php echo ($status=='Sold'?"<span class='red bold'>".strtoupper($status)."</span>":$price);?></div>
-			<a class='noprint med bold' href="mailto:dynamiccookies@gmail.com?cc=a.e.davis@hotmail.com&subject=<?php echo str_replace(' ','%20',$base_name)?>">Request More Information</a>
+			<div class='big bold center prtblue'><?php echo $base_name.($status=='Sold'?" - <span class='red bold'>".strtoupper($status)."</span>":($price!="$0"?" - ".$price:""));?></div>
+			<!--<a class='noprint med bold' href="mailto:&subject=<?php echo str_replace(' ','%20',$base_name)?>">Request More Information</a>-->
 		</div>
 		<div class='content'>	<!-- Content -->
-			<?php if (strlen($txt) <=0) {echo ("\n<h2 class='noprint'>Information coming soon.</h2><p></p>");} else {echo ("<h3>" . $txt . "</h3>");}?>
+			<?php if (strlen($txt) <=0) {echo ("\n<!--<h2 class='noprint'>Information coming soon.</h2>--><p></p>");} else {echo ("<h3>" . $txt . "</h3>");}?>
 		</div>
 		<!-- Photo Gallery - Following code was borrowed from https://codepen.io/AMKohn/pen/EKJHf?editors=1100 -->
 		<div class="gallery" align="center">
@@ -90,7 +90,7 @@
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center noscreen'>
 		<div class='leftspacer'>&nbsp;</div>
 		<div id="main">
-			<div class='big bold center prtblue'><?php echo $base_name?> - <?php echo ($status=='Sold'?"<span class='red bold'>".strtoupper($status)."</span>":$price);?></div>
+			<div class='big bold center prtblue'><?php echo $base_name.($status=='Sold'?" - <span class='red bold'>".strtoupper($status)."</span>":($price!="$0"?" - ".$price:""));?></div>
 			<div class='med'>
 				<?php echo ($phone != "" ? "<b>Call:</b> " . $phone . "&nbsp;&nbsp;|&nbsp;&nbsp;" : ""); echo ($email != "" ? "<b>Email:</b> " . $email : "");?>
 			</div>
