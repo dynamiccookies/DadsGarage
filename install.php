@@ -1,16 +1,26 @@
 <?php 
-$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
-$repBranch = $_POST['branches']?:"master";
-$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
-$redirectURL = 'files/settings.php'; //Redirect URL - Leave blank for no redirect
-//-------------------------------------------
-	//Pull list of branches from GitHub
-	ini_set("allow_url_fopen", 1);
-	$options  = array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT']));
-	$url = "https://api.github.com/repos/dynamiccookies/dadsgarage/branches";
-	$branches = json_decode(file_get_contents($url, false, stream_context_create($options)),true);
+session_start();
+$repo = 'dynamiccookies/DadsGarage';			//GitHub repo (username/repository)
+$defaultBranch = '';							//Default branch to install if none selected - Set to 'master' if left blank
+$title = "Dad's Garage Management System"; 		//Name of your application - Used in installer title
+$redirectURL = 'files/settings.php'; 			//Redirect URL
 
+//-------------DO NOT EDIT BELOW------------------------------
+ini_set("allow_url_fopen", 1);
+$repository = 'https://github.com/'.$repo.'/';
+$repBranch = $_POST['branches']?:($defaultBranch?:"master");
+$source = substr($repo, strpos($repo, "/") + 1).'-'.$repBranch;
+//Pull list of branches from GitHub for install
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/".$repo."/branches"); 
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch,CURLOPT_USERAGENT,substr($repo, strpos($repo, "/") + 1));
+$branches = json_decode(curl_exec($ch),true);
+curl_close($ch);
+//Run install if button clicked
 if ($_POST['branches']) {
+	$_SESSION["branch"]=$repBranch;
+	foreach ($branches as $branch) {if($branch['name']==$repBranch) {$_SESSION["inicommit"]=$branch['commit']['sha'];}}
 	$file = file_put_contents("install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
 	if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
 	$zip = new ZipArchive;
@@ -31,22 +41,23 @@ if ($_POST['branches']) {
 			}
 		}
 		$zip->close();
+		mkdir('vehicles');		//Need to move to edit.php
 		unlink('install.zip');
 		unlink('.gitignore');
 		unlink(__FILE__);
 		if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
-	} else {echo "Error Extracting Zip: Please <a href=\"".$project."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";}
+	} else {echo "Error Extracting Zip: Please <a href=\"".$repository."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";}
 }
 ?>
 <div style="text-align:center;">
-	<span style="font-weight:bold;font-size:24px;">Welcome to the Dad's Garage Management System Installer!</span><br/><br/>
+	<span style="font-weight:bold;font-size:24px;">Welcome to the <?php echo $title;?> Installer!</span><br/><br/>
 	<span style="font-size:18px;">Make sure this file is saved to the root of your install directory.<br/><br/>
-	If you'd like to install a repository other than master, select it here:</span><br/>
+	If you'd like to install a repository other than the default, select it here:</span><br/>
 	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 		<select name="branches">
 			<?php foreach ($branches as $branch) {
 				$branch = $branch['name'];
-				echo "<option value'$branch'".($branch=='master'?" selected":"").">$branch</option>";}?>
+				echo "<option value'$branch'".($branch==$repBranch?" selected":"").">$branch</option>";}?>
 		</select><br/><br/>
 		<input type="Submit" name="Submit" value="Install">
 	</form>

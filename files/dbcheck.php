@@ -84,7 +84,7 @@
 			$temp = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
 			$result = $temp->fetchColumn();
 			if($result==0) {
- 				$createUser = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`isadmin`) VALUES ('admin','".password_hash('admin', PASSWORD_DEFAULT)."',1)");
+ 				$createUser = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) VALUES ('admin','".password_hash('admin', PASSWORD_DEFAULT)."','System','Account',1)");
 				$createUser->execute(); 
 				return TRUE;
 			} else {
