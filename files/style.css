@@ -1,12 +1,6 @@
 @media screen {
 	.noscreen {display: none;}
 	html, body { min-height: 100%;}
-	body.bg {
-		background-image: url("green.jpg"); /*wood.jpg*/
-		background-repeat: no-repeat;
-		background-attachment: fixed;
-		padding-bottom:100px;
-	}
 	table.settings {
 		margin: auto;
 		border-top: 2px solid;

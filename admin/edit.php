@@ -174,7 +174,7 @@
 					<tr><!-- Row 5 -->
 						<td>
 							<span id='buyer' class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">Buyer:</span>
-							<span id="lblinsured" class="block" name="lblinsured"><a href="mailto:info@insurancecenterofbuffalo.com?subject=Auto%20Insurance&body=<?php echo $vehicle;?>%20-%20VIN:%20<?php echo strtoupper($rows[0]['vin'])?>" title="Send Email to Insurance Center of Buffalo">Insured?</a>:</span>
+							<span id="lblinsured" class="block" name="lblinsured"><a href="mailto:<?php echo $insuranceEmail;?>?subject=Auto%20Insurance&body=<?php echo $vehicle;?>%20-%20VIN:%20<?php echo strtoupper($rows[0]['vin'])?>" title="Send Email to Insurance Center of Buffalo">Insured?</a>:</span>
 						</td>
 						<td nowrap>
 							<input type="textbox" style="width:78px;" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>" id='fname' name='fname' placeholder="First Name" value="">
