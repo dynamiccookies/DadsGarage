@@ -2,7 +2,6 @@
 	session_start();
 	define('included', TRUE);
 	require_once($files."header.php");
-	require_once("include.php");
 	ini_set("allow_url_fopen", 1);
 	$userMessage = "";
 
@@ -265,7 +264,7 @@
 				</table>
 			</div>
 			<div id="Users" class="tabcontent">
-				<?php if($dbExists){if(tableExists("users")){$selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);}}?>
+				<?php if($dbExists){if(tableExists("users")){require_once("include.php");$selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);}}?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
 						<tr><td>Username:</td><td><input name="user" type="textbox" value=""></td></tr>
