@@ -2,6 +2,7 @@
 	session_start();
 	define('included', TRUE);
 	require_once($files."header.php");
+	require_once("include.php");
 	ini_set("allow_url_fopen", 1);
 	$userMessage = "";
 
