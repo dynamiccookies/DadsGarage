@@ -2,7 +2,7 @@
 	require_once("files/include.php");
 	file_put_contents("files/log.txt",date('Y-m-d H:i:s') . "," . $_SERVER['REMOTE_ADDR'] . "\n",FILE_APPEND);	//log date/time and IP data
 ?>
-<body id="main" class='bg'><!--<p>Vehicles For Sale:</p>-->
+<body id="main" class='darkbg'><!--<p>Vehicles For Sale:</p>-->
 	<div class='holder'>
 		<?php 
 			foreach ($rows as $row) {
