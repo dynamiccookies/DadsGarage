@@ -67,6 +67,7 @@
 		$_SESSION['settings'] = 'owners';
 	}
 	if(isset($_POST['userAdd'])) {
+		if(!$_POST['isadmin']) {$_POST['isadmin']=0;}
 		$insertUsers->bindParam(':user',strtolower($_POST['user']));
 		$insertUsers->bindParam(':pass',password_hash($_POST['user'], PASSWORD_DEFAULT));
 		$insertUsers->bindParam(':fname',$_POST['fname']);
