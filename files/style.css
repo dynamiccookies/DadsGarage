@@ -24,6 +24,11 @@
 		font-size: 24px;
 		font-weight: bold;
 	}
+	input[name=createTables] {
+		background: red;
+		color: white;
+		font-weight: bold;
+	}
 	#main > .disclaimer {
 		font-size: 10px;
 		text-align: center;

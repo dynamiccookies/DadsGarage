@@ -4,11 +4,12 @@
 		header('Location: index.php');
 		exit;
 	}
-	include("../admin/secure.php");
+	include('../admin/secure.php');
 	$id = $_GET['id']; 
 	$reload = "<meta http-equiv=refresh content=\"0; URL=".$_SERVER['REQUEST_URI']."\">";
-	$vehicle = trim(($rows[0]["year"]==0000?'':$rows[0]["year"])." ".$rows[0]['make']." ".$rows[0]['model']." ".$rows[0]['trim']);
-
+	$vehicle = trim(($rows[0]['year']==0000?'':$rows[0]['year']).' '.$rows[0]['make'].' '.$rows[0]['model'].' '.$rows[0]['trim']);
+	$dir = '../vehicles';
+	if(!file_exists($dir) && !is_dir($dir)) {mkdir($dir);} 
 	if(isset($_POST['SubmitTop'])) {
 		$update->bindParam(':vin',$_POST['vin']); 
 		$update->bindParam(':year',$_POST['year']); 
@@ -37,8 +38,8 @@
 		echo $reload;
 	}
 	if(isset($_POST['delPic'])) {
-		unlink($_POST["pic"]);						//Delete photo
-		$pDelete->bindParam(':pid',$_POST["pid"]);	//Delete database entry
+		unlink($_POST['pic']);						//Delete photo
+		$pDelete->bindParam(':pid',$_POST['pid']);	//Delete database entry
 		$pDelete->execute();
 		$_SESSION['edit'] = 'photos';
 		echo "<script> window.location.replace('".$_SERVER['REQUEST_URI']."#".$_POST["oldpic"]."'); </script>";

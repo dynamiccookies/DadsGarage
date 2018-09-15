@@ -1,6 +1,6 @@
 <?php
-	require("../files/password.php");
-	require("../files/include.php");
+	require('../files/password.php');
+	require('../files/include.php');
 	if(isset($_GET['logout'])) {
 		echo "<meta http-equiv=refresh content=\"0; URL=".($_SESSION['isadmin']?".":"portal.php")."\">";
 		session_unset();     // unset $_SESSION variable for the run-time 
@@ -13,27 +13,27 @@
 	<html>
 	<head>
 		<title>Please enter password to access this page</title>
-		<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-		<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			function chgPass(show,hide){document.getElementById(show).className = "show";document.getElementById(hide).className = "hide";}
+		<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='NO-CACHE'>
+		<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+		<script src='http://code.jquery.com/jquery-latest.min.js'></script>
+		<script language='JavaScript' type='text/javascript'>
+			function chgPass(show,hide){document.getElementById(show).className = 'show';document.getElementById(hide).className = 'hide';}
 		</script>
-		<style type="text/css">.hide {display:none;}</style>
+		<style type='text/css'>.hide {display:none;}</style>
 	</head>
-	<body class="darkbg">
-		<div id="mainContainer" class="bgblue bord5 p15 b-rad15 m-lrauto center m-top25" style="margin-top:auto !important;">
-		  <form method="post">
+	<body class='darkbg'>
+		<div id='mainContainer' class='bgblue bord5 p15 b-rad15 m-lrauto center m-top25' style='margin-top:auto!important;'>
+		  <form method='post'>
 			<h3>Please enter password to access this page</h3>
-			<font color="red"><?php echo $error_msg; ?></font><br />
-			Login:<br /><input style="border: 1px solid black;" type="input" name="access_login" /><br />
-			Password:<br /><input style="border: 1px solid black;" type="password" name="access_password" /><br />
-			<div id="show" class="hide">
-				New Password:<br /><input style="border: 1px solid black;" type="password" name="new_password" /><br />
-				<a onclick="chgPass('hide','show')" href="javascript:void(0);">Cancel</a>
+			<font color='red'><?php echo $error_msg; ?></font><br />
+			Login:<br /><input style='border: 1px solid black;' type='input' name='access_login' autofocus /><br />
+			Password:<br /><input style='border: 1px solid black;' type='password' name='access_password' /><br />
+			<div id='show' class='hide'>
+				New Password:<br /><input style='border: 1px solid black;' type='password' name='new_password' /><br />
+				<a onclick="chgPass('hide','show')" href='javascript:void(0);'>Cancel</a>
 			</div>
-			<a onclick="chgPass('show','hide')" class="show" id="hide" href="javascript:void(0);">Change Password</a>
-			<p></p><input type="submit" name="Submit" value="Submit" />
+			<a onclick="chgPass('show','hide')" class='show' id='hide' href='javascript:void(0);'>Change Password</a>
+			<p></p><input type='submit' name='Submit' value='Submit' />
 		</form>
 		  <br />
 		</div>
@@ -50,7 +50,7 @@ if (isset($_POST['access_login'])) {
 	$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
 
 	if(!password_verify($_POST['access_password'],$account[0]['hash'])) {
-		showLoginPasswordProtect("Incorrect username/password.");
+		showLoginPasswordProtect('Incorrect username/password.');
 	} else {
 		if(isset($_POST['new_password']) && $_POST['new_password']<>'') {
 			$updateUsers->bindParam(':pass',password_hash($_POST['new_password'], PASSWORD_DEFAULT));
@@ -71,7 +71,7 @@ if (isset($_POST['access_login'])) {
     if ((isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) || !$_SESSION['LoggedIn']) {
 		// last request was more than 30 minutes ago
 		if($_SESSION) {session_unset(); session_destroy();}	// destroy session data in storage
-		showLoginPasswordProtect("");
+		showLoginPasswordProtect('');
 	}
 	if (!isset($_SESSION['CREATED'])) {
 		$_SESSION['CREATED'] = time();

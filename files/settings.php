@@ -1,32 +1,34 @@
 <?php
 	session_start();
 	define('included', TRUE);
-	require_once($files."header.php");
-	ini_set("allow_url_fopen", 1);
-	$userMessage = "";
+	require_once($files.'header.php');
+	ini_set('allow_url_fopen', 1);
+	$userMessage = '';
+	$debug = FALSE;
 
 	//Create/update config.ini.php
-	if (!file_exists("config.ini.php") || isset($_POST['Save'])) {
+	if (!file_exists('config.ini.php') || isset($_POST['Save'])) {
 		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
 		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
 		($_POST["branch"]?:($_SESSION["branch"]?:""))."\"\ncommit = \"".($_SESSION['inicommit']?:"")."\"\n*/\n?>";
-		file_put_contents("config.ini.php", $file);
+		file_put_contents('config.ini.php', $file);
 	}
 
 	//Read config.ini.php
-	$ini = parse_ini_file("config.ini.php");
+	$ini = parse_ini_file('config.ini.php');
 	$_SESSION['inicommit']=$ini['commit'];
+
 	//Test validity of database, host, & credentials
-	require_once("dbcheck.php");
-	$hostChk = (!$ini["host"]?"Required Field":($array["connTest"]?($array["connTest"]!="Pass"?$array["connTest"]:""):""));
-	$hostChk = ($hostChk!=""?" class=\"required\" title=\"".$hostChk."\"":" class=\"pass\" title=\"Host Connection Successful\"");
-	if ($ini["host"]) {
-		$dbChk = (!$ini["dbname"]?"Required Field":($array["dbTest"]?($array["dbTest"]!="Pass"?$array["dbTest"]:""):""));
-		$dbChk = ($dbChk!=""?" class=\"required\" title=\"".$dbChk."\"":" class=\"pass\" title=\"Database Connection Successful\"");
-		$userChk = (!$ini["username"]?"Required Field":($array["credTest"]?($array["credTest"]!="Pass"?$array["credTest"]:""):""));
-		$userChk = ($userChk!=""?" class=\"required\" title=\"".$userChk."\"":" class=\"pass\" title=\"Login Successful\"");
-		$passChk = (!$ini["password"]?"Required Field":($array["credTest"]?($array["credTest"]!="Pass"?$array["credTest"]:""):""));
-		$passChk = ($passChk!=""?" class=\"required\" title=\"".$passChk."\"":" class=\"pass\" title=\"Login Successful\"");
+	require_once('dbcheck.php');
+	$hostChk = (!$ini['host']?'Required Field':($array['connTest']?($array['connTest']!='Pass'?$array['connTest']:''):''));
+	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
+	if ($ini['host']) {
+		$dbChk = (!$ini['dbname']?'Required Field':($array['dbTest']?($array['dbTest']!='Pass'?$array['dbTest']:''):''));
+		$dbChk = ($dbChk!=''?" class='required' title='".$dbChk."'":" class='pass' title='Database Connection Successful'");
+		$userChk = (!$ini['username']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
+		$userChk = ($userChk!=''?" class='required' title='".$userChk."'":" class='pass' title='Login Successful'");
+		$passChk = (!$ini['password']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
+		$passChk = ($passChk!=''?" class='required' title='".$passChk."'":" class='pass' title='Login Successful'");
 	}
 
 	//Check existence/create database tables
@@ -42,6 +44,7 @@
 				$dbChk = str_replace('Database Connection Successful','One or more tables are missing from the database.',$dbChk);
 			}
 		}
+
 		//Check existence/create default Admin user
 		$userExists=usersExist();
  		if ($userExists===TRUE) {
@@ -53,6 +56,8 @@
 			} else {$userMessage = $userExists;}
 		} elseif($userExists===FALSE) {require("../admin/secure.php");}
 	}
+
+	if($dbExists) {if(tableExists("users")){require_once("include.php");}}
 	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd'])) {unset($_SESSION['settings']);}
 	if(isset($_POST['ownerAdd'])) {
 		$oInsert->bindParam(':name',$_POST['name']);
@@ -62,7 +67,6 @@
 		$_SESSION['settings'] = 'owners';
 	}
 	if(isset($_POST['userAdd'])) {
-		$_POST['isadmin']?:$_POST['isadmin']=0;
 		$insertUsers->bindParam(':user',strtolower($_POST['user']));
 		$insertUsers->bindParam(':pass',password_hash($_POST['user'], PASSWORD_DEFAULT));
 		$insertUsers->bindParam(':fname',$_POST['fname']);
@@ -185,28 +189,30 @@
 		  <div class="bar3"></div>
 		</div>
 		<div id="mainContainer" class="bgblue bord5 b-rad15 m-lrauto center m-top25">
-			<div class="settings-header">Settings Page</div><br/>
+			<div class="settings-header">Settings</div><br/>
 			<button class="tablink width33" onclick="openTab('Database', this, 'left')"<?php echo (!$_SESSION['settings']?" id=\"defaultOpen\"":"");?>>Database</button>
-			<button class="tablink width33" 
+			<button class='tablink width33' 
 				<?php 
-					if($dbExists){
+					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Owners', this, 'middle')\"";
 						echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");
-					} else { echo "title=\"The Database information is required first.\" style=\"cursor:not-allowed;\"";}
+					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
+					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
 			>Owners</button>
-			<button class="tablink width33"	
+			<button class='tablink width33'	
 				<?php 
-					if($dbExists){
+					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Users', this, 'right')\"";
 						echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");
-					} else { echo "title=\"The Database information is required first.\" style=\"cursor:not-allowed;\"";}
+					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
+					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?>
 			>Users</button>
 			<div id="Database" class="tabcontent">
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
-						<tr><td>Host Name:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
+						<tr><td>Host Address:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
 						<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
 						<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
 						<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
@@ -237,7 +243,11 @@
 				</form>
 			</div>
 			<div id="Owners" class="tabcontent">
-				<?php $owners=$oRows;?>
+				<?php 
+					$oSelect->execute();
+					$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);
+					$owners=$oRows;
+				?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
 						<tr><td>Name:</td><td><input name="name" type="textbox" value=""></td></tr>
@@ -246,9 +256,10 @@
 					</table><br/>
 					<input type="Submit" name="ownerAdd" value="Add"><br/><br/>
 				</form>
-				<table id="owners">
-					<tr><th>Name</th><th>Phone</th><th>Email</th><th>Delete</th></tr>
-					<?php foreach($owners as $owner) {?>
+				<?php if (is_array($owners) || $owners instanceof Traversable) {?>
+					<table id="owners">
+						<tr><th>Name</th><th>Phone</th><th>Email</th><th>Delete</th></tr>
+						<?php foreach($owners as $owner) {?>
 							<tr>
 								<td><?php echo $owner['name']?></td>
 								<td><?php echo $owner['phone']?></td>
@@ -260,11 +271,19 @@
 									</form>
 								</td>
 							</tr>
-					<?php }?>
-				</table>
+						<?php }?>
+					</table>
+				<?php }?>
 			</div>
 			<div id="Users" class="tabcontent">
-				<?php if($dbExists){if(tableExists("users")){require_once("include.php");$selectAllUsers->execute();$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);}}?>
+ 				<?php 
+				if($dbExists){
+					if(tableExists("users")){
+						require_once("include.php");
+						$selectAllUsers->execute();
+						$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
+					}
+				}?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
 						<tr><td>Username:</td><td><input name="user" type="textbox" value=""></td></tr>
@@ -298,6 +317,9 @@
 							</tr>
 					<?php }?>
 				</table>
+				<?php if(isset($_POST['resetUser'])) {?>
+					<br><span class="red bold"><?php echo $_POST['user'];?>'s password has been reset.</span>
+				<?php }?>
 			</div>
 		</div>
 	</div>

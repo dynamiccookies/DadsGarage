@@ -4,13 +4,13 @@
 		header('HTTP/1.0 403 Forbidden');
 		exit;
 	}
-	require("password.php");
-	ini_set('display_errors', 0);
-	$server = $ini["host"];
+	require('password.php');
+	ini_set('display_errors', $debug);
+	$server = $ini['host'];
 	$port = 3306;
-	$dbName = $ini["dbname"];
-	$dbUsername = $ini["username"];
-	$dbPassword = $ini["password"];
+	$dbName = $ini['dbname'];
+	$dbUsername = $ini['username'];
+	$dbPassword = $ini['password'];
 	$array = array();
 
 /* //	Testing create_conn function - Future Release
@@ -32,10 +32,10 @@
 		else {$array['connTest'] = 'Fail - Cannot connect to ' . $server . ':' . $port;}
 		fclose($handle);
 	}
-	catch(PDOException $e){$array['connTest'] = 'Fail - Cannot connect to ' . $server . ':' . $port."'catch'";} 
+	catch(PDOException $e){$array['connTest'] = 'Fail - Cannot connect to ' . $server . ':' . $port;} 
 	// check Username/Password 
 	try {
-		$conn = new PDO("mysql:host=".$server, $dbUsername, $dbPassword);
+		$conn = new PDO('mysql:host='.$server, $dbUsername, $dbPassword);
 		// set the PDO error mode to exception
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		$array['credTest'] = 'Pass';
@@ -91,12 +91,12 @@
    				$selectUsers = $conn->prepare("SELECT * FROM users WHERE username='admin'");
 				$selectUsers->execute();
 				$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
-				if(password_verify("admin",$account[0]['hash'])) {return TRUE;}
+				if(password_verify('admin',$account[0]['hash'])) {return TRUE;}
 				else {return FALSE;}
- 				return "How did you get here?";
+ 				return 'How did you get here?';
 			}
 		}
-		catch (PDOException $e) {return "There was a problem: ".$e;}
+		catch (PDOException $e) {return 'There was a problem: '.$e;}
 	}
 
 	function tableExists($table) {	//https://stackoverflow.com/questions/1717495/check-if-a-database-table-exists-using-php-pdo
