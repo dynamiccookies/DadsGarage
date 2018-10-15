@@ -17,11 +17,13 @@ curl_setopt($ch, CURLOPT_USERAGENT,substr($repo, strpos($repo, '/') + 1));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $branches = json_decode(curl_exec($ch),true);
 curl_close($ch);
-if ($_POST['branches']) {	//Run install if button clicked
-	$_SESSION['branch']=$repBranch;
-	foreach ($branches as $branch) {if($branch['name']==$repBranch) {$_SESSION['inicommit']=$branch['commit']['sha'];}}
+if ($_POST['branches']) {				//Run install if button clicked
+	$_SESSION['branch']=$repBranch;		//Store selected branch into session variable for use later
+	foreach ($branches as $branch) {	//Store selected branch's commit sha into session variable for use later
+		if($branch['name']==$repBranch) {$_SESSION['inicommit']=$branch['commit']['sha'];}
+	}
 	$file = file_put_contents('install.zip', fopen($repository.'archive/'.$repBranch.'.zip', 'r'), LOCK_EX);
-	if($file === FALSE) die("Error Writing to File: Please <a href='".$repository."issues/new?title=Installation - Error Writing to File'>click here</a> to submit a ticket.");
+	if($file === FALSE) die("Error Writing to File: Please <a href='".$repository."issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
 	$zip = new ZipArchive;
 	$res = $zip->open('install.zip');
 	if ($res === TRUE) {
@@ -44,7 +46,7 @@ if ($_POST['branches']) {	//Run install if button clicked
 		unlink('.gitignore');
 		unlink(__FILE__);
 		if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=".$redirectURL."'>";
-	} else {echo "Error Extracting Zip: Please <a href='".$repository."issues/new?title=Installation - Error Extracting'>click here</a> to submit a ticket.";}
+	} else {echo "Error Extracting Zip: Please <a href='".$repository."issues/new?title=Installation - Error Extracting'>submit an issue</a>.";}
 }
 ?>
 <!doctype html>

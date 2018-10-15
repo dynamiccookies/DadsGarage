@@ -1,17 +1,14 @@
 <?php
 	session_start();
 	define('included', TRUE);
-	require_once($files.'header.php');
+	require_once($files . 'header.php');
 	ini_set('allow_url_fopen', 1);
 	$userMessage = '';
-	$debug = FALSE;
+	$debug = TRUE;
 
-	//Create/update config.ini.php
+	//Create/update config.ini.php on page load/save
 	if (!file_exists('config.ini.php') || isset($_POST['Save'])) {
-		$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
-		"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
-		($_POST["branch"]?:($_SESSION["branch"]?:""))."\"\ncommit = \"".($_SESSION['inicommit']?:"")."\"\n*/\n?>";
-		file_put_contents('config.ini.php', $file);
+		updateConfig(($_POST['branch']?:($_SESSION['branch']?:'')),($_SESSION['inicommit']?:''));
 	}
 
 	//Read config.ini.php
@@ -34,12 +31,11 @@
 	//Check existence/create database tables
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
 		$dbExists = TRUE;
-		if (!tableExists("customers") || !tableExists("expenses") || !tableExists("files") || 
-			!tableExists("owners") || !tableExists("photos") || !tableExists("users") || !tableExists("vehicles")) {
-			if ($_POST['createTables']){
-				$created_tables = create_tables();
+		if (!tableExists('customers')	|| !tableExists('expenses') || !tableExists('files') || !tableExists('owners') || 
+			!tableExists('photos')		|| !tableExists('users')	|| !tableExists('vehicles')) {
+			if ($_POST['createTables']){$created_tables = create_tables();
 			} else {
-				$button = " <input type=\"Submit\" name=\"createTables\" value=\"Create Table(s)\">";
+				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
 				$dbChk = str_replace('pass','warn',$dbChk);
 				$dbChk = str_replace('Database Connection Successful','One or more tables are missing from the database.',$dbChk);
 			}
@@ -58,7 +54,7 @@
 	}
 
 	if($dbExists) {if(tableExists("users")){require_once("include.php");}}
-	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd'])) {unset($_SESSION['settings']);}
+	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
 	if(isset($_POST['ownerAdd'])) {
 		$oInsert->bindParam(':name',$_POST['name']);
 		$oInsert->bindParam(':phone',$_POST['phone']);
@@ -67,13 +63,15 @@
 		$_SESSION['settings'] = 'owners';
 	}
 	if(isset($_POST['userAdd'])) {
-		if(!$_POST['isadmin']) {$_POST['isadmin']=0;}
-		$insertUsers->bindParam(':user',strtolower($_POST['user']));
-		$insertUsers->bindParam(':pass',password_hash($_POST['user'], PASSWORD_DEFAULT));
-		$insertUsers->bindParam(':fname',$_POST['fname']);
-		$insertUsers->bindParam(':lname',$_POST['lname']);
-		$insertUsers->bindParam(':isadmin',$_POST['isadmin'],PDO::PARAM_BOOL);
-		$insertUsers->execute();
+		if($_POST['user']) {
+			if(!$_POST['isadmin']) {$_POST['isadmin']=0;}
+			$insertUsers->bindParam(':user',strtolower($_POST['user']));
+			$insertUsers->bindParam(':pass',password_hash($_POST['user'], PASSWORD_DEFAULT));
+			$insertUsers->bindParam(':fname',$_POST['fname']);
+			$insertUsers->bindParam(':lname',$_POST['lname']);
+			$insertUsers->bindParam(':isadmin',$_POST['isadmin'],PDO::PARAM_BOOL);
+			$insertUsers->execute();
+		}
 		$_SESSION['settings'] = 'users';
 	}
 	if(isset($_POST['resetUser'])) {
@@ -123,10 +121,7 @@
 				unlink(dirname(__DIR__).'/install.zip');
 				unlink(dirname(__DIR__).'/.gitignore');
 	
-				$file="<?php \n/*;\n[connection]\ndbname = \"".($_POST["dbname"]?:"")."\"\nhost = \"".($_POST["host"]?:"").
-				"\"\nusername = \"".($_POST["username"]?:"")."\"\npassword = \"".($_POST["password"]?:"")."\"\nbranch = \"".
-				($_POST["branch"]?:"")."\"\ncommit = \"".getBranchInfo(null,$_POST['branch'])['new']['commit']."\"\n*/\n?>";
-				file_put_contents("config.ini.php", $file);
+				updateConfig(($_POST['branch']?:''),getBranchInfo(null,$_POST['branch'])['new']['commit']);
 	
 				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
 				$_SESSION['results'] = 'Application Updated Successfully!';
@@ -142,27 +137,46 @@
 		unset($_SESSION['results']);
 		unset($_SESSION['run']);
 	}
-
-	//Pull branch info from GitHub
-	function getBranchInfo($commit = null,$branch = null) {
-		$json = getJSON("branches");
+	
+	//(Re)Create config.ini.php file
+	function updateConfig($branch = null, $commit = null) {
+		require('password.php');
+		file_put_contents('config.ini.php', 
+			"<?php \n/*;\n[connection]\n".
+				"dbname		= '" . ($_POST['dbname']?:'') . "'\n" .
+				"host 		= '" . ($_POST['host']?:'') . "'\n" .
+				"username 	= '" . ($_POST['username']?:'') . "'\n" .
+				"password 	= '" . ($_POST['password']?:'') . "'\n" .
+//				"password 	= '" . ($_POST['password']?password_hash($_POST['password'], PASSWORD_DEFAULT):'') . "'\n" .
+				"branch		= '" . $branch . "'\n" .
+				"commit		= '" . $commit . "'\n" .
+				"bitlyuser	= '" . '' . "'\n" .
+				"bitlyAPI	= '" . '' . "'\n" . 
+			"*/\n?>");
+	}
+	
+	//Iterate through retreived branch info - create/return multidimentional array
+	function getBranchInfo($commit = null, $branch = null) {
+		$json = getJSON('branches');
 		foreach($json as $item) {$info['branches'][$item['name']]=$item['commit']['sha'];}
 		if($commit) {
-			$json = getJSON("commits/".$commit);
-			$info['current']=array("commit"=>$json['sha'],"date"=>str_replace("Z","",str_replace("T"," ",$json['commit']['committer']['date'])),"notes"=>$json['commit']['message']);
+			$json = getJSON('commits/'.$commit);
+			$info['current']=array('commit'=>$json['sha'],'date'=>str_replace('Z','',str_replace('T',' ',$json['commit']['committer']['date'])),'notes'=>$json['commit']['message']);
 		}
 		if($branch) {
-			$json=getJSON("branches/".$branch);
-			$info['new']=array("name"=>$json['name'],"commit"=>$json['commit']['sha'],"date"=>str_replace("Z","",str_replace("T"," ",$json['commit']['commit']['committer']['date'])));
+			$json=getJSON('branches/'.$branch);
+			$info['new']=array('name'=>$json['name'],'commit'=>$json['commit']['sha'],'date'=>str_replace('Z','',str_replace('T',' ',$json['commit']['commit']['committer']['date'])));
 		}
 		if (($commit) && ($branch) && ($info['current']['commit']!=$info['new']['commit'])) {
-			$json = getJSON("compare/".$info['current']['commit']."...".$info['new']['commit']);
-			if ($json['status']=="ahead" || $json['status']=="diverged") {$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by']." commit(s) behind.</div><br/>";}
+			$json = getJSON('compare/'.$info['current']['commit'].'...'.$info['new']['commit']);
+			if ($json['status']=='ahead' || $json['status']=='diverged') {$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by'].' commit(s) behind.</div><br/>';}
 		}
 		return $info;
 	}
+	
+	//Pull branch info from GitHub
 	function getJSON($url) {
-		$url = "https://api.github.com/repos/dynamiccookies/dadsgarage/".$url;
+		$url = 'https://api.github.com/repos/dynamiccookies/dadsgarage/'.$url;
 		return json_decode(file_get_contents($url, false, stream_context_create(array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT'])))),true);
 	}
 
@@ -181,35 +195,77 @@
 		} catch(PDOException $e){echo $sql."<br>".$e->getMessage();}
 	} */
 ?>
-<body class="settings darkbg">
-	<div id="adminSidenav" class="adminsidenav"><?php require_once("menu.php");?></div>
-	<div id="adminMain">
-		<div class="adminContainer" onclick="myFunction(this)">
-		  <div class="bar1"></div>
-		  <div class="bar2"></div>
-		  <div class="bar3"></div>
+<body class='settings darkbg'>
+	<div id='adminSidenav' class='adminsidenav'><?php require_once('menu.php');?></div>
+	<div id='adminMain'>
+		<div class='adminContainer' onclick='myFunction(this)'>
+		  <div class='bar1'></div>
+		  <div class='bar2'></div>
+		  <div class='bar3'></div>
 		</div>
-		<div id="mainContainer" class="bgblue bord5 b-rad15 m-lrauto center m-top25">
-			<div class="settings-header">Settings</div><br/>
-			<button class="tablink width33" onclick="openTab('Database', this, 'left')"<?php echo (!$_SESSION['settings']?" id=\"defaultOpen\"":"");?>>Database</button>
-			<button class='tablink width33' 
+		<div id='mainContainer' class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
+			<div class='settings-header'>Settings</div><br/>
+			<button class='tablink width25'
+				<?php 
+					if(strpos($dbChk,'pass')){
+						echo "onclick=\"openTab('General', this, 'left')\"";
+						echo (!$_SESSION['settings']?" id='defaultOpen'":'');
+					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
+					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
+				?> 
+			>General</button>
+			<button class='tablink width25' onclick="openTab('Database', this, 'middle')"	
+				<?php echo ($_SESSION['settings']=='database'||!strpos($dbChk,'pass')?" id='defaultOpen'":'');?>
+			>Database</button>
+			<button class='tablink width25' 
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Owners', this, 'middle')\"";
-						echo ($_SESSION['settings']=='owners'?" id=\"defaultOpen\"":"");
+						echo ($_SESSION['settings']=='owners'?" id='defaultOpen'":'');
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
 			>Owners</button>
-			<button class='tablink width33'	
+			<button class='tablink width25'	
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Users', this, 'right')\"";
-						echo ($_SESSION['settings']=='users'?" id=\"defaultOpen\"":"");
+						echo ($_SESSION['settings']=='users'?" id='defaultOpen'":'');
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?>
 			>Users</button>
+			<div id='General' class='tabcontent'>
+				<form action='<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
+					<table class='settings'>
+						<tr><td>Bitly User Key:</td><td><input name='bitlyUser' type='textbox' value=''></td></tr>
+						<tr><td nowrap>Bitly API Key:</td><td><input name='bitlyAPI' type='textbox' value=''></td></tr>
+						<tr><td>Git Branch:</td><td style='text-align:left;'>
+							<select name='branch'>
+								<?php 
+									foreach(getBranchInfo()['branches'] as $branch=>$value) {
+										if(!$ini['branch']) {$ini['branch']='master';}
+										echo "<option value='$branch'".($branch==$ini['branch']?' selected':'').">$branch</option>";
+									}
+								?>
+							</select>
+						</td></tr>
+					</table><br/>
+					<?php 
+						if (isset($_SESSION['run'])) {
+							echo $_SESSION['results'].'<br/><br/>';
+							$_SESSION['run']+=1;
+						}
+						echo ($created_tables?($created_tables===true?
+							'Tables created successfully.<br/>':'There was a problem creating the table(s).<br/>'):'');
+						echo $userMessage;
+						echo getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:'';
+						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
+						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
+						if (dbExists) {echo $button?:'';}
+					?>
+				</form>
+			</div>
 			<div id="Database" class="tabcontent">
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
@@ -245,9 +301,14 @@
 			</div>
 			<div id="Owners" class="tabcontent">
 				<?php 
-					$oSelect->execute();
-					$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);
-					$owners=$oRows;
+					if($dbExists) {
+						if(tableExists('owners')){
+							require_once('include.php');
+							$oSelect->execute();
+							$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);
+							$owners=$oRows;
+						}
+					}
 				?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
@@ -287,13 +348,13 @@
 				}?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 					<table class="settings">
-						<tr><td>Username:</td><td><input name="user" type="textbox" value=""></td></tr>
+						<tr><td>Username:</td><td><input id='newUsername' name="user" type="textbox" value=""></td></tr>
 						<tr><td nowrap>First Name:</td><td><input name="fname" type="textbox" value=""></td></tr>
 						<tr><td>Last Name:</td><td><input name="lname" type="textbox" value=""></td></tr>
 						<tr><td>Is Admin?</td><td style="text-align:left;"><input name="isadmin" type="checkbox" value="1"></td></tr>
 						<tr><td colspan=2>*On add and reset, password is equal to the username</td></tr>
 					</table><br/>
-					<input type="Submit" name="userAdd" value="Add"><br/><br/>
+					<input type="submit" name="userAdd" id='userAdd' value="Add"><br/><br/>
 				</form>
 				<table id="users">
 					<tr><th>Username</th><th>First Name</th><th>Last Name</th><th>Is Admin?</th><th>Password</th><th>Delete</th></tr>
@@ -312,6 +373,7 @@
 								<td>
 									<form action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>' method='post'>
 										<input type='hidden' name='deleteID' value='<?php echo $user['id']?>'>
+										<input type='hidden' name='user' value='<?php echo $user['username']?>'>
 										<input type='submit' name='deleteUser' value='Delete'>
 									</form>
 								</td>
@@ -319,12 +381,47 @@
 					<?php }?>
 				</table>
 				<?php if(isset($_POST['resetUser'])) {?>
-					<br><span class="red bold"><?php echo $_POST['user'];?>'s password has been reset.</span>
-				<?php }?>
+					<br><span class='red bold'><?php echo $_POST['user'];?>'s password has been reset.</span>
+				<?php } elseif(isset($_POST['deleteUser'])) {?>
+					<br><span class='red bold'><?php echo $_POST['user'];?>'s account has been deleted.</span>
+				<?php } elseif(isset($_POST['userAdd'])) {
+							if($_POST['user']) {?>
+								<br><span class='red bold'><?php echo strtolower($_POST['user']);?>'s account has been created successfully.</span>
+							<?php } else {?>
+								<br><span class='red bold'>Username must not be blank.</span>
+				<?php 		}
+						}?>
 			</div>
 		</div>
 	</div>
 	<div class="commit"><?php echo $ini['commit'];?></div>
 	<script src="admin.js"></script>
-	<script>document.getElementById("defaultOpen").click();</script>
+	<script>
+		<?php
+			if($dbExists) {
+				if(tableExists('owners')) {
+					$selectAllUsernames = $db->prepare("SELECT username FROM users ORDER BY fname ASC");
+					$selectAllUsernames->execute();
+					$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
+				}
+			}
+		?>
+		var usernames = <?php echo json_encode($usernames);?>;
+		document.getElementById('defaultOpen').click();
+		$(document).ready(function() {
+			var txtUsername = $('#newUsername');
+			txtUsername.keyup(function(){
+				for (var i=0;usernames.length>i;i++) {
+					if (txtUsername.val().toLowerCase() == usernames[i].username) {
+						txtUsername.prop('title','Username exists').toggleClass('required',true);
+						$('#userAdd').prop('disabled', true);
+						break;
+					} else {
+						txtUsername.prop('title','').toggleClass('required',false);
+						$('#userAdd').prop('disabled', false);
+					}
+				}
+			});
+		});
+	</script>
 </body>

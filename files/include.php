@@ -28,25 +28,17 @@
 	$success = 'noscreen ';
 	$logout = $admin.'secure.php?logout=1';
 
-	//This is not needed. Use ternary operators on each statement (completed) and remove this if/else.
-	//if ($_GET['id']) {
-		//$where = "WHERE ID=".$_GET['id'];
-		//$pwhere = "WHERE vehicle=".$_GET['id'];
-		//$ewhere = "WHERE ID=".$_SESSION['eid'];
-	//} else {
-		//$where = '';
-		//$pwhere = '';
-		//$eid = '';
-	//}
-
 	//Users Table
 	$selectUsers = $db->prepare("SELECT * FROM users WHERE username=:name");
 	$selectAllUsers = $db->prepare("SELECT * FROM users ORDER BY fname ASC");
+	$selectAllUsernames = $db->prepare("SELECT username FROM users ORDER BY fname ASC");
 	$insertUsers = $db->prepare("INSERT INTO users (username,hash,fname,lname,isadmin) VALUES (:user,:pass,:fname,:lname,:isadmin)");
 	$updateUsers = $db->prepare("UPDATE users SET hash = :pass WHERE username = :name");
 	$deleteUser = $db->prepare("DELETE FROM users WHERE id=:id");
-	$selectAllUsers->execute();
-	$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
+	$selectAllUsers->execute();	//Not needed anymore? Moved to settings.php
+	$selectAllUsernames->execute();		//Should this be moved too?
+	$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);	//Not needed anymore? Moved to settings.php
+	$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);	//Should this be moved too?
 
 	//Vehicles - Prepare query to insert year, make, model, & trim as new record into database
 	$insert = $db->prepare("INSERT INTO vehicles (year,make,model,trim) VALUES (:year,:make,:model,:trim)");

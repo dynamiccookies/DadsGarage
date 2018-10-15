@@ -99,6 +99,7 @@
 		catch (PDOException $e) {return 'There was a problem: '.$e;}
 	}
 
+	//check if a specific table exists
 	function tableExists($table) {	//https://stackoverflow.com/questions/1717495/check-if-a-database-table-exists-using-php-pdo
 		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
 		// Set options
@@ -118,6 +119,8 @@
 			return false;
 		}
 	}
+
+	//create missing tables
 	function create_tables() {
 		$sql = "
 		CREATE TABLE IF NOT EXISTS `expenses` (`id` bigint(11) AUTO_INCREMENT NOT NULL,`vehicle` int(11) NOT NULL,
