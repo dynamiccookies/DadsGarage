@@ -1,10 +1,11 @@
 @media screen {
 	.noscreen {display: none;}
 	html, body { min-height: 100%;}
+	input[type="Submit"] {
+		padding: 5px 10px;
+	}
 	table.settings {
 		margin: auto;
-		border-top: 2px solid;
-		border-bottom: 2px solid;
 		padding: 15px;
 	}
 	table.settings td:first-child {
@@ -119,6 +120,10 @@
 	.width25 {width: 25%;}
 	.width33 {width: 33.333333%;}
 	.width50 {width: 50%;}
+	.borderupdown {
+		border-top: 2px solid;
+		border-bottom: 2px solid;
+	}
 	.tabcontent {
 		color: black;
 		display: none;
@@ -127,6 +132,11 @@
 		text-align: center;
 		background-color: silver;
 		border-radius: 0px 0px 10px 10px;
+	}
+	.hrsettings {
+		border: 1px solid black;
+		margin: 25px auto;
+		width: 80%;
 	}
 	#Description, #Internal {
 		padding-bottom:71px;

@@ -176,8 +176,17 @@
 	
 	//Pull branch info from GitHub
 	function getJSON($url) {
-		$url = 'https://api.github.com/repos/dynamiccookies/dadsgarage/'.$url;
-		return json_decode(file_get_contents($url, false, stream_context_create(array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT'])))),true);
+		$ch = curl_init();
+//		curl_setopt($ch, CURLOPT_HTTPHEADER, array("If-Modified-Since: ".gmdate('D, d M Y H:i:s \G\M\T',time()-60*60*60*60)));
+		curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/dynamiccookies/dadsgarage/' . $url); 
+		curl_setopt($ch, CURLOPT_USERAGENT, 'dynamiccookies/DadsGarage');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$results = json_decode(curl_exec($ch), true);
+		curl_close($ch);
+		return $results;
+
+//		$url = 'https://api.github.com/repos/dynamiccookies/dadsgarage/'.$url;
+//		return json_decode(file_get_contents($url, false, stream_context_create(array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT'])))),true);
 	}
 
 /* Testing Database Creation - Future Release
@@ -205,7 +214,7 @@
 		</div>
 		<div id='mainContainer' class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
 			<div class='settings-header'>Settings</div><br/>
-			<button class='tablink width25'
+			<button class='tablink width25' value='General'
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('General', this, 'left')\"";
@@ -213,11 +222,11 @@
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
-			>General</button>
-			<button class='tablink width25' onclick="openTab('Database', this, 'middle')"	
+			><span class='alt'>G</span>eneral</button>
+			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
 				<?php echo ($_SESSION['settings']=='database'||!strpos($dbChk,'pass')?" id='defaultOpen'":'');?>
-			>Database</button>
-			<button class='tablink width25' 
+			><span class='alt'>D</span>atabase</button>
+			<button class='tablink width25' value='Owners'
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Owners', this, 'middle')\"";
@@ -225,8 +234,8 @@
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
-			>Owners</button>
-			<button class='tablink width25'	
+			><span class='alt'>O</span>wners</button>
+			<button class='tablink width25'	value='Users'
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Users', this, 'right')\"";
@@ -234,10 +243,10 @@
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?>
-			>Users</button>
+			><span class='alt'>U</span>sers</button>
 			<div id='General' class='tabcontent'>
 				<form action='<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
-					<table class='settings'>
+					<table class='settings borderupdown'>
 						<tr><td>Bitly User Key:</td><td><input name='bitlyUser' type='textbox' value=''></td></tr>
 						<tr><td nowrap>Bitly API Key:</td><td><input name='bitlyAPI' type='textbox' value=''></td></tr>
 						<tr><td>Git Branch:</td><td style='text-align:left;'>
@@ -268,7 +277,7 @@
 			</div>
 			<div id="Database" class="tabcontent">
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
-					<table class="settings">
+					<table class='settings borderupdown'>
 						<tr><td>Host Address:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
 						<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
 						<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
@@ -315,9 +324,10 @@
 						<tr><td>Name:</td><td><input name="name" type="textbox" value=""></td></tr>
 						<tr><td>Phone:</td><td><input name="phone" type="textbox" value=""></td></tr>
 						<tr><td>Email:</td><td><input name="email" type="textbox" value=""></td></tr>
-					</table><br/>
-					<input type="Submit" name="ownerAdd" value="Add"><br/><br/>
+					</table>
+					<input type="Submit" name="ownerAdd" value="Add"><br/>
 				</form>
+				<hr class='hrsettings'>
 				<?php if (is_array($owners) || $owners instanceof Traversable) {?>
 					<table id="owners">
 						<tr><th>Name</th><th>Phone</th><th>Email</th><th>Delete</th></tr>
@@ -353,9 +363,10 @@
 						<tr><td>Last Name:</td><td><input name="lname" type="textbox" value=""></td></tr>
 						<tr><td>Is Admin?</td><td style="text-align:left;"><input name="isadmin" type="checkbox" value="1"></td></tr>
 						<tr><td colspan=2>*On add and reset, password is equal to the username</td></tr>
-					</table><br/>
-					<input type="submit" name="userAdd" id='userAdd' value="Add"><br/><br/>
+					</table>
+					<input type="submit" name="userAdd" id='userAdd' value="Add"><br/>
 				</form>
+				<hr class='hrsettings'>
 				<table id="users">
 					<tr><th>Username</th><th>First Name</th><th>Last Name</th><th>Is Admin?</th><th>Password</th><th>Delete</th></tr>
 					<?php foreach($users as $user) {?>
@@ -421,7 +432,16 @@
 						$('#userAdd').prop('disabled', false);
 					}
 				}
+			});			
+			$(document).keydown(function(e) {
+				if(e.altKey) {e.preventDefault();$('.alt').css('text-decoration','underline');}
+				if(e.altKey && e.keyCode == 71) {openTab('General', $("button[value='General']").get(0), 'left');}
+				else if(e.altKey && e.keyCode == 68) {
+					e.preventDefault();openTab('Database', $("button[value='Database']").get(0), 'middle');}
+				else if(e.altKey && e.keyCode == 79) {openTab('Owners', $("button[value='Owners']").get(0), 'middle');}
+				else if(e.altKey && e.keyCode == 85) {openTab('Users', $("button[value='Users']").get(0), 'right');}
 			});
+			$(document).keyup(function(e) {$('.alt').css('text-decoration','none');});
 		});
 	</script>
 </body>
