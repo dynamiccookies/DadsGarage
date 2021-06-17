@@ -1,10 +1,10 @@
 <?php
 	session_start();
 	define('included', TRUE);
-	require_once($files . 'header.php');
+	require_once('header.php');
 	ini_set('allow_url_fopen', 1);
 	$userMessage = '';
-	$debug = TRUE;
+	$debug       = TRUE;
 
 	//Create/update config.ini.php on page load/save
 	if (!file_exists('config.ini.php') || isset($_POST['Save'])) {
@@ -12,21 +12,21 @@
 	}
 
 	//Read config.ini.php
-	$ini = parse_ini_file('config.ini.php');
-	$_SESSION['inicommit']=$ini['commit'];
+	$ini                   = parse_ini_file('config.ini.php');
+	$_SESSION['inicommit'] = $ini['commit'];
 
 	//Test validity of database, host, & credentials
-	require_once('dbcheck.php');
-	$hostChk = (!$ini['host']?'Required Field':($array['connTest']?($array['connTest']!='Pass'?$array['connTest']:''):''));
-	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
 	if ($ini['host']) {
+		require_once('dbcheck.php');
+		$hostChk = ($array['connTest'] ? ($array['connTest']!='Pass' ? $array['connTest'] : ''):'');
 		$dbChk = (!$ini['dbname']?'Required Field':($array['dbTest']?($array['dbTest']!='Pass'?$array['dbTest']:''):''));
 		$dbChk = ($dbChk!=''?" class='required' title='".$dbChk."'":" class='pass' title='Database Connection Successful'");
 		$userChk = (!$ini['username']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
 		$userChk = ($userChk!=''?" class='required' title='".$userChk."'":" class='pass' title='Login Successful'");
 		$passChk = (!$ini['password']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
 		$passChk = ($passChk!=''?" class='required' title='".$passChk."'":" class='pass' title='Login Successful'");
-	}
+	} else {$hostChk = 'Required Field';}
+	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
 
 	//Check existence/create database tables
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
@@ -42,7 +42,7 @@
 		}
 
 		//Check existence/create default Admin user
-		$userExists=usersExist();
+		$userExists = usersExist();
  		if ($userExists===TRUE) {
 			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Click here to change the password.</a><br/><br/>";
 		} elseif (!$userExists===FALSE) {
@@ -51,7 +51,7 @@
 			} elseif (strpos($userExists,"Access denied for user '".$_POST['username']."'")) {$userMessage = "The username or password is incorrect.<br/><br/>";
 			} else {$userMessage = $userExists;}
 		} elseif($userExists===FALSE) {require("../admin/secure.php");}
-	}
+	} else {$dbExists = FALSE;}
 
 	if($dbExists) {if(tableExists("users")){require_once("include.php");}}
 	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
@@ -95,7 +95,7 @@
 	if (isset($_POST['Update'])) {
   		try {
 			$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
-			$repBranch = $_POST['branch']?:"master";
+			$repBranch = $_POST['branch']?:'master';
 			$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
 			$redirectURL = 'settings.php'; //Redirect URL - Leave blank for no redirect
 			$file = file_put_contents(dirname(__DIR__)."/install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
@@ -118,11 +118,12 @@
 					}
 				}
 				$zip->close();
-				unlink(dirname(__DIR__).'/install.zip');
-				unlink(dirname(__DIR__).'/.gitignore');
+				unlink(dirname(__DIR__) . '/install.zip');
+				unlink(dirname(__DIR__) . 'README.md');
+				unlink(dirname(__DIR__) . '/.gitignore');
 	
-				updateConfig(($_POST['branch']?:''),getBranchInfo(null,$_POST['branch'])['new']['commit']);
-	
+				updateConfig($repBranch,getBranchInfo(null,$repBranch)['new']['commit']);
+				
 				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
 				$_SESSION['results'] = 'Application Updated Successfully!';
 			} else {
@@ -137,17 +138,16 @@
 		unset($_SESSION['results']);
 		unset($_SESSION['run']);
 	}
-	
+
 	//(Re)Create config.ini.php file
 	function updateConfig($branch = null, $commit = null) {
 		require('password.php');
 		file_put_contents('config.ini.php', 
 			"<?php \n/*;\n[connection]\n".
-				"dbname		= '" . ($_POST['dbname']?:'') . "'\n" .
-				"host 		= '" . ($_POST['host']?:'') . "'\n" .
-				"username 	= '" . ($_POST['username']?:'') . "'\n" .
-				"password 	= '" . ($_POST['password']?:'') . "'\n" .
-//				"password 	= '" . ($_POST['password']?password_hash($_POST['password'], PASSWORD_DEFAULT):'') . "'\n" .
+				"dbname		= '" . ($_POST['dbname']   ?: '') . "'\n" .
+				"host 		= '" . ($_POST['host']     ?: '') . "'\n" .
+				"username 	= '" . ($_POST['username'] ?: '') . "'\n" .
+				"password 	= '" . ($_POST['password'] ?: '') . "'\n" .
 				"branch		= '" . $branch . "'\n" .
 				"commit		= '" . $commit . "'\n" .
 				"bitlyuser	= '" . '' . "'\n" .
@@ -157,7 +157,11 @@
 	
 	//Iterate through retreived branch info - create/return multidimentional array
 	function getBranchInfo($commit = null, $branch = null) {
-		$json = getJSON('branches');
+		if (!$_SESSION['json']) {$_SESSION['json'] = getJSON('branches');}
+		$json = $_SESSION['json'];
+
+		echo "<script>console.log('Commit: ".$commit." - Branch: ".$branch."');var json = ".json_encode($json).";console.log(json);</script>";
+
 		foreach($json as $item) {$info['branches'][$item['name']]=$item['commit']['sha'];}
 		if($commit) {
 			$json = getJSON('commits/'.$commit);
@@ -177,32 +181,13 @@
 	//Pull branch info from GitHub
 	function getJSON($url) {
 		$ch = curl_init();
-//		curl_setopt($ch, CURLOPT_HTTPHEADER, array("If-Modified-Since: ".gmdate('D, d M Y H:i:s \G\M\T',time()-60*60*60*60)));
 		curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/dynamiccookies/dadsgarage/' . $url); 
 		curl_setopt($ch, CURLOPT_USERAGENT, 'dynamiccookies/DadsGarage');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$results = json_decode(curl_exec($ch), true);
 		curl_close($ch);
 		return $results;
-
-//		$url = 'https://api.github.com/repos/dynamiccookies/dadsgarage/'.$url;
-//		return json_decode(file_get_contents($url, false, stream_context_create(array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT'])))),true);
 	}
-
-/* Testing Database Creation - Future Release
-	if (substr_count($dbChk,"does not exist.")>0) {
-		$mkDB="<form action=\"<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>\" method=\"post\"><input type=\"Submit\" name=\"mkDB\" value=\"Create Database\"></form>";
-	}
-	if ($_POST['mkDB']) {
-		try {
-			$conn = new PDO("mysql:host=".$ini['host'].";dbname=".$ini['dbname'], $ini["username"], $ini["password"]);
-			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "CREATE DATABASE ".$ini['dbname'];
-			// use exec() because no results are returned
-			$conn->exec($sql);
-			echo "Database created successfully<br>";
-		} catch(PDOException $e){echo $sql."<br>".$e->getMessage();}
-	} */
 ?>
 <body class='settings darkbg'>
 	<div id='adminSidenav' class='adminsidenav'><?php require_once('menu.php');?></div>
@@ -271,7 +256,7 @@
 						echo getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:'';
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
 						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
-						if (dbExists) {echo $button?:'';}
+						if ($dbExists) {echo $button?:'';}
 					?>
 				</form>
 			</div>
@@ -280,8 +265,8 @@
 					<table class='settings borderupdown'>
 						<tr><td>Host Address:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
 						<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-						<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>"></td></tr>
-						<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>"></td></tr>
+						<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>" autocomplete='username'></td></tr>
+						<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>" autocomplete='current-password'></td></tr>
 						<tr><td>Git Branch:</td><td style="text-align:left;">
 							<select name="branch">
 								<?php 
@@ -304,7 +289,7 @@
 						echo getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"";
 						echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
 						echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
-						if (dbExists) {echo $button?:"";}
+						if ($dbExists) {echo $button?:"";}
 					?>
 				</form>
 			</div>
