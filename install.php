@@ -17,7 +17,7 @@
 	//-------------DO NOT EDIT BELOW------------------------------
 	ini_set('allow_url_fopen', 1);
 	$repository = 'https://github.com/' . $repo . '/';
-	$repBranch  = $_POST['branches'] ?: ($defaultBranch ?: 'master');
+	$repBranch  = (isset($_POST['branches']) ? $_POST['branches'] : ($defaultBranch ?: 'master'));
 	$source     = substr($repo, strpos($repo, '/') + 1) . '-' . $repBranch;
 
 	// Pull list of branches from GitHub for install
@@ -29,7 +29,7 @@
 	curl_close($ch);
 
 	// Run install if button clicked
-	if ($_POST['branches']) {
+	if (isset($_POST['branches'])) {
 		
 		// Store selected branch into session variable for use later
 		$_SESSION['branch'] = $repBranch;
