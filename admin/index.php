@@ -1,5 +1,5 @@
 <?php
-	session_start();
+	if(!isset($_SESSION)){session_start();} 
 	include("secure.php");
 //	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=../portal.php\">");}
 	if(isset($_POST['submit'])) {

@@ -1,5 +1,5 @@
 <?php
-	session_start();
+	if(!isset($_SESSION)){session_start();} 
 	define('included', TRUE);
 	require_once('header.php');
 	ini_set('allow_url_fopen', 1);
