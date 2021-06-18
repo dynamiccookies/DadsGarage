@@ -155,7 +155,8 @@
 		}
 	}
 	if (isset($_POST['access_login'])) {
-		$selectUsers->bindParam(':name',strtolower($_POST['access_login']));
+		$lowercase = strtolower($_POST['access_login']);
+		$selectUsers->bindParam(':name',$lowercase);
 		$selectUsers->execute();
 		$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
 
