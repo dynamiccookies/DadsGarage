@@ -159,11 +159,12 @@
 		$selectUsers->bindParam(':name',$lowercase);
 		$selectUsers->execute();
 		$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
+		$account = $account[0];
 
-		if (!password_verify($_POST['access_password'],$account[0]['hash'])) {
+		if (!password_verify($_POST['access_password'],$account['hash'])) {
 			showLoginPasswordProtect('Incorrect username and/or password.');
 		} elseif (
-			password_verify($_POST['access_password'],$account[0]['hash']) && 
+			password_verify($_POST['access_password'],$account['hash']) && 
 			$_POST['access_login'] == $_POST['access_password'] &&
 			(!isset($_POST['new_password']) || $_POST['new_password'] == '')
 		) {
@@ -174,12 +175,13 @@
 				$updateUsers->bindParam(':name',strtolower($_POST['access_login']));
 				$updateUsers->execute();
 			}
-			$_SESSION['userid']=$account[0]['id'];
-			$_SESSION['isadmin']=$account[0]['isadmin'];
-			$_SESSION['fname']=$account[0]['fname'];
-			$_SESSION['lname']=$account[0]['lname'];
+			$_SESSION['userid']        = $account['id'];
+			$_SESSION['isadmin']       = $account['isadmin'];
+			$_SESSION['fname']         = $account['fname'];
+			$_SESSION['lname']         = $account['lname'];
 			$_SESSION['LAST_ACTIVITY'] = time(); // update last activity time stamp
-			$_SESSION['LoggedIn'] = true;
+			$_SESSION['LoggedIn']      = true;
+
 			unset($_POST['access_login']);
 			unset($_POST['access_password']);
 			unset($_POST['Submit']);
