@@ -1,6 +1,7 @@
 <?php
-	require('../files/password.php');
-	require('../files/include.php');
+	require '../files/password.php';
+	require '../files/include.php';
+	
 	if(isset($_GET['logout'])) {
 		echo "<meta http-equiv=refresh content=\"0; URL=" . (isset($_SESSION['isadmin']) ? "." : "..\\") . "\">";
 		session_unset();     // unset $_SESSION variable for the run-time 

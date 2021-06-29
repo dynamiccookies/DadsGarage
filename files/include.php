@@ -7,9 +7,9 @@
 			$path = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/'));
 			$path = substr($path, strrpos($path, '/')+1);
 			if ($path=='admin') {$path='../files/settings.php';} elseif ($path=='files') {$path='settings.php';} else {$path='files/settings.php';}
-			echo "<meta http-equiv=refresh content=\"5; URL=".$path."\">";
+			echo "<meta http-equiv=refresh content=\"5; URL=" . $path . "\">";
 			echo "<p style='font-weight:bold;font-size:24px;color:red;'>Settings are missing!<br/>Redirecting there now.</p>";
-			exit(1);
+			exit();
 		}
 	});
 	
@@ -22,8 +22,8 @@
 	
 	define('included', TRUE);
 
-	require_once($files.'header.php');
-	require($files.'conn.php');
+	require_once($files . 'header.php');
+	require($files . 'conn.php');
 
 	$success = 'noscreen ';
 	$logout = $admin.'secure.php?logout=1';
@@ -44,7 +44,6 @@
 	$insert = $db->prepare("INSERT INTO vehicles (year,make,model,trim) VALUES (:year,:make,:model,:trim)");
 	
 	//Vehicles - Prepare query to update all fields (except purchprice and purchdate) where ID=$_GET['ID']
-	//$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
 	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes " . (isset($_GET['id']) ? "WHERE ID=" . $_GET['id'] : ''));
 
 	if (isset($_GET['id'])){
@@ -68,10 +67,10 @@
 	$oSelect->execute();																			//Execute query
 	$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);													//Fill array with results
 
-		$oUpdate->execute();																			//Execute query
-		echo "<meta http-equiv=refresh content=\"0; URL=http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'].'?id='.$_GET['id'].'">';
 	if ((isset($_GET['ophone']) || isset($_GET['oemail'])) && isset($_GET['id'])) {
 		$oUpdate = $db->prepare("UPDATE owners SET email='" . (isset($_GET['oemail']) ? $_GET['oemail'] : '') . "',phone='" . (isset($_GET['ophone']) ? $_GET['ophone'] : '') . "' WHERE id=" . $rows[0]['owner']);		//Create query to update owners
+		$oUpdate->execute();	//Execute query
+		echo "<meta http-equiv=refresh content=\"0; URL=http://" . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] . '?id=' . $_GET['id'] . '">';
 	}
 	
 	//Photos Table

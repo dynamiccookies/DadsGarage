@@ -1,19 +1,23 @@
 <?php
+
 	if(!isset($_SESSION)){session_start();} 
-	define('included', TRUE);
-	require_once('header.php');
 	ini_set('allow_url_fopen', 1);
-	$userMessage = '';
+
+	define('included', TRUE);
+
+	require_once('header.php');
 
 	//Create/update config.ini.php on page load/save
-	if (!file_exists('config.ini.php') || isset($_POST['Save'])) {
-		updateConfig(($_POST['branch']?:($_SESSION['branch']?:'')),($_SESSION['inicommit']?:''));
+	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
+
+		updateConfig(($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), ($_SESSION['inicommit'] ?: ''));
 	}
 
-	//Read config.ini.php
+	//Read config.ini.php and set variables
 	$ini                   = parse_ini_file('config.ini.php');
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
+	$userMessage           = '';
 
 	//Test validity of database, host, & credentials
 	if ($ini['host']) {
@@ -167,12 +171,9 @@
 	function getBranchInfo($commit = null, $branch = null) {
 		if (!isset($_SESSION['json'])) {$_SESSION['json'] = getJSON('branches');}
 		$json = $_SESSION['json'];
-
-		echo "<script>console.log('Commit: ".$commit." - Branch: ".$branch."');var json = ".json_encode($json).";console.log(json);</script>";
-
 		foreach($json as $item) {$info['branches'][$item['name']]=$item['commit']['sha'];}
 		if($commit) {
-			$json = getJSON('commits/'.$commit);
+			$json = getJSON('commits/' . $commit);
 			$info['current']=array('commit'=>$json['sha'],'date'=>str_replace('Z','',str_replace('T',' ',$json['commit']['committer']['date'])),'notes'=>$json['commit']['message']);
 		}
 		if($branch) {
@@ -281,8 +282,8 @@
 							echo $_SESSION['results'].'<br/><br/>';
 							$_SESSION['run']+=1;
 						}
-							'Tables created successfully.<br/>':'There was a problem creating the table(s).<br/>'):'');
 						echo (isset($createdTables) ? ($createdTables === true ? 
+							'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $userMessage;
 						$aheadBy = getBranchInfo($ini['commit'],$ini['branch']);
 						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
@@ -315,8 +316,8 @@
 							echo $_SESSION['results']."<br/><br/>";
 							$_SESSION['run']+=1;
 						}
-							"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
 						echo (isset($created_tables) ? ($created_tables === true ?
+							'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $userMessage;
 						$aheadBy = getBranchInfo($ini['commit'],$ini['branch']);
 						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
@@ -429,10 +430,10 @@
 		<?php
 			if($dbExists) {
 				if(tableExists('owners')) {
-					$selectAllUsernames = $db->prepare("SELECT username FROM users ORDER BY fname ASC");
-					$selectAllUsernames->execute();
-					$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
 				}
+				$selectAllUsernames = $db->prepare("SELECT username FROM users ORDER BY fname ASC");
+				$selectAllUsernames->execute();
+				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
 			}
 		?>
 
