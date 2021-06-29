@@ -70,9 +70,9 @@
 	}
 	$conn = null;
 
-	//check users exist
- 	function usersExist() {
 		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
+	// Check if admin exists
+ 	function adminExists() {
 		// Set options
 		$options = array(
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -81,18 +81,19 @@
 		);
 		//Create a new PDO instance
 		try {
-			$conn = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
-			$temp = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
-			$result = $temp->fetchColumn();
-			if($result==0) {
- 				$createUser = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) VALUES ('admin','".password_hash('admin', PASSWORD_DEFAULT)."','System','Account',1)");
-				$createUser->execute(); 
+			$conn        = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
+			$adminExists = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
+			$adminExists = $adminExists->fetchColumn();
+			if($adminExists == 0) {
+ 				$createAdmin = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) VALUES ('admin','" . 
+					password_hash('admin', PASSWORD_DEFAULT) . "','System','Account',1)");
+				$createAdmin->execute(); 
 				return TRUE;
 			} else {
-   				$selectUsers = $conn->prepare("SELECT * FROM users WHERE username='admin'");
-				$selectUsers->execute();
-				$account = $selectUsers->fetchAll(PDO::FETCH_ASSOC);
-				if(password_verify('admin',$account[0]['hash'])) {return TRUE;}
+   				$findAdmin = $conn->prepare("SELECT * FROM users WHERE username='admin'");
+				$findAdmin->execute();
+				$findAdmin = $findAdmin->fetchAll(PDO::FETCH_ASSOC);
+				if(!empty($findAdmin) && password_verify('admin',$findAdmin[0]['hash'])) {return TRUE;}
 				else {return FALSE;}
  				return 'How did you get here?';
 			}
@@ -122,7 +123,7 @@
 	}
 
 	//create missing tables
-	function create_tables() {
+	function createTables() {
 		$sql = "
 		CREATE TABLE IF NOT EXISTS `expenses` (`id` bigint(11) AUTO_INCREMENT NOT NULL,`vehicle` int(11) NOT NULL,
 		`date` date DEFAULT NULL,`description` mediumtext NOT NULL,`cost` decimal(10,2) NOT NULL,PRIMARY KEY (`id`));

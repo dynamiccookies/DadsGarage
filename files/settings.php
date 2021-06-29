@@ -28,12 +28,12 @@
 	} else {$hostChk = 'Required Field';}
 	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
 
-	//Check existence/create database tables
+	// Check existence/create database tables
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
 		$dbExists = TRUE;
 		if (!tableExists('customers')	|| !tableExists('expenses') || !tableExists('files') || !tableExists('owners') || 
 			!tableExists('photos')		|| !tableExists('users')	|| !tableExists('vehicles')) {
-			if ($_POST['createTables']){$created_tables = create_tables();
+			if ($_POST['createTables']){$createdTables = createTables();
 			} else {
 				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
 				$dbChk = str_replace('pass','warn',$dbChk);
@@ -41,16 +41,16 @@
 			}
 		}
 
-		//Check existence/create default Admin user
-		$userExists = usersExist();
- 		if ($userExists===TRUE) {
-			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Click here to change the password.</a><br/><br/>";
-		} elseif (!$userExists===FALSE) {
-			if (strpos($userExists,"Base table or view not found")!==FALSE) {
+		// Create/check default Admin user
+		$adminExists = adminExists();
+ 		if ($adminExists === TRUE) {
+			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
+		} elseif (!$adminExists === FALSE) {
+			if (strpos($adminExists,"Base table or view not found") !== FALSE) {
 				$userMessage = "The Users table does not exist.<br/>Please click the Create Table(s) button to create it.<br/><br/>";
-			} elseif (strpos($userExists,"Access denied for user '".$_POST['username']."'")) {$userMessage = "The username or password is incorrect.<br/><br/>";
-			} else {$userMessage = $userExists;}
-		} elseif($userExists===FALSE) {require("../admin/secure.php");}
+			} elseif (strpos($adminExists,"Access denied for user '" . $_POST['username'] . "'")) {$userMessage = "The username or password is incorrect.<br/><br/>";
+			} else {$userMessage = $adminExists;}
+		} elseif($adminExists === FALSE) {require("../admin/secure.php");}
 	} else {$dbExists = FALSE;}
 
 	if($dbExists) {if(tableExists("users")){require_once("include.php");}}
