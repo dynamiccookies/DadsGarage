@@ -45,14 +45,17 @@
 	
 	//Vehicles - Prepare query to update all fields (except purchprice and purchdate) where ID=$_GET['ID']
 	//$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".$where);
-	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes ".($_GET['id']?"WHERE ID=".$_GET['id']:''));
-	$updateDesc = $db->prepare("UPDATE vehicles SET pubnotes=:pubnotes WHERE ID=".$_GET['id']);
-	$updateInternal = $db->prepare("UPDATE vehicles SET intnotes=:intnotes WHERE ID=".$_GET['id']);
+	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes " . (isset($_GET['id']) ? "WHERE ID=" . $_GET['id'] : ''));
+
+	if (isset($_GET['id'])){
+		$updateDesc = $db->prepare("UPDATE vehicles SET pubnotes=:pubnotes WHERE ID=" . $_GET['id']);
+		$updateInternal = $db->prepare("UPDATE vehicles SET intnotes=:intnotes WHERE ID=" . $_GET['id']);
+	}
 	
 	//Vehicles - Prepare query to select (if $_GET[;ID;] exists, return all info for only that vehicle; else return all info for all vehicles) [may want to break into two 
 	//select statements for efficiency]
 	//$select = $db->prepare("SELECT * FROM vehicles ".$where." ORDER BY year ASC");
-	$select = $db->prepare("SELECT * FROM vehicles ".($_GET['id']?"WHERE ID=".$_GET['id']:'')." ORDER BY year ASC");
+	$select = $db->prepare("SELECT * FROM vehicles " . (isset($_GET['id']) ? "WHERE ID=" . $_GET['id'] : '') . " ORDER BY year ASC");
 	$select->execute();																//Execute select query
 	$rows = $select->fetchAll(PDO::FETCH_ASSOC);									//Fill array with select query results
 
@@ -65,10 +68,10 @@
 	$oSelect->execute();																			//Execute query
 	$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);													//Fill array with results
 
-	if (($_GET['ophone'] || $_GET['oemail']) && isset($_GET['id'])) {
-		$oUpdate = $db->prepare("UPDATE owners SET email='".$_GET['oemail']."',phone='".$_GET['ophone']."' WHERE id=".$rows[0]['owner']);		//Create query to update owners
 		$oUpdate->execute();																			//Execute query
 		echo "<meta http-equiv=refresh content=\"0; URL=http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'].'?id='.$_GET['id'].'">';
+	if ((isset($_GET['ophone']) || isset($_GET['oemail'])) && isset($_GET['id'])) {
+		$oUpdate = $db->prepare("UPDATE owners SET email='" . (isset($_GET['oemail']) ? $_GET['oemail'] : '') . "',phone='" . (isset($_GET['ophone']) ? $_GET['ophone'] : '') . "' WHERE id=" . $rows[0]['owner']);		//Create query to update owners
 	}
 	
 	//Photos Table
@@ -78,18 +81,31 @@
 	$pDelete = $db->prepare("DELETE FROM photos WHERE id=:pid");									//Create query to delete photo
 	$pSelect1 = $db->prepare("SELECT * FROM photos WHERE vehicle=:vid ORDER BY filename");			//Select first photo
 	//$pSelect = $db->prepare("SELECT * FROM photos ".$pwhere." ORDER BY filename ASC");				//Create query to select photos for vehicle ID
-	$pSelect = $db->prepare("SELECT * FROM photos ".($_GET['id']?"WHERE vehicle=".$_GET['id']:'')." ORDER BY filename ASC");	//Create query to select photos for vehicle ID
-	if ($_GET['id']) {$pSelect->execute();																			//Execute query
-	$pRows = $pSelect->fetchAll(PDO::FETCH_ASSOC);}													//Fill array with results
+	$pSelect = $db->prepare("SELECT * FROM photos " . (isset($_GET['id']) ? "WHERE vehicle=" . $_GET['id'] : '') . " ORDER BY filename ASC");	//Create query to select photos for vehicle ID
+	if (isset($_GET['id'])) {
+
+		//Execute query
+		$pSelect->execute();
+
+		//Fill array with results
+		$pRows = $pSelect->fetchAll(PDO::FETCH_ASSOC);
+	}
 	
 	//Files Table
 	$finsert = $db->prepare("INSERT INTO files (vehicle,filename) VALUES (:vehicle,:filename)");	//Create query to insert photo
 	$fUpdate = $db->prepare("UPDATE files SET filename = :filename WHERE id = :fid");
 	$fDelete = $db->prepare("DELETE FROM files WHERE id=:fid");										//Create query to delete photo
 	//$fSelect = $db->prepare("SELECT * FROM files ".$pwhere." ORDER BY filename ASC");				//Create query to select photos for vehicle ID
-	$fSelect = $db->prepare("SELECT * FROM files ".($_GET['id']?"WHERE vehicle=".$_GET['id']:'')." ORDER BY filename ASC");				//Create query to select photos for vehicle ID
-	if ($_GET['id']) {$fSelect->execute();																			//Execute query
-	$fRows = $fSelect->fetchAll(PDO::FETCH_ASSOC);}													//Fill array with results
+	$fSelect = $db->prepare("SELECT * FROM files " . (isset($_GET['id']) ? "WHERE vehicle=" . $_GET['id'] : '') . " ORDER BY filename ASC");				//Create query to select photos for vehicle ID
+
+	if (isset($_GET['id'])) {
+
+		//Execute query
+		$fSelect->execute();
+
+		//Fill array with results
+		$fRows = $fSelect->fetchAll(PDO::FETCH_ASSOC);
+	}
 	
 	//Expenses Table
 	$eFields = array('vehicle,date,description,cost');
@@ -97,11 +113,11 @@
 	$eUpdate = $db->prepare("UPDATE expenses SET date = :date, description = :desc, cost = :cost WHERE id = :eid");
 	$eDelete = $db->prepare("DELETE FROM expenses WHERE id=:eid");									//Create query to delete photo
 	//$eSelect = $db->prepare("SELECT * FROM expenses ".$pwhere." ORDER BY date ASC");				//Create query to select photos for vehicle ID
-	$eSelect = $db->prepare("SELECT * FROM expenses ".($_GET['id']?"WHERE vehicle=".$_GET['id']:'')." ORDER BY date ASC");				//Create query to select photos for vehicle ID
-	if ($_GET['id']) {$eSelect->execute();															//Execute query
+	$eSelect = $db->prepare("SELECT * FROM expenses " . (isset($_GET['id']) ? "WHERE vehicle=" . $_GET['id'] : '') . " ORDER BY date ASC");				//Create query to select photos for vehicle ID
+	if (isset($_GET['id'])) {$eSelect->execute();															//Execute query
 	$eRows = $eSelect->fetchAll(PDO::FETCH_ASSOC);}													//Fill array with results
 	//$eTots = $db->prepare("SELECT SUM(cost) as 'Total' FROM expenses ".$pwhere);
-	$eTots = $db->prepare("SELECT SUM(cost) as 'Total' FROM expenses ".($_GET['id']?"WHERE vehicle=".$_GET['id']:''));
+	$eTots = $db->prepare("SELECT SUM(cost) as 'Total' FROM expenses " . (isset($_GET['id']) ? "WHERE vehicle=" . $_GET['id'] : ''));
 	$eTots->execute();
 	$eTotal = $eTots->fetchAll(PDO::FETCH_ASSOC);
 	?>

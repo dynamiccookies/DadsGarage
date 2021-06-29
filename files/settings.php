@@ -165,7 +165,7 @@
 	
 	//Iterate through retreived branch info - create/return multidimentional array
 	function getBranchInfo($commit = null, $branch = null) {
-		if (!$_SESSION['json']) {$_SESSION['json'] = getJSON('branches');}
+		if (!isset($_SESSION['json'])) {$_SESSION['json'] = getJSON('branches');}
 		$json = $_SESSION['json'];
 
 		echo "<script>console.log('Commit: ".$commit." - Branch: ".$branch."');var json = ".json_encode($json).";console.log(json);</script>";
@@ -211,19 +211,19 @@
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('General', this, 'left')\"";
-						echo (!$_SESSION['settings']?" id='defaultOpen'":'');
+						echo (!isset($_SESSION['settings'])?" id='defaultOpen'":'');
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
 			><span class='alt'>G</span>eneral</button>
 			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
-				<?php echo ($_SESSION['settings']=='database'||!strpos($dbChk,'pass')?" id='defaultOpen'":'');?>
+				<?php echo ((isset($_SESSION['settings']) && $_SESSION['settings']=='database') || !strpos($dbChk,'pass') ? " id='defaultOpen'" : '');?>
 			><span class='alt'>D</span>atabase</button>
 			<button class='tablink width25' value='Owners'
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Owners', this, 'middle')\"";
-						echo ($_SESSION['settings']=='owners'?" id='defaultOpen'":'');
+						echo ((isset($_SESSION['settings']) && $_SESSION['settings']=='owners') ? " id='defaultOpen'" : '');
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
@@ -232,7 +232,7 @@
 				<?php 
 					if(strpos($dbChk,'pass')){
 						echo "onclick=\"openTab('Users', this, 'right')\"";
-						echo ($_SESSION['settings']=='users'?" id='defaultOpen'":'');
+						echo ((isset($_SESSION['settings']) && $_SESSION['settings']=='users') ? " id='defaultOpen'" : '');
 					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?>
@@ -281,13 +281,14 @@
 							echo $_SESSION['results'].'<br/><br/>';
 							$_SESSION['run']+=1;
 						}
-						echo ($created_tables?($created_tables===true?
 							'Tables created successfully.<br/>':'There was a problem creating the table(s).<br/>'):'');
+						echo (isset($createdTables) ? ($createdTables === true ? 
 						echo $userMessage;
-						echo getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:'';
+						$aheadBy = getBranchInfo($ini['commit'],$ini['branch']);
+						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
 						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
-						if ($dbExists) {echo $button?:'';}
+						if ($dbExists) {echo (isset($button) ? $button : '');}
 					?>
 				</form>
 			</div>
@@ -314,13 +315,14 @@
 							echo $_SESSION['results']."<br/><br/>";
 							$_SESSION['run']+=1;
 						}
-						echo ($created_tables?($created_tables===true?
 							"Tables created successfully.<br/>":"There was a problem creating the table(s).<br/>"):"");
+						echo (isset($created_tables) ? ($created_tables === true ?
 						echo $userMessage;
-						echo getBranchInfo($ini['commit'],$ini['branch'])['new']['aheadby']?:"";
+						$aheadBy = getBranchInfo($ini['commit'],$ini['branch']);
+						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
 						echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
 						echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
-						if ($dbExists) {echo $button?:"";}
+						if ($dbExists) {echo (isset($button) ? $button : '');}
 					?>
 				</form>
 			</div>
@@ -433,7 +435,8 @@
 				}
 			}
 		?>
-		var usernames = <?php echo json_encode($usernames);?>;
+
+		var usernames = <?php echo (isset($usernames) ? json_encode($usernames) : "''");?>;
 		$(document).ready(function() {
 			var txtUsername = $('#newUsername');
 			document.getElementById('defaultOpen').click();

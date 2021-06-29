@@ -2,7 +2,7 @@
 	require('../files/password.php');
 	require('../files/include.php');
 	if(isset($_GET['logout'])) {
-		echo "<meta http-equiv=refresh content=\"0; URL=".($_SESSION['isadmin']?".":"portal.php")."\">";
+		echo "<meta http-equiv=refresh content=\"0; URL=" . (isset($_SESSION['isadmin']) ? "." : "..\\") . "\">";
 		session_unset();     // unset $_SESSION variable for the run-time 
 		session_destroy();   // destroy session data in storage
 	}
@@ -187,7 +187,7 @@
 			unset($_POST['Submit']);
 		}
 	} else {
-		if ((isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) || !$_SESSION['LoggedIn']) {
+		if ((isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) || !isset($_SESSION['LoggedIn'])) {
 			// last request was more than 30 minutes ago
 			if($_SESSION) {session_unset(); session_destroy();}	// destroy session data in storage
 			showLoginPasswordProtect('');

@@ -44,8 +44,8 @@
 		$array['credTest'] = 'Fail - Check '.($array['connTest']!='Pass'?'the host address, ':'').'your username & password.';
 	}
 	//check if DB exists
-	if(isset($dbName)){
 		$dsn = 'mysql:host='.$server.';dbname='.$dbName.';port='.$port;
+	if(!empty($dbName)){
 		// Set options
 		$options = array(
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
