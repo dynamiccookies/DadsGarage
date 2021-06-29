@@ -4,7 +4,6 @@
 	require_once('header.php');
 	ini_set('allow_url_fopen', 1);
 	$userMessage = '';
-	$debug       = TRUE;
 
 	//Create/update config.ini.php on page load/save
 	if (!file_exists('config.ini.php') || isset($_POST['Save'])) {
@@ -13,6 +12,7 @@
 
 	//Read config.ini.php
 	$ini                   = parse_ini_file('config.ini.php');
+	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
 
 	//Test validity of database, host, & credentials
@@ -142,16 +142,24 @@
 	//(Re)Create config.ini.php file
 	function updateConfig($branch = null, $commit = null) {
 		require('password.php');
+
+		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
+
+        if(isset($_POST['debug']))    {$debug = $_POST['debug'];}
+        elseif(isset($_ini['debug'])) {$debug = $ini['debug'];}
+        else                          {$debug = 'false';}
+
 		file_put_contents('config.ini.php', 
-			"<?php \n/*;\n[connection]\n".
-				"dbname		= '" . ($_POST['dbname']   ?: '') . "'\n" .
-				"host 		= '" . ($_POST['host']     ?: '') . "'\n" .
-				"username 	= '" . ($_POST['username'] ?: '') . "'\n" .
-				"password 	= '" . ($_POST['password'] ?: '') . "'\n" .
+			"<?php \n/*;\n[connection]\n" .
+				"dbname		= '" . ($_POST['dbname']   ?: (isset($ini['dbname'])   ? $ini['dbname']   : ''))      . "'\n" .
+				"host 		= '" . ($_POST['host']     ?: (isset($ini['host'])     ? $ini['host']     : ''))      . "'\n" .
+				"username 	= '" . ($_POST['username'] ?: (isset($ini['username']) ? $ini['username'] : ''))      . "'\n" .
+				"password 	= '" . ($_POST['password'] ?: (isset($ini['password']) ? $ini['password'] : ''))      . "'\n" .
+				"debug		= '" . $debug  . "'\n" .
 				"branch		= '" . $branch . "'\n" .
 				"commit		= '" . $commit . "'\n" .
-				"bitlyuser	= '" . '' . "'\n" .
-				"bitlyAPI	= '" . '' . "'\n" . 
+				"bitlyuser	= '" . ''      . "'\n" .
+				"bitlyAPI	= '" . ''      . "'\n" . 
 			"*/\n?>");
 	}
 	
@@ -244,6 +252,29 @@
 								?>
 							</select>
 						</td></tr>
+						<tr>
+							<td>Debug Mode:</td>
+							<td style='text-align:left;'>
+                                <input type="hidden" name="debug" value="<?php 
+								        if($_SESSION['debug'] === true) {
+								            echo '1';
+								        } elseif($_SESSION['debug'] === false) {
+								            echo '0';
+								        }
+							        ?>"
+                                ><input type='checkbox' onclick="this.previousSibling.value=1-this.previousSibling.value"
+								    <?php 
+								        if($_SESSION['debug'] === true) {
+								            echo 'value=true checked';
+								        } elseif($_SESSION['debug'] === false) {
+								            echo 'value=false unchecked';
+								        } else {
+								            echo "phpvalue=" . $ini['debug'];
+								        }
+							        ?>
+						        >
+							</td>
+						</tr>
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {

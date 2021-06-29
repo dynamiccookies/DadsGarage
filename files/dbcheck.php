@@ -5,13 +5,13 @@
 		exit;
 	}
 	require('password.php');
-	ini_set('display_errors', $debug);
 	$server = $ini['host'];
 	$port = 3306;
 	$dbName = $ini['dbname'];
 	$dbUsername = $ini['username'];
 	$dbPassword = $ini['password'];
 	$array = array();
+	ini_set('display_errors', $_SESSION['debug']);
 
 /* //	Testing create_conn function - Future Release
 	function create_conn($sql) {
@@ -66,6 +66,7 @@
 		elseif ($db_selected == 0 && $array['credTest'] == 'Pass') {$array['dbTest'] = 'Fail - '.$dbName.' does not exist.';}
 		elseif ($db_selected == 0 && $array['credTest'] != 'Pass' && $array['connTest'] == 'Pass') {$array['dbTest'] = 'Fail - Check your username & password.';}
 		elseif ($db_selected == 0 && $array['credTest'] != 'Pass') {$array['dbTest'] = 'Fail - Double check host address.';}
+			if ($_SESSION['debug']) echo "<script>console.log('SQL Error: " . $sqlError . "');</script>";
 	}
 	$conn = null;
 

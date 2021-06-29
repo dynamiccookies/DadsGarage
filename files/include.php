@@ -1,6 +1,6 @@
 <?php
 	if(!isset($_SESSION)){session_start();} 
-	ini_set('display_errors', $debug);
+	ini_set('display_errors', $_SESSION['debug']);
 	register_shutdown_function(function(){
 		$last_error = error_get_last();
 		if (!empty($last_error) && $last_error['type'] & (E_ERROR | E_COMPILE_ERROR | E_PARSE | E_CORE_ERROR | E_USER_ERROR)){
