@@ -12,13 +12,13 @@
 			exit(1);
 		}
 	});
-	//Set path to 'files'
-	$files=substr(getcwd(), strrpos(getcwd(), '/') + 1);
-	if ($files=='admin') {$files='../files/';} elseif ($files=='files') {$files='';} else {$files='files/';}
+	
+	//Get current path
+	$currentPath = substr(getcwd(), strrpos(getcwd(), '/') + 1);
 
-	//Set path to 'admin'
-	$admin=substr(getcwd(), strrpos(getcwd(), '/') + 1);
-	if ($admin=='files') {$admin='../admin/';} elseif ($admin=='admin') {$admin='';} else {$admin='admin/';}
+	//Set paths to 'admin' & 'files'
+	if ($currentPath == 'admin') {$files = '../files/';} elseif ($currentPath == 'files') {$files = '';} else {$files = 'files/';}
+	if ($currentPath == 'files') {$admin = '../admin/';} elseif ($currentPath == 'admin') {$admin = '';} else {$admin = 'admin/';}
 	
 	define('included', TRUE);
 
