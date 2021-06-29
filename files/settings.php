@@ -434,9 +434,9 @@
 			}
 		?>
 		var usernames = <?php echo json_encode($usernames);?>;
-		document.getElementById('defaultOpen').click();
 		$(document).ready(function() {
 			var txtUsername = $('#newUsername');
+			document.getElementById('defaultOpen').click();
 			txtUsername.keyup(function(){
 				for (var i=0;usernames.length>i;i++) {
 					if (txtUsername.val().toLowerCase() == usernames[i].username) {
