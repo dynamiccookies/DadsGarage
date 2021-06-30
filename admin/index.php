@@ -37,8 +37,12 @@
 					<span id='success' class='<?php echo $success;?>red bold'>Vehicle Added Successfully!</span></center>
 			</form>
 			<hr /><br/>
-			<button class="tablink width50" onclick="openTab('ForSale', this, 'left')"<?php echo (!$_SESSION['admin']?" id=\"defaultTab\"":"");?>>For Sale</button>
-			<button class="tablink width50" onclick="openTab('Sold', this, 'right')"<?php echo ($_SESSION['admin']=='sold'?" id=\"defaultTab\"":"");?>>Sold</button>
+			<button class="tablink width50" onclick="openTab('ForSale', this, 'left')"
+				<?php echo (!isset($_SESSION['admin'])?" id=\"defaultTab\"":"");?>
+			>For Sale</button>
+			<button class="tablink width50" onclick="openTab('Sold', this, 'right')"
+				<?php echo (isset($_SESSION['admin']) && $_SESSION['admin'] == 'sold' ? " id=\"defaultTab\"" : '');?>
+			>Sold</button>
 			<div id="ForSale" class="tabcontent">
 				<table class='tbl-align htmlTable table'>
 					<?php
@@ -47,7 +51,11 @@
 								$pSelect1->bindParam(':vid',$row["id"]);
 								$pSelect1->execute();
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
-								($photo1[0]['filename']?$src="<img src='../vehicles/".$row['id']."/".$photo1[0]['filename']."' width=100px>":$src='(no photo)');
+								
+								(isset($photo1[0]['filename']) 
+									? $src = "<img src='../vehicles/" . $row['id'] . "/" . $photo1[0]['filename'] . "' width=100px>" 
+									: $src = '(no photo)');
+
 								($row['status']=='Draft'?$color=' red':$color=' blue');
 								$name = ($row["year"]==0000?'':$row["year"])." ".$row["make"]." ".$row["model"]." ".$row["trim"];
 								echo "<tr><td class='center'>".$src."</td><td class='td-align' nowrap><a href='edit.php?id=".$row["id"]."' class='small'>".$name."</a></td><td align='center' class='tdcenter".$color."' nowrap>".$row['status']."</td></tr>";
@@ -64,7 +72,11 @@
 								$pSelect1->bindParam(':vid',$row["id"]);
 								$pSelect1->execute();
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
-								($photo1[0]['filename']?$src="<img src='../vehicles/".$row['id']."/".$photo1[0]['filename']."' width=100px>":$src='(no photo)');
+
+								(isset($photo1[0]['filename']) 
+									? $src = "<img src='../vehicles/" . $row['id'] . "/" . $photo1[0]['filename'] . "' width=100px>"
+									: $src = '(no photo)');
+
 								$name = $row["year"]." ".$row["make"]." ".$row["model"]." ".$row["trim"];
 								echo "<tr><td>".$src."</td><td class='td-align'><a href='edit.php?id=".$row["id"]."' class='small'>".$name."</a></td></tr>";
 							}

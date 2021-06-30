@@ -201,11 +201,19 @@
 				</table>
 			</form>
 				<br/><hr><br/>
-				<button class="tablink width20" onclick="openTab('Description', this, 'left')"<?php echo (!$_SESSION['edit']?" id=\"defaultTab\"":"");?>>Description</button>
-				<button class="tablink width20" onclick="openTab('Internal', this, 'middle')"<?php echo ($_SESSION['edit']=='internal'?" id=\"defaultTab\"":"");?>>Internal</button>
-				<button class="tablink width20" onclick="openTab('Expenses', this, 'middle')"<?php echo ($_SESSION['edit']=='expenses'?" id=\"defaultTab\"":"");?>>Expenses</button>
-				<button class="tablink width20" onclick="openTab('Files', this, 'middle')"<?php echo ($_SESSION['edit']=='files'?" id=\"defaultTab\"":"");?>>Files</button>
-				<button class="tablink width20" onclick="openTab('Photos', this, 'right')"<?php echo ($_SESSION['edit']=='photos'?" id=\"defaultTab\"":"");?>>Photos</button>
+				<button class="tablink width20" onclick="openTab('Description', this, 'left')"<?php echo (!isset($_SESSION['edit'])?" id=\"defaultTab\"":"");?>>Description</button>
+				<button class="tablink width20" onclick="openTab('Internal', this, 'middle')"
+					<?php echo (isset($_SESSION['edit']) && $_SESSION['edit'] == 'internal' ? " id=\"defaultTab\"" : "");?>
+				>Internal</button>
+				<button class="tablink width20" onclick="openTab('Expenses', this, 'middle')"
+					<?php echo (isset($_SESSION['edit']) && $_SESSION['edit'] == 'expenses' ? " id=\"defaultTab\"" : "");?>
+				>Expenses</button>
+				<button class="tablink width20" onclick="openTab('Files', this, 'middle')"
+					<?php echo (isset($_SESSION['edit']) && $_SESSION['edit'] == 'files' ? " id=\"defaultTab\"" : "");?>
+				>Files</button>
+				<button class="tablink width20" onclick="openTab('Photos', this, 'right')"
+					<?php echo (isset($_SESSION['edit']) && $_SESSION['edit'] == 'photos' ? " id=\"defaultTab\"" : "");?>
+				>Photos</button>
 				<div id="Description" class="tabcontent">
 					<form action="<?php echo htmlspecialchars($_SERVER["REQUEST_URI"]);?>" method="post">
 						<textarea class="boxsizingBorder" tabindex=10 style="padding:10px;margin-top:5px;width:90%;height:200px" name="pubnotes"><?php echo $rows[0]['pubnotes'];?></textarea><br/>

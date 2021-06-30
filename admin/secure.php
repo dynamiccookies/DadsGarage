@@ -1,4 +1,5 @@
 <?php
+	if(!isset($_SESSION)){session_start();} 
 	require '../files/password.php';
 	require '../files/include.php';
 	
