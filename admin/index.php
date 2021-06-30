@@ -13,7 +13,6 @@
 	}
 ?>
 <body class='darkbg'>
-	<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
 	<div id="adminSidenav" class="adminsidenav">
 		<?php require_once("../files/menu.php");?>
 	</div>
