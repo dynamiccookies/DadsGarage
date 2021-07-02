@@ -1,6 +1,6 @@
 <?php
 
-	if(!isset($_SESSION)){session_start();} 
+	if(!isset($_SESSION)){session_start();}
 	ini_set('allow_url_fopen', 1);
 
 	define('included', TRUE);
@@ -10,7 +10,10 @@
 	//Create/update config.ini.php on page load/save
 	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
 
-		updateConfig(($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), ($_SESSION['inicommit'] ?: ''));
+		updateConfig(
+			($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), 
+			($_SESSION['inicommit'] ?: '')
+		);
 	}
 
 	//Read config.ini.php and set variables
@@ -20,9 +23,10 @@
 	$userMessage           = '';
 
 	//Test validity of database, host, & credentials
-	if ($ini['host']) {
-		require_once('dbcheck.php');
-		$hostChk = ($array['connTest'] ? ($array['connTest']!='Pass' ? $array['connTest'] : ''):'');
+	if (isset($ini['host'])) {
+		require_once 'dbcheck.php';
+
+		$hostChk = (isset($array['connTest']) && $array['connTest'] != 'Pass' ? $array['connTest'] : '');
 		$dbChk = (!$ini['dbname']?'Required Field':($array['dbTest']?($array['dbTest']!='Pass'?$array['dbTest']:''):''));
 		$dbChk = ($dbChk!=''?" class='required' title='".$dbChk."'":" class='pass' title='Database Connection Successful'");
 		$userChk = (!$ini['username']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
@@ -34,9 +38,16 @@
 
 	// Check existence/create database tables
 	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
-		$dbExists = TRUE;
-		if (!tableExists('customers')	|| !tableExists('expenses') || !tableExists('files') || !tableExists('owners') || 
-			!tableExists('photos')		|| !tableExists('users')	|| !tableExists('vehicles')) {
+		$dbExists = true;
+		if (
+			!tableExists('customers') ||
+			!tableExists('expenses')  ||
+			!tableExists('files')     ||
+			!tableExists('owners')    ||
+			!tableExists('photos')    ||
+			!tableExists('users')	  ||
+			!tableExists('vehicles')
+		) {
 			if ($_POST['createTables']){$createdTables = createTables();
 			} else {
 				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
@@ -149,21 +160,38 @@
 
 		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
 
-        if(isset($_POST['debug']))    {$debug = $_POST['debug'];}
-        elseif(isset($_ini['debug'])) {$debug = $ini['debug'];}
-        else                          {$debug = 'false';}
+
+        if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
+        elseif(isset($_ini['dbname']))   {$dbname   = $ini['dbname'];}
+        else                             {$dbname   = '';}
+
+        if(isset($_POST['host']))        {$host     = $_POST['host'];}
+        elseif(isset($_ini['host']))     {$host     = $ini['host'];}
+        else                             {$host     = '';}
+
+        if(isset($_POST['username']))    {$username = $_POST['username'];}
+        elseif(isset($_ini['username'])) {$username = $ini['username'];}
+        else                             {$username = '';}
+
+        if(isset($_POST['password']))    {$password = $_POST['password'];}
+        elseif(isset($_ini['password'])) {$password = $ini['password'];}
+        else                             {$password = '';}
+
+        if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
+        elseif(isset($_ini['debug']))    {$debug    = $ini['debug'];}
+        else                             {$debug    = 'false';}
 
 		file_put_contents('config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
-				"dbname		= '" . ($_POST['dbname']   ?: (isset($ini['dbname'])   ? $ini['dbname']   : ''))      . "'\n" .
-				"host 		= '" . ($_POST['host']     ?: (isset($ini['host'])     ? $ini['host']     : ''))      . "'\n" .
-				"username 	= '" . ($_POST['username'] ?: (isset($ini['username']) ? $ini['username'] : ''))      . "'\n" .
-				"password 	= '" . ($_POST['password'] ?: (isset($ini['password']) ? $ini['password'] : ''))      . "'\n" .
-				"debug		= '" . $debug  . "'\n" .
-				"branch		= '" . $branch . "'\n" .
-				"commit		= '" . $commit . "'\n" .
-				"bitlyuser	= '" . ''      . "'\n" .
-				"bitlyAPI	= '" . ''      . "'\n" . 
+				"dbname		= '" . $dbname   . "'\n" .
+				"host 		= '" . $host     . "'\n" .
+				"username 	= '" . $username . "'\n" .
+				"password 	= '" . $password . "'\n" .
+				"debug		= '" . $debug    . "'\n" .
+				"branch		= '" . $branch   . "'\n" .
+				"commit		= '" . $commit   . "'\n" .
+				"bitlyuser	= '" . ''        . "'\n" .
+				"bitlyAPI	= '" . ''        . "'\n" . 
 			"*/\n?>");
 	}
 	

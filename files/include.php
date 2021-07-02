@@ -1,7 +1,7 @@
 <?php
 
 	if(!isset($_SESSION)){session_start();} 
-	ini_set('display_errors', $_SESSION['debug']);
+	ini_set('display_errors', (isset($_SESSION['debug']) ? $_SESSION['debug'] : false));
 	register_shutdown_function(function(){
 		$last_error = error_get_last();
 		if (!empty($last_error) && $last_error['type'] & (E_ERROR | E_COMPILE_ERROR | E_PARSE | E_CORE_ERROR | E_USER_ERROR)){
@@ -30,12 +30,12 @@
 	$logout = $admin.'secure.php?logout=1';
 
 	//Users Table
-	$selectUsers = $db->prepare("SELECT * FROM users WHERE username=:name");
-	$selectAllUsers = $db->prepare("SELECT * FROM users ORDER BY fname ASC");
+	$selectUsers        = $db->prepare("SELECT * FROM users WHERE username=:name");
+	$selectAllUsers     = $db->prepare("SELECT * FROM users ORDER BY fname ASC");
 	$selectAllUsernames = $db->prepare("SELECT username FROM users ORDER BY fname ASC");
-	$insertUsers = $db->prepare("INSERT INTO users (username,hash,fname,lname,isadmin) VALUES (:user,:pass,:fname,:lname,:isadmin)");
-	$updateUsers = $db->prepare("UPDATE users SET hash = :pass WHERE username = :name");
-	$deleteUser = $db->prepare("DELETE FROM users WHERE id=:id");
+	$insertUsers        = $db->prepare("INSERT INTO users (username,hash,fname,lname,isadmin) VALUES (:user,:pass,:fname,:lname,:isadmin)");
+	$updateUsers        = $db->prepare("UPDATE users SET hash = :pass WHERE username = :name");
+	$deleteUser         = $db->prepare("DELETE FROM users WHERE id=:id");
 	$selectAllUsers->execute();	//Not needed anymore? Moved to settings.php
 	$selectAllUsernames->execute();		//Should this be moved too?
 	$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);	//Not needed anymore? Moved to settings.php

@@ -124,7 +124,7 @@
 							</select>
 						</td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-						<td rowspan=5><?php echo ($pRows[0]['filename']?"<img src='../vehicles/".$id."/".$pRows[0]['filename']."' width=200px />":'');?></td>
+						<td rowspan=5><?php echo (isset($pRows[0]['filename']) ? "<img src='../vehicles/" . $id . "/" . $pRows[0]['filename'] . "' width=200px />" : '');?></td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 					</tr>
 					<tr><!-- Row 3 -->

@@ -1,6 +1,4 @@
 <?php
-	if(!isset($_SESSION)){session_start();} 
-	include("secure.php");
 //	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=../portal.php\">");}
 	if(isset($_POST['submit'])) {
 		$insert->bindParam(':year',$_POST["year"]);
@@ -8,23 +6,28 @@
 		$insert->bindParam(':model',$_POST["model"]);
 		$insert->bindParam(':trim',$_POST["trim"]);
 
+	if (!isset($_SESSION)){session_start();} 
+	include 'secure.php';
+
+
 		$insert->execute();
 		$success = '';
-		echo "<meta http-equiv=refresh content=\"3; URL=".$_SERVER['REQUEST_URI']."\">";
+		echo "<meta http-equiv=refresh content=\"3; URL=" . $_SERVER['REQUEST_URI'] . "\">";
 	}
 ?>
 <body class='darkbg'>
-	<div id="adminSidenav" class="adminsidenav">
-		<?php require_once("../files/menu.php");?>
+
+	<div id='adminSidenav' class='adminsidenav'>
+		<?php require_once '../files/menu.php';?>
 	</div>
-	<div id="adminMain">
-		<div class="adminContainer" onclick="myFunction(this)">
-		  <div class="bar1"></div>
-		  <div class="bar2"></div>
-		  <div class="bar3"></div>
+	<div id='adminMain'>
+		<div class='adminContainer' onclick='myFunction(this)'>
+		  <div class='bar1'></div>
+		  <div class='bar2'></div>
+		  <div class='bar3'></div>
 		</div>
-		<div id="mainContainer" class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
-			<div class="huge bold center p15">Admin Page</div>
+		<div id='mainContainer' class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
+			<div class='huge bold center p15'>Admin Page</div>
 			<hr />
 			<form action="" method="post">
 					<div class="med bold">Add Vehicle:</div>
@@ -37,18 +40,18 @@
 					<span id='success' class='<?php echo $success;?>red bold'>Vehicle Added Successfully!</span></center>
 			</form>
 			<hr /><br/>
-			<button class="tablink width50" onclick="openTab('ForSale', this, 'left')"
-				<?php echo (!isset($_SESSION['admin'])?" id=\"defaultTab\"":"");?>
+			<button class='tablink width50' onclick="openTab('ForSale', this, 'left')"
+				<?php echo (!isset($_SESSION['admin']) ? " id='defaultTab'" : '');?>
 			>For Sale</button>
-			<button class="tablink width50" onclick="openTab('Sold', this, 'right')"
-				<?php echo (isset($_SESSION['admin']) && $_SESSION['admin'] == 'sold' ? " id=\"defaultTab\"" : '');?>
+			<button class='tablink width50'	onclick="openTab('Sold', this, 'right')"
+				<?php echo (isset($_SESSION['admin']) && $_SESSION['admin'] == 'sold' ? " id='defaultTab'" : '');?>
 			>Sold</button>
-			<div id="ForSale" class="tabcontent">
+			<div id='ForSale' class='tabcontent'>
 				<table class='tbl-align htmlTable table'>
 					<?php
 						foreach ($rows as $row) {
 							if ($row['status'] != 'Delete' && $row['status'] != 'Sold') {
-								$pSelect1->bindParam(':vid',$row["id"]);
+								$pSelect1->bindParam(':vid', $row['id']);
 								$pSelect1->execute();
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 								
