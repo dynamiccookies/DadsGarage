@@ -1,5 +1,4 @@
 <?php
-//	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=../portal.php\">");}
 
 	if (!isset($_SESSION)){session_start();} 
 	include 'secure.php';
@@ -113,44 +112,6 @@
 					?>
 				</table>
 			</div>
-<!--			<table class='viewing m-lrauto center'><tr>
-				<td>Currently viewing:</td>
-				<td><span id='lblSale' class='bold'>For Sale&nbsp;&nbsp;&nbsp;&nbsp;</span><span id='lblSold' class='bold'>Sold&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
-				<td><button class='block' type='button' id='sale1' onclick="viewSold()">View Sold</button>
-				<button class='block' type='button' id='hidden1' onclick="viewSale()">View For Sale</button></td>
-			</tr></table>
-			<p></p>
-			<table class='m-lrauto center'><tr id='sale' class='category' style='display:block;'><td>
-			<table class='tbl-align htmlTable'>
-			<?php
-				foreach ($rows as $row) {
-					if ($row['status'] != 'Delete' && $row['status'] != 'Sold') {
-						$pSelect1->bindParam(':vid',$row["id"]);
-						$pSelect1->execute();
-						$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
-						($photo1[0]['filename']?$src="<img src='../vehicles/".$row['id']."/".$photo1[0]['filename']."' width=100px>":$src='(no photo)');
-						($row['status']=='Draft'?$color=' red':$color=' blue');
-						$name = ($row["year"]==0000?'':$row["year"])." ".$row["make"]." ".$row["model"]." ".$row["trim"];
-						echo "<tr><td class='center'>".$src."</td><td class='td-align' nowrap><a href='edit.php?id=".$row["id"]."' class='small'>".$name."</a></td><td align='center' class='tdcenter".$color."' nowrap>".$row['status']."</td></tr>";
-					}
-				}
-			?>
-			</table></td></tr>
-			<tr id='hidden' class='category' style='display:none;'><td>
-			<table class='tbl-align htmlTable'>
-			<?php
-				foreach ($rows as $row) {
-					if ($row['status'] == 'Sold') {
-						$pSelect1->bindParam(':vid',$row["id"]);
-						$pSelect1->execute();
-						$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
-						($photo1[0]['filename']?$src="<img src='../vehicles/".$row['id']."/".$photo1[0]['filename']."' width=100px>":$src='(no photo)');
-						$name = $row["year"]." ".$row["make"]." ".$row["model"]." ".$row["trim"];
-						echo "<tr><td>".$src."</td><td class='td-align'><a href='edit.php?id=".$row["id"]."' class='small'>".$name."</a></td></tr>";
-					}
-				}
-			?>
-			</table></td></tr></table>-->
 		</div>
 	</div>
 	<script src="../files/admin.js"></script>

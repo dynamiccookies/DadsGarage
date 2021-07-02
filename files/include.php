@@ -27,7 +27,6 @@
 	require($files . 'conn.php');
 
 	$success = 'noscreen ';
-	$logout = $admin.'secure.php?logout=1';
 
 	//Users Table
 	$selectUsers        = $db->prepare("SELECT * FROM users WHERE username=:name");
