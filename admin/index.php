@@ -7,6 +7,7 @@
 		$insert->bindParam(':make',$_POST["make"]);
 		$insert->bindParam(':model',$_POST["model"]);
 		$insert->bindParam(':trim',$_POST["trim"]);
+
 		$insert->execute();
 		$success = '';
 		echo "<meta http-equiv=refresh content=\"3; URL=".$_SERVER['REQUEST_URI']."\">";

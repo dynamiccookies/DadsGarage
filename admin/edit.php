@@ -1,4 +1,5 @@
 <?php
+
 	if(!isset($_SESSION)){session_start();} 
 	if(!$_GET['id']) {
 		header('Location: index.php');

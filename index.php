@@ -1,4 +1,5 @@
 <?php
+
 	require_once("files/include.php");
 	file_put_contents("files/log.txt",date('Y-m-d H:i:s') . "," . $_SERVER['REMOTE_ADDR'] . "\n",FILE_APPEND);	//log date/time and IP data
 ?>

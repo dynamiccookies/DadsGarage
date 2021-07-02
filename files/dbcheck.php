@@ -1,4 +1,5 @@
 <?php
+
 	if(!isset($_SESSION)){session_start();} 
 	if(!defined('included')) {
 		header('HTTP/1.0 403 Forbidden');

@@ -1,4 +1,5 @@
 <?php
+
 	if(!$_GET['id']) {
 		header('Location: index.php');
 		exit;

@@ -1,4 +1,5 @@
 <?php
+
 	// Do not allow a direct connection to this file
 	if(!defined('included')) {
 		header('HTTP/1.0 403 Forbidden');

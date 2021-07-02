@@ -1,4 +1,5 @@
 <?php
+
 	$css = substr(getcwd(), strrpos(getcwd(), '/') + 1);
 	if($css == 'admin') {$css = '../files/';} elseif($css == 'files') {$css = '';} else {$css = 'files/';}
 ?>

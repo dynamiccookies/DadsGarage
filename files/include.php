@@ -1,4 +1,5 @@
 <?php
+
 	if(!isset($_SESSION)){session_start();} 
 	ini_set('display_errors', $_SESSION['debug']);
 	register_shutdown_function(function(){
