@@ -1,14 +1,30 @@
 <?php
 //	if(!$_SESSION['isadmin']) {die("<meta http-equiv=refresh content=\"0; URL=../portal.php\">");}
-	if(isset($_POST['submit'])) {
-		$insert->bindParam(':year',$_POST["year"]);
-		$insert->bindParam(':make',$_POST["make"]);
-		$insert->bindParam(':model',$_POST["model"]);
-		$insert->bindParam(':trim',$_POST["trim"]);
 
 	if (!isset($_SESSION)){session_start();} 
 	include 'secure.php';
 
+	if (isset($_POST['submit'])) {
+		
+		if (isset($_POST['VIN'])) {
+			include_once 'vin-decoder.php';
+			$options   = array('Make','Model','ModelYear','Trim', 'VIN');
+
+			// decodeVIN function is in 'vin-decoder.php' file
+			$vinValues = decodeVIN($_POST['VIN'], ...$options);
+
+			$insert->bindParam(':vin',   $vinValues['VIN']);
+			$insert->bindParam(':year',  $vinValues['ModelYear']);
+			$insert->bindParam(':make',  $vinValues['Make']);
+			$insert->bindParam(':model', $vinValues['Model']);
+			$insert->bindParam(':trim',  $vinValues['Trim']);
+		} else {
+			$insert->bindParam(':vin',   '');
+			$insert->bindParam(':year',  $_POST['year']);
+			$insert->bindParam(':make',  $_POST['make']);
+			$insert->bindParam(':model', $_POST['model']);
+			$insert->bindParam(':trim',  $_POST['trim']);
+		}
 
 		$insert->execute();
 		$success = '';
@@ -29,15 +45,25 @@
 		<div id='mainContainer' class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
 			<div class='huge bold center p15'>Admin Page</div>
 			<hr />
-			<form action="" method="post">
-					<div class="med bold">Add Vehicle:</div>
-					<center><table class='m-bottom15'>
-					<tr><td><input type='textbox' style='width:40px' name='year' placeholder="Year" value=''></td><td>
-					<input type='textbox' style='width:100px' name='make' placeholder="Make" value=''></td><td>
-					<input type='textbox' style='width:100px' name='model' placeholder="Model" value=''></td><td>
-					<input type='textbox' style='width:75px' name='trim' placeholder="Trim" value=''></td><td>
-					<input type="submit" name="submit" value="Add"></td></tr></td></tr></table>
-					<span id='success' class='<?php echo $success;?>red bold'>Vehicle Added Successfully!</span></center>
+			<div class='med bold'>Add Vehicle:</div>
+			<form action='' method='post'>
+				<center>
+					<table class='m-bottom15'>
+						<tr>
+							<td colspan=2><input type='textbox' style='width:96%'    name='VIN' placeholder='VIN' value=''></td>
+							<td rowspan=3><input type='submit'  style='margin:10px;' name='submit' value='Add'></td>
+						</tr>
+						<tr>
+							<td><input type='textbox' style='width:100px' name='year'  placeholder='Year'  value=''></td>
+							<td><input type='textbox' style='width:100px' name='make'  placeholder='Make'  value=''></td>
+						</tr>
+						<tr>
+							<td><input type='textbox' style='width:100px' name='model' placeholder='Model' value=''></td>
+							<td><input type='textbox' style='width:100px' name='trim'  placeholder='Trim'  value=''></td>
+						</tr>
+					</table>
+					<span id='success' class='<?= $success;?>red bold'>Vehicle Added Successfully!</span>
+				</center>
 			</form>
 			<hr /><br/>
 			<button class='tablink width50' onclick="openTab('ForSale', this, 'left')"
