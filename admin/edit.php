@@ -155,7 +155,7 @@
 								}
 							?>
 							</select>
-							<select name="payment" id="payment" onchange="paymentType()" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">
+							<select name="payment" id="payment" onchange="paymentType()" class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>">
 								<?php
 									$statuses=array('Cash','Payments','Trade');
 									foreach($statuses as $stat){
@@ -175,12 +175,12 @@
 					</tr>
 					<tr><!-- Row 5 -->
 						<td>
-							<span id='buyer' class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">Buyer:</span>
-							<span id="lblinsured" class="block" name="lblinsured"><a href="mailto:<?php echo $insuranceEmail;?>?subject=Auto%20Insurance&body=<?php echo $vehicle;?>%20-%20VIN:%20<?php echo strtoupper($rows[0]['vin'])?>" title="Send Email to Insurance Center of Buffalo">Insured?</a>:</span>
+							<span id='buyer' class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>">Buyer:</span>
+							<span id="lblinsured" class="block" name="lblinsured"><a href="mailto:<?php echo $insuranceEmail;?>?subject=Auto%20Insurance&body=<?php echo $vehicle;?>%20-%20VIN:%20<?php echo strtoupper($rows[0]['vin'])?>" title="Send Email to insurance company">Insured?</a>:</span>
 						</td>
 						<td nowrap>
-							<input type="textbox" style="width:78px;" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>" id='fname' name='fname' placeholder="First Name" value="">
-							<input type="textbox" style="width:78px;" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>" id='lname' name='lname' placeholder="Last Name" value="">
+							<input type="textbox" style="width:78px;" class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>" id='fname' name='fname' placeholder="First Name" value="">
+							<input type="textbox" style="width:78px;" class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>" id='lname' name='lname' placeholder="Last Name" value="">
 							<input type="checkbox" class="block" id="insured" name="insured" value='insured'<?php echo ($rows[0]['insured'] == 1?" checked='checked'":"")?>>
 						</td>
 						<td>&nbsp;</td>
@@ -190,8 +190,8 @@
 						<td colspan=2>&nbsp;</td>
 					</tr>
 					<tr><!-- Row 6 -->
-						<td><span id="lblsaledate" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>">Sale Date:</span></td>
-						<td><input type="date" id="saledate" class="<?php echo ($rows[0]['status']!='Sold'?noscreen:'');?>" style="width:167px;" name="saledate"></td>
+						<td><span id="lblsaledate" class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>">Sale Date:</span></td>
+						<td><input type="date" id="saledate" class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>" style="width:167px;" name="saledate"></td>
 						<td>&nbsp;</td>
 						<td>Miles:</td>
 						<td><input style="width:90px;" type="textbox" name="miles" tabindex=8 value="<?php echo number_format($rows[0]['miles'])?>"></td>
