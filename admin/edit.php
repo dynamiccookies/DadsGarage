@@ -12,18 +12,22 @@
 	$dir = '../vehicles';
 	if(!file_exists($dir) && !is_dir($dir)) {mkdir($dir);} 
 	if(isset($_POST['SubmitTop'])) {
-		$update->bindParam(':vin',$_POST['vin']); 
-		$update->bindParam(':year',$_POST['year']); 
-		$update->bindParam(':make',$_POST['make']); 
-		$update->bindParam(':model',$_POST['model']); 
-		$update->bindParam(':trim',$_POST['trim']); 
-		$update->bindParam(':miles',str_replace(',','',$_POST['miles'])); 
-		$update->bindParam(':owner',$_POST['owner']); 
-		$update->bindParam(':askprice',str_replace(str_split('$,'),'',$_POST['askprice'])); 
-		$update->bindParam(':status',$_POST['status']); 
-		$update->bindParam(':insured',($_POST['insured']?$_POST['insured']=1:$_POST['insured']=0));
-		$update->bindParam(':payment',$_POST['payment']);
-		$update->bindParam(':paynotes',$_POST['soldnotes']);
+        $_POST['miles']    = str_replace(',', '', $_POST['miles']);
+	    $_POST['askprice'] = (float) str_replace(str_split('$,'), '', $_POST['askprice']);
+	    (isset($_POST['insured']) ? $_POST['insured'] = 1 : $_POST['insured'] = 0);
+
+		$update->bindParam(':vin',      $_POST['vin']); 
+		$update->bindParam(':year',     $_POST['year']); 
+		$update->bindParam(':make',     $_POST['make']); 
+		$update->bindParam(':model',    $_POST['model']); 
+		$update->bindParam(':trim',     $_POST['trim']); 
+		$update->bindParam(':miles',    $_POST['miles']); 
+		$update->bindParam(':owner',    $_POST['owner']); 
+		$update->bindParam(':askprice', $_POST['askprice']); 
+		$update->bindParam(':status',   $_POST['status']); 
+		$update->bindParam(':insured',  $_POST['insured']);
+		$update->bindParam(':payment',  $_POST['payment']);
+		$update->bindParam(':paynotes', $_POST['soldnotes']);
 		$update->execute();
 		echo $reload;
 	}
@@ -176,7 +180,14 @@
 					<tr><!-- Row 5 -->
 						<td>
 							<span id='buyer' class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>">Buyer:</span>
-							<span id="lblinsured" class="block" name="lblinsured"><a href="mailto:<?php echo $insuranceEmail;?>?subject=Auto%20Insurance&body=<?php echo $vehicle;?>%20-%20VIN:%20<?php echo strtoupper($rows[0]['vin'])?>" title="Send Email to insurance company">Insured?</a>:</span>
+							<span id='lblinsured' class='block' name='lblinsured'>
+                                <?php 
+                                    // Need to build out the insurance info section further - Placeholder for now
+                                    $insuranceEmail = '';
+                                    echo "<a href='mailto:$insuranceEmail?subject=Auto%20Insurance&body=$vehicle%20-%20VIN:%20";
+                                    echo strtoupper($rows[0]['vin']) . " title='Send Email to insurance company'>Insured?</a>:";
+                                ?>
+                            </span>
 						</td>
 						<td nowrap>
 							<input type="textbox" style="width:78px;" class="<?php echo ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>" id='fname' name='fname' placeholder="First Name" value="">
