@@ -208,9 +208,11 @@
 			$json=getJSON('branches/'.$branch);
 			$info['new']=array('name'=>$json['name'],'commit'=>$json['commit']['sha'],'date'=>str_replace('Z','',str_replace('T',' ',$json['commit']['commit']['committer']['date'])));
 		}
-		if (($commit) && ($branch) && ($info['current']['commit']!=$info['new']['commit'])) {
-			$json = getJSON('compare/'.$info['current']['commit'].'...'.$info['new']['commit']);
-			if ($json['status']=='ahead' || $json['status']=='diverged') {$info['new']['aheadby']="<div class='red bold'>Update available. ".$json['ahead_by'].' commit(s) behind.</div><br/>';}
+		if ($commit && $branch && $info['current']['commit'] != $info['new']['commit']) {
+			$json = getJSON('compare/' . $info['current']['commit'] . '...' . $info['new']['commit']);
+			if ($json['status'] == 'ahead' || $json['status'] == 'diverged') {
+				$info['new']['aheadby'] = "<div class='red bold bgyellow'>Update available. " . $json['ahead_by'] . ' commit(s) behind.</div><br/>';
+			}
 		}
 		return $info;
 	}
