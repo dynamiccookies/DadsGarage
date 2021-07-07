@@ -23,17 +23,17 @@
 	$img = $pRows;
 	
 	//Custom Location ---------------------------------------------
-	$loc = $_GET["l"];	//get 'l' param for location
+	$loc = (isset($_GET['1']) ? $_GET['1'] : '');	//get 'l' param for location
 	
 	//QR Code -----------------------------------------------------
-	$qr = $_GET["qr"];	//get 'qr' param for qr code
+	$qr = (isset($_GET['qr']) ? $_GET['qr'] : '');	//get 'qr' param for qr code
 	if ($qr == 1) {		//if qr scanned
 		$qrlog = date('Y-m-d H:i:s') . "," . $base_name . "," . $_SERVER['REMOTE_ADDR'] . ($loc ? ',' . $loc : "") . "\n";	//get date/time and IP qr code scanned on
 		file_put_contents("files/qr.log",$qrlog,FILE_APPEND);	//log date/time and IP data
 	}
 	//bit.ly variables-Used for short URL on QR code.--------------
-	$login = o_31ku8f5rm;
-	$appkey = R_6380f8f15f3f4636a46990da43165ba8;
+	$login = 'o_31ku8f5rm';
+	$appkey = 'R_6380f8f15f3f4636a46990da43165ba8';
 	//$bitly = get_bitly_short_url($base_url . $_SERVER['REQUEST_URI'] . "&qr=1" . ($loc ? '&l=' . $loc : ""),$login,$appkey);
 	$bitly = get_bitly_short_url($base_url . $_SERVER['REQUEST_URI'] . "&qr=1",$login,$appkey);
 	$currentURL = "http://chart.apis.google.com/chart?cht=qr&chld=h&chl=" . $bitly;  
