@@ -395,10 +395,6 @@
 	  white-space: nowrap;
 	  border-left: dashed;
 	}
-		margin-top: -25px;
-	tr.info > td > div {
-	}
-	tr.smallqr > td > div {}
 	td:first-child {border-left: none;}
 	td.rotate > div {
 	  transform: 
