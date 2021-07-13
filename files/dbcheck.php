@@ -112,11 +112,11 @@
 
 	//check if a specific table exists
 	function tableExists($table) {	//https://stackoverflow.com/questions/1717495/check-if-a-database-table-exists-using-php-pdo
-		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
+		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
 		// Set options
 		$options = array(
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_PERSISTENT => true,
+			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_PERSISTENT         => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		);
 		//Create a new PDO instance
@@ -125,7 +125,7 @@
 			$temp = "SELECT 1 FROM ".$table." LIMIT 1";
 			$temp = $conn->query($temp);
 			return true;
-		} 
+		}
 		catch (PDOException $e) {
 			return false;
 		}

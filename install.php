@@ -24,9 +24,9 @@
 	// Pull list of branches from GitHub for install
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/' . $repo . '/branches'); 
-	curl_setopt($ch, CURLOPT_USERAGENT,substr($repo, strpos($repo, '/') + 1));
+	curl_setopt($ch, CURLOPT_USERAGENT, substr($repo, strpos($repo, '/') + 1));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	$branches = json_decode(curl_exec($ch),true);
+	$branches = json_decode(curl_exec($ch), true);
 	curl_close($ch);
 
 	// Run install if button clicked
