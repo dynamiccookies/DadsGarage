@@ -125,7 +125,7 @@
 				<table style='padding:15px;'>
 					<tr><!-- Row 1 -->
 						<td colspan='12' class='center huge bold'>
-							<a href='../vehicle.php?id=<?= $rows[0]['id'];?>'><?= $vehicle;?></a><br/><hr size='3px'/>
+							<a href='../vehicle.php?id=<?= $rows[0]['id'];?>' target='_blank'><?= $vehicle;?></a><br/><hr size='3px'/>
 						</td>
 					</tr>
 					<tr><!-- Row 2 -->
