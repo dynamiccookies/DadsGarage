@@ -36,7 +36,7 @@
 		padding-top: 50px;
 		margin: 50px 175px;
 		clear: left;
-		bottom: 0px;
+		bottom: 0;
 	}
 	#main > p {
 		font-size: 24px;
@@ -131,7 +131,7 @@
 		padding-top:75px;
 		text-align: center;
 		background-color: silver;
-		border-radius: 0px 0px 10px 10px;
+		border-radius: 0 0 10px 10px;
 	}
 	.hrsettings {
 		border: 1px solid black;
@@ -179,7 +179,7 @@
 		margin: 0 auto;
 		border-collapse: collapse;
 	}
-	.tb-p15 {padding: 15px 0px;}
+	.tb-p15 {padding: 15px 0;}
 	.tdcenter {
 		align: center;
 		padding-left: 10px;
@@ -193,7 +193,7 @@
 	.m-bottom25 {margin-bottom:25px;}
 	.m-top25 {margin-top:25px;}
 	.m-right {margin-right:25px;}
-	.viewing {border-collapse: collapse;border-spacing: 25px 0px;}
+	.viewing {border-collapse: collapse;border-spacing: 25px 0;}
 	.bgblue {background-color:#daecee;}
 	.bord5, textarea {border: 5px solid gray;}
 	.b-right1 {border-right: 1px solid;}
@@ -231,7 +231,7 @@
 		padding: 1px;
 		height: 35vw; /**500px**/
 	}
-	.gallery > .thumbnails > p {padding: 25px 0px;}
+	.gallery > .thumbnails > p {padding: 25px 0;}
 	.boxsizingBorder {
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
@@ -275,11 +275,11 @@
 	#adminMain {
 		transition: margin-left .5s;
 		padding: 16px;
-		margin-left: 0px;
+		margin-left: 0;
 	}
 
 	#adminSidenav {
-		width: 0px;
+		width: 0;
 		transition: width .5s;
 	}
 
@@ -358,7 +358,7 @@
 		vertical-align: top;
 		margin-top: -20px;
 	}
-	span > img {margin: 0px 0px 0px 53px;}
+	span > img {margin: 0 0 0 53px;}
 	.leftspacer {
 		float: left;
 		width: 15%;
