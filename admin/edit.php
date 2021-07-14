@@ -75,7 +75,7 @@
 		unlink($_POST['file']);
 
 		//Delete database entry
-		$fDelete->bindParam(':fid',$_POST["fid"]);
+		$fDelete->bindParam(':fid',$_POST['fid']);
 		$fDelete->execute();
 		
 		$_SESSION['edit'] = 'files';
@@ -158,8 +158,7 @@
 					</tr>
 					<tr><!-- Row 3 -->
 						<td nowrap><?= ($rows[0]['status'] == 'Sold' ? 'Sale' : 'Asking');?> Price:</td>
-						<td><input style='width:165px;' type='textbox' tabindex=2 name='askprice' value='
-						<?php 
+						<td><input style='width:165px;' type='textbox' tabindex=2 name='askprice' value='<?php 
 							if (strpos($rows[0]['askprice'], '$') === FALSE && trim($rows[0]['askprice']) !== '') {
 								echo '$' . number_format($rows[0]['askprice']);
 							}
@@ -238,34 +237,34 @@
 					</tr>
 				</table>
 			</form>
-				<br/><hr><br/>
-				<button class='tablink width20' onclick="openTab('Description', this, 'left')"
-					<?= (!isset($_SESSION['edit']) ? ' id="defaultTab"' : '');?>
-				>Description</button>
-				<button class='tablink width20' onclick="openTab('Internal', this, 'middle')"
-					<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'internal' ? ' id="defaultTab"' : '');?>
-				>Internal</button>
-				<button class='tablink width20' onclick="openTab('Expenses', this, 'middle')"
-					<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'expenses' ? ' id="defaultTab"' : '');?>
-				>Expenses</button>
-				<button class='tablink width20' onclick="openTab('Files', this, 'middle')"
-					<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'files' ? ' id="defaultTab"' : '');?>
-				>Files</button>
-				<button class='tablink width20' onclick="openTab('Photos', this, 'right')"
-					<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'photos' ? ' id="defaultTab"' : '');?>
-				>Photos</button>
-				<div id='Description' class='tabcontent'>
-					<form action='<?= htmlspecialchars($_SERVER['REQUEST_URI']);?>' method='post'>
-						<textarea class='boxsizingBorder' tabindex=10 style='padding:10px;margin-top:5px;width:90%;height:200px;' name='pubnotes'><?= $rows[0]['pubnotes'];?></textarea><br/>
-						<input type='Submit' tabindex=11 name='SubmitDesc' id='SubmitDesc' value='Save'>
-					</form>
-				</div>
-				<div id='Internal' class='tabcontent'>
-					<form action='<?= htmlspecialchars($_SERVER['REQUEST_URI']);?>' method='post'>
-						<textarea class='boxsizingBorder' tabindex=12 style='padding:10px;margin-top:5px;width:90%;height:200px;' name='intnotes'><?= $rows[0]['intnotes']?></textarea><br/>
-						<input type='Submit' tabindex=13 name='SubmitInternal' id='SubmitInternal' value='Save'>
-					</form>
-				</div>
+			<br/><hr><br/>
+			<button class='tablink width20' onclick="openTab('Description', this, 'left')"
+				<?= (!isset($_SESSION['edit']) ? ' id="defaultTab"' : '');?>
+			>Description</button>
+			<button class='tablink width20' onclick="openTab('Internal', this, 'middle')"
+				<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'internal' ? ' id="defaultTab"' : '');?>
+			>Internal</button>
+			<button class='tablink width20' onclick="openTab('Expenses', this, 'middle')"
+				<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'expenses' ? ' id="defaultTab"' : '');?>
+			>Expenses</button>
+			<button class='tablink width20' onclick="openTab('Files', this, 'middle')"
+				<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'files' ? ' id="defaultTab"' : '');?>
+			>Files</button>
+			<button class='tablink width20' onclick="openTab('Photos', this, 'right')"
+				<?= (isset($_SESSION['edit']) && $_SESSION['edit'] == 'photos' ? ' id="defaultTab"' : '');?>
+			>Photos</button>
+			<div id='Description' class='tabcontent'>
+				<form action='<?= htmlspecialchars($_SERVER['REQUEST_URI']);?>' method='post'>
+					<textarea class='boxsizingBorder' tabindex=10 style='padding:10px;margin-top:5px;width:90%;height:200px;' name='pubnotes'><?= $rows[0]['pubnotes'];?></textarea><br/>
+					<input type='Submit' tabindex=11 name='SubmitDesc' id='SubmitDesc' value='Save'>
+				</form>
+			</div>
+			<div id='Internal' class='tabcontent'>
+				<form action='<?= htmlspecialchars($_SERVER['REQUEST_URI']);?>' method='post'>
+					<textarea class='boxsizingBorder' tabindex=12 style='padding:10px;margin-top:5px;width:90%;height:200px;' name='intnotes'><?= $rows[0]['intnotes']?></textarea><br/>
+					<input type='Submit' tabindex=13 name='SubmitInternal' id='SubmitInternal' value='Save'>
+				</form>
+			</div>
 			<div id='Expenses' class='tabcontent'>
 				<div class='bgblue p15 b-rad15 bord5'>
 					Expenses:<br>
@@ -352,7 +351,7 @@
 									</tr>
 						<?php		}
 								echo '</table>';
-							} else {echo ('\nThere are no files for this vehicle.');}
+							} else {echo ('There are no files for this vehicle.');}
 						?>
 					</center></div>
 				</div>
@@ -395,7 +394,7 @@
 									</tr>
 						<?php   }
 								echo '</table>';
-							} else {echo '\nThere are no photos for this vehicle.';}
+							} else {echo 'There are no photos for this vehicle.';}
 						?>
 					</center></div>
 				</div>
