@@ -45,24 +45,23 @@
 	}
 	#main .holder {
 		font-size: 24px;
-		text-align: center;
 		font-weight: bold;
-		width: 1040px;
-		margin-left: auto;
-		margin-right: auto;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-content: stretch;
+		justify-content: center;
+		align-items: baseline;
 	}
 	#main .vehicle {
 		background-color:#daecee;
 		border: 2px;
 		border-radius: 25px;
 		border-style: solid;
-		display: inline;
 		float: left;
 		padding: 5px 5px 10px 10px;
 		width: 500px;
 		text-align: center;
-		margin-left: auto;
-		margin-right: auto;
 	}
 	#main .vehicle img {height: 200px;}
 	#main .red {border-color: red;}
