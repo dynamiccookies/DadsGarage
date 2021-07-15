@@ -84,7 +84,6 @@ function statusChange() {
 		document.getElementById("fname").className = "";
 		document.getElementById("lname").className = "";
 		document.getElementById("lblsaledate").className = "";
-		document.getElementById("saledate").className = "";
 	}else{
 		document.getElementById("lblsaledate").className = "noscreen";
 		document.getElementById("saledate").className = "noscreen";
@@ -94,6 +93,7 @@ function statusChange() {
 		document.getElementById("lblinsured").className = "";
 		document.getElementById("insured").className = "";
 		document.getElementById("payment").className = "noscreen";
+		document.getElementById('sold_date').className   = '';
 	}
 
 }

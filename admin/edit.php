@@ -32,6 +32,7 @@
 		$update->bindParam(':insured',  $_POST['insured']);
 		$update->bindParam(':payment',  $_POST['payment']);
 		$update->bindParam(':paynotes', $_POST['soldnotes']);
+		$update->bindParam(':sold_date', $_POST['sold_date']);
 		$update->execute();
 		echo $reload;
 	}
@@ -227,7 +228,16 @@
 					</tr>
 					<tr><!-- Row 6 -->
 						<td><span id='lblsaledate' class='<?= ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>'>Sale Date:</span></td>
-						<td><input type='date' id='saledate' class='<?= ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>' style='width:167px;' name='saledate'></td>
+						<td>
+							<input 
+								type='date' 
+								id='sold_date' 
+								class='<?= ($rows[0]['status'] != 'Sold' ? 'noscreen ' : '');?>' 
+								style='width:167px;' 
+								name='sold_date'
+								value='<?= (isset($rows[0]['sold_date']) ? $rows[0]['sold_date'] : '');?>'
+							>
+						</td>
 						<td>&nbsp;</td>
 						<td>Miles:</td>
 						<td><input style='width:90px;' type='textbox' name='miles' tabindex=8 value='<?= number_format($rows[0]['miles'])?>'></td>
