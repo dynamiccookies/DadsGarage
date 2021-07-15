@@ -5,7 +5,7 @@
 		header('HTTP/1.0 403 Forbidden');
 		exit;
 	}
-	require('password.php');
+	require 'password.php';
 	ini_set('display_errors', $_SESSION['debug']);
 	$server      = $ini['host'];
 	$port        = 3306;
@@ -134,14 +134,52 @@
 	//create missing tables
 	function createTables() {
 		$sql = "
-		CREATE TABLE IF NOT EXISTS `expenses` (`id` bigint(11) AUTO_INCREMENT NOT NULL,`vehicle` int(11) NOT NULL,
-		`date` date DEFAULT NULL,`description` mediumtext NOT NULL,`cost` decimal(10,2) NOT NULL,PRIMARY KEY (`id`));
+			CREATE TABLE IF NOT EXISTS `customers` (
+				`id` int(11) AUTO_INCREMENT NOT NULL,
+				`username` varchar(255) NOT NULL,
+				`hash` varchar(255) NOT NULL,
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `username` (`username`));
 
-		CREATE TABLE IF NOT EXISTS `customers` (`id` int(11) AUTO_INCREMENT NOT NULL,`username` varchar(255) NOT NULL,
-		`hash` varchar(255) NOT NULL,PRIMARY KEY (`id`),UNIQUE KEY `username` (`username`));
+			CREATE TABLE IF NOT EXISTS `expenses` (
+				`id` bigint(11) AUTO_INCREMENT NOT NULL,
+				`vehicle` int(11) NOT NULL,
+				`date` date DEFAULT NULL,
+				`description` mediumtext NOT NULL,
+				`cost` decimal(10,2) NOT NULL,
+				PRIMARY KEY (`id`));
 
-		CREATE TABLE IF NOT EXISTS `files` (`id` mediumint(9) AUTO_INCREMENT NOT NULL,`vehicle` mediumint(9) NOT NULL,
-		`filename` varchar(255) NOT NULL,`order` tinyint(4) NOT NULL,PRIMARY KEY (`id`));
+			CREATE TABLE IF NOT EXISTS `files` (
+				`id` mediumint(9) AUTO_INCREMENT NOT NULL,
+				`vehicle` mediumint(9) NOT NULL,
+				`filename` varchar(255) NOT NULL,
+				`order` tinyint(4) DEFAULT 0 NOT NULL,
+				PRIMARY KEY (`id`));
+
+			CREATE TABLE IF NOT EXISTS `owners` (
+				`id` int(11) AUTO_INCREMENT NOT NULL,
+				`name` varchar(255) NOT NULL,
+				`email` varchar(255) DEFAULT NULL,
+				`phone` varchar(14) DEFAULT NULL,
+				PRIMARY KEY (`id`));
+
+			CREATE TABLE IF NOT EXISTS `photos` (
+				`id` mediumint(9) AUTO_INCREMENT NOT NULL,
+				`vehicle` mediumint(9) NOT NULL,
+				`filename` varchar(255) NOT NULL,
+				`order` tinyint(4) DEFAULT 0 NOT NULL,
+				PRIMARY KEY (`id`));
+
+			CREATE TABLE IF NOT EXISTS `users` (
+				`id` int(11) AUTO_INCREMENT NOT NULL,
+				`username` varchar(255) NOT NULL,
+				`hash` varchar(255) NOT NULL,
+				`fname` varchar(40) NOT NULL,
+				`lname` varchar(40) NOT NULL,
+				`isadmin` tinyint(1) NOT NULL DEFAULT 0,
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `username` (`username`));
+
 			CREATE TABLE IF NOT EXISTS `vehicles` (
 				`id` int(11) AUTO_INCREMENT NOT NULL,
 				`vin` varchar(17) DEFAULT NULL,
@@ -167,18 +205,8 @@
 		";
 
 
-		CREATE TABLE IF NOT EXISTS `owners` (`id` int(11) AUTO_INCREMENT NOT NULL,`name` varchar(255) NOT NULL,
-		`email` varchar(255) DEFAULT NULL,`phone` varchar(14) DEFAULT NULL,PRIMARY KEY (`id`));
 
-		CREATE TABLE IF NOT EXISTS `photos` (`id` mediumint(9) AUTO_INCREMENT NOT NULL,`vehicle` mediumint(9) NOT NULL,
-		`filename` varchar(255) NOT NULL,`order` tinyint(4) NOT NULL,PRIMARY KEY (`id`));
-
-		CREATE TABLE IF NOT EXISTS `users` (`id` int(11) AUTO_INCREMENT NOT NULL,`username` varchar(255) NOT NULL,
-		`hash` varchar(255) NOT NULL,`fname` varchar(40) NOT NULL,`lname` varchar(40) NOT NULL,
-		`isadmin` tinyint(1) NOT NULL DEFAULT 0,PRIMARY KEY (`id`),UNIQUE KEY `username` (`username`));
-
-
-		$dsn = 'mysql:host='.$GLOBALS['server'].';dbname='.$GLOBALS['dbName'].';port='.$GLOBALS['port'];
+		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
 		// Set options
 		$options = array(
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

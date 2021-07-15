@@ -8,15 +8,21 @@ $('#category span').click(function () {
 });
 
 function viewSold() {
-	document.getElementById('hidden').style.display = 'block';document.getElementById('sale').style.display = 'none';
-	document.getElementById('hidden1').style.display = 'block';document.getElementById('sale1').style.display = 'none';
-	document.getElementById('lblSold').style.display = 'block';document.getElementById('lblSale').style.display = 'none';
+	document.getElementById('hidden').style.display = 'block';
+	document.getElementById('sale').style.display = 'none';
+	document.getElementById('hidden1').style.display = 'block';
+	document.getElementById('sale1').style.display = 'none';
+	document.getElementById('lblSold').style.display = 'block';
+	document.getElementById('lblSale').style.display = 'none';
 	$.ajax({type: "POST", url: 'ajax.php', data: {view: "sold"}}).done(function() {});
 }
 function viewSale() {
-	document.getElementById('sale').style.display = 'block';document.getElementById('hidden').style.display = 'none';
-	document.getElementById('sale1').style.display = 'block';document.getElementById('hidden1').style.display = 'none';
-	document.getElementById('lblSale').style.display = 'block';document.getElementById('lblSold').style.display = 'none';
+	document.getElementById('sale').style.display = 'block';
+	document.getElementById('hidden').style.display = 'none';
+	document.getElementById('sale1').style.display = 'block';
+	document.getElementById('hidden1').style.display = 'none';
+	document.getElementById('lblSale').style.display = 'block';
+	document.getElementById('lblSold').style.display = 'none';
 	$.ajax({type: "POST", url: 'ajax.php', data: {view: "forsale"}}).done(function() {});
 }
 function myFunction(x) {

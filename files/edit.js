@@ -60,7 +60,7 @@ function updateOwner() {
 }
 function statusChange() {
 	var txt = '';
-	var e = document.getElementById("status");
+	var e = document.getElementById('status');
 	var stat = e.options[e.selectedIndex].value;
 	switch(stat) {
 		case 'Draft':
@@ -75,34 +75,29 @@ function statusChange() {
 		default:
 			txt = '';
 	}
-	document.getElementById("notice").innerHTML = txt;
+	document.getElementById('notice').innerHTML = txt;
 	if (stat == 'Sold') {
-		document.getElementById("payment").className = "";
-		document.getElementById("lblinsured").className = "noscreen";
-		document.getElementById("insured").className = "noscreen";
-		document.getElementById("buyer").className = "";
-		document.getElementById("fname").className = "";
-		document.getElementById("lname").className = "";
-		document.getElementById("lblsaledate").className = "";
-	}else{
-		document.getElementById("lblsaledate").className = "noscreen";
-		document.getElementById("saledate").className = "noscreen";
-		document.getElementById("buyer").className = "noscreen";
-		document.getElementById("fname").className = "noscreen";
-		document.getElementById("lname").className = "noscreen";
-		document.getElementById("lblinsured").className = "";
-		document.getElementById("insured").className = "";
-		document.getElementById("payment").className = "noscreen";
+		document.getElementById('payment').className     = '';
+		document.getElementById('lblinsured').className  = 'noscreen';
+		document.getElementById('insured').className     = 'noscreen';
+		document.getElementById('buyer').className       = '';
+		document.getElementById('fname').className       = '';
+		document.getElementById('lname').className       = '';
+		document.getElementById('lblsaledate').className = '';
 		document.getElementById('sold_date').className   = '';
+	} else {
+		document.getElementById('lblsaledate').className = 'noscreen';
+		document.getElementById('sold_date').className   = 'noscreen';
+		document.getElementById('buyer').className       = 'noscreen';
+		document.getElementById('fname').className       = 'noscreen';
+		document.getElementById('lname').className       = 'noscreen';
+		document.getElementById('lblinsured').className  = '';
+		document.getElementById('insured').className     = '';
+		document.getElementById('payment').className     = 'noscreen';
 	}
-
 }
-function loading1() {
-	document.getElementById("loading1").style.display = 'block';
-}
-function loading2() {
-	document.getElementById("loading2").style.display = 'block';
-}
+function loading1() {document.getElementById('loading1').style.display = 'block';}
+function loading2() {document.getElementById('loading2').style.display = 'block';}
 function valPhone(num) {
 	var arr = num.match(/\d+/g);
 	var str = '';
