@@ -5,29 +5,44 @@
 
 	if (isset($_POST['submit'])) {
 		
-		if (isset($_POST['VIN'])) {
-			include_once 'vin-decoder.php';
-			$options   = array('Make','Model','ModelYear','Trim', 'VIN');
+		if (!empty($_POST['VIN'])) {
+			$duplicate_vin      = false;
+			$vehicle_attributes = array('Make', 'Model', 'ModelYear', 'Trim', 'VIN');
 
-			// decodeVIN function is in 'vin-decoder.php' file
-			$vinValues = decodeVIN($_POST['VIN'], ...$options);
+			foreach ($rows as $row) {
+				if (!empty($row['vin']) && $row['vin'] == $_POST['VIN']) {
+				    $duplicate_vin = true;
+					break;
+				}
+			}
 
-			$insert->bindParam(':vin',   $vinValues['VIN']);
-			$insert->bindParam(':year',  $vinValues['ModelYear']);
-			$insert->bindParam(':make',  $vinValues['Make']);
-			$insert->bindParam(':model', $vinValues['Model']);
-			$insert->bindParam(':trim',  $vinValues['Trim']);
+            if (!$duplicate_vin) {
+    			include_once 'vin-decoder.php';
+
+    			// decodeVIN function is in 'vin-decoder.php' file
+    			$vinValues = decodeVIN($_POST['VIN'], ...$vehicle_attributes);
+    
+    			$insert->bindParam(':vin',   $vinValues['VIN']);
+    			$insert->bindParam(':year',  $vinValues['ModelYear']);
+    			$insert->bindParam(':make',  $vinValues['Make']);
+    			$insert->bindParam(':model', $vinValues['Model']);
+    			$insert->bindParam(':trim',  $vinValues['Trim']);
+        		$insert->execute();
+            } else {
+    			$dupVIN = '<span class="red bold">VIN Exists: </span><a href="edit.php?id=' . $row['id'] . '" target="_blank" class="bold">' . $_POST['VIN'] . '</a>';
+            }
 		} else {
-			$insert->bindParam(':vin',   '');
+		    $blank = '';
+			$insert->bindParam(':vin',   $blank);
 			$insert->bindParam(':year',  $_POST['year']);
 			$insert->bindParam(':make',  $_POST['make']);
 			$insert->bindParam(':model', $_POST['model']);
 			$insert->bindParam(':trim',  $_POST['trim']);
-		}
+    		$insert->execute();
 
-		$insert->execute();
-		$success = '';
-		echo "<meta http-equiv=refresh content=\"3; URL=" . $_SERVER['REQUEST_URI'] . "\">";
+    		$success = '';
+    		echo "<meta http-equiv=refresh content=\"3; URL=" . $_SERVER['REQUEST_URI'] . "\">";
+		}
 	}
 ?>
 <body class='darkbg'>
@@ -61,6 +76,7 @@
 							<td><input type='textbox' style='width:100px' name='trim'  placeholder='Trim'  value=''></td>
 						</tr>
 					</table>
+					<?= (isset($dupVIN) ? $dupVIN : '');?>
 					<span id='success' class='<?= $success;?>red bold'>Vehicle Added Successfully!</span>
 				</center>
 			</form>
