@@ -19,6 +19,8 @@
         $_POST['miles']    = str_replace(',', '', $_POST['miles']);
 	    $_POST['askprice'] = (float) str_replace(str_split('$,'), '', $_POST['askprice']);
 	    (isset($_POST['insured']) ? $_POST['insured'] = 1 : $_POST['insured'] = 0);
+        
+        if (empty($_POST['sold_date'])) $_POST['sold_date'] = null;
 
 		$update->bindParam(':vin',       $_POST['vin']);
 		$update->bindParam(':year',      $_POST['year']);
