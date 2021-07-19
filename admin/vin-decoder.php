@@ -16,13 +16,16 @@
      * success or an array of error messages on failure.
      *
      * @access public
+     * @link https://github.com/dynamiccookies/vin-decoder vin-decoder.php
      * @link https://vpic.nhtsa.dot.gov/api/ NHTSA API
      * @author Chad A Davis <github.com/dynamiccookies>
      * @license http://www.opensource.org/licenses/mit-license.html MIT License
      * @copyright 2021 @author
-     * @param string          $vin             Vehicle Identification Number
-     * @param string|array ...$keys (optional) Multiple strings or array of keys
-     *                                         to return from the NHTSA array
+     * @version 0.2.0 - Please remember to check for the latest version
+     * @param string    $vin             Vehicle Identification Number
+     * @param mixed  ...$keys (optional) Key(s) from the NHTSA array as one or 
+     *                                   many strings, or an array of strings
+     *
      * @return object Vehicle
      */
 
@@ -45,21 +48,23 @@
 			
 			if (!$results['ErrorCode'] == '0') {
 				$vehicle['Error']    = explode(';', $results['ErrorText']);
-				$vehicle['Searched'] = $search;
+				$vehicle['Searched'] = str_replace('VIN(s): ', '', $search);
 
 				return $vehicle;
 			} else {$vehicle['Error'] = 0;}
+
+			$results['Make'] = ucwords(strtolower($results['Make']));
 
 			if (!$keys) {
 				$results['Error']   = 0;
 				$results['Message'] = $message;
 
 				return $results;
+			} else {
+				foreach ($keys as $key) {$vehicle[$key] = $results[$key];}
+
+				return $vehicle;
 			}
-
-			foreach ($keys as $key) {$vehicle[$key] = $results[$key];}
 		} else {return false;}
-
-		return $vehicle;
 	}
 ?>
