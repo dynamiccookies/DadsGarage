@@ -1,7 +1,6 @@
 <?php
 
 	if(!isset($_SESSION)){session_start();}
-	ini_set('allow_url_fopen', 1);
 
 	define('included', TRUE);
 
@@ -109,44 +108,57 @@
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
   		try {
-			$repository = 'https://github.com/dynamiccookies/DadsGarage/'; //URL to GitHub repository
-			$repBranch = $_POST['branch']?:'master';
-			$source = 'DadsGarage-'.$repBranch; //RepositoryName-Branch
-			$redirectURL = 'settings.php'; //Redirect URL - Leave blank for no redirect
-			$file = file_put_contents(dirname(__DIR__)."/install.zip", fopen($repository."archive/".$repBranch.".zip", 'r'), LOCK_EX);
-			if($file === FALSE) die("Error Writing to File: Please <a href=\"".$repository."issues/new?title=Installation - Error Writing to File\">click here</a> to submit a ticket.");
-			$zip = new ZipArchive;
-			$res = $zip->open(dirname(__DIR__).'/install.zip');
-			if ($res === TRUE) {
-				for($i=0; $i<$zip->numFiles; $i++) {
-					$name = $zip->getNameIndex($i);
-					if (strpos($name, "{$source}/") !== 0) continue;
-					$file = dirname(__DIR__).'/'.substr($name, strlen($source)+1);
-					if (substr($file,-1)!='/') {
-						$dir = dirname($file);
-						if (!is_dir($dir)) mkdir($dir, 0777, true);
-						$fread = $zip->getStream($name);
-						$fwrite = fopen($file, 'w');
-						while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
-						fclose($fread);
-						fclose($fwrite);
-					}
-				}
-				$zip->close();
-				unlink(dirname(__DIR__) . '/install.zip');
-				unlink(dirname(__DIR__) . 'README.md');
-				unlink(dirname(__DIR__) . '/.gitignore');
-	
-				updateConfig($repBranch,getBranchInfo(null,$repBranch)['new']['commit']);
-				
-				if ($redirectURL) echo "<meta http-equiv=refresh content=\"0; URL=".$redirectURL."\">";
+			ini_set('allow_url_fopen', 1);
+        	$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
+        	$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
+        	$source      = 'DadsGarage-' . $repBranch;
+        	$redirectURL = 'settings.php';
+
+    		// Download repository files as 'install.zip' and store in '$file' variable
+    		$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
+
+    		// If '$file' variable does not contain data, present error message to screen and kill script
+    		if ($file === false) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
+    
+    		$zip = new ZipArchive;
+
+    		// Open zip file and store contents in '$res' variable
+    		$res = $zip->open(dirname(__DIR__) . '/install.zip');
+    		if ($res === true) {
+    			for($i = 0; $i < $zip->numFiles; $i++) {
+	    			$name = $zip->getNameIndex($i);
+		    		if (strpos($name, "{$source}/") !== 0) continue;
+				    $file = dirname(__DIR__) . '/' . substr($name, strlen($source) + 1);
+    				if (substr($file, -1) != '/') {
+    					if (!is_dir(dirname($file))) mkdir(dirname($file), 0777, true);
+    					$fread  = $zip->getStream($name);
+    					$fwrite = fopen($file, 'w');
+    					while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
+    					fclose($fread);
+    					fclose($fwrite);
+    				}
+    			}
+    			$zip->close();
+			
+    			// Delete the following files
+    			unlink(dirname(__DIR__) . '/install.zip');
+    			unlink(dirname(__DIR__) . '/README.md');
+    			unlink(dirname(__DIR__) . '/.gitignore');
+    			unlink(dirname(__DIR__) . '/install.php');
+
+				updateConfig($repBranch, getBranchInfo(null, $repBranch)['new']['commit']);
+
+    			// If '$redirectURL' variable exists, redirect page to that URL
+    			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
 				$_SESSION['results'] = 'Application Updated Successfully!';
-			} else {
-				echo "Error Extracting Zip: Please <a href=\"".$repository."issues/new?title=Installation - Error Extracting\">click here</a> to submit a ticket.";
+
+    		} else {
+    		    echo "Error Extracting Zip: Please <a href='" . $repository . "issues/new?title=Installation - Error Extracting'>submit an issue</a>.";
 				$_SESSION['results'] = 'Something went wrong!';
-			}
-		} catch (Exception $e){$_SESSION['results'] = 'Something went wrong!<br/>'.$e;}
+    		}
+		} catch (Exception $e) {$_SESSION['results'] = 'Something went wrong!<br/>'.$e;}
 	}
+
 	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
 		$_SESSION['run']=1;
 	} elseif (isset($_SESSION['run']) && $_SESSION['run']==3) {
@@ -180,6 +192,14 @@
         if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
         elseif(isset($_ini['debug']))    {$debug    = $ini['debug'];}
         else                             {$debug    = 'false';}
+
+        if(isset($branch))               {$branch = $branch;}
+        elseif(isset($_ini['branch']))   {$branch = $ini['branch'];}
+        else                             {$branch = '';}
+
+        if(isset($commit))               {$commit = $commit;}
+        elseif(isset($_ini['commit']))   {$commit = $ini['commit'];}
+        else                             {$commit = '';}
 
 		file_put_contents('config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
