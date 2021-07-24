@@ -4,7 +4,7 @@
 
 	define('included', TRUE);
 
-	require_once('header.php');
+	require_once 'header.php' ;
 
 	//Create/update config.ini.php on page load/save
 	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
@@ -36,7 +36,7 @@
 	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
 
 	// Check existence/create database tables
-	if (strpos($hostChk,'pass') && strpos($dbChk,'pass') && strpos($userChk,'pass') && strpos($passChk,'pass')) {
+	if (strpos($hostChk, 'pass') && strpos($dbChk, 'pass') && strpos($userChk, 'pass') && strpos($passChk, 'pass')) {
 		$dbExists = true;
 		if (
 			!tableExists('customers') ||
@@ -47,11 +47,12 @@
 			!tableExists('users')	  ||
 			!tableExists('vehicles')
 		) {
-			if ($_POST['createTables']){$createdTables = createTables();
+			if ($_POST['createTables']) {
+				$createdTables = createTables();
 			} else {
 				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
-				$dbChk = str_replace('pass','warn',$dbChk);
-				$dbChk = str_replace('Database Connection Successful','One or more tables are missing from the database.',$dbChk);
+				$dbChk  = str_replace('pass', 'warn', $dbChk);
+				$dbChk  = str_replace('Database Connection Successful', 'One or more tables are missing from the database.', $dbChk);
 			}
 		}
 
@@ -59,48 +60,49 @@
 		$adminExists = adminExists();
  		if ($adminExists === TRUE) {
 			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
-		} elseif (!$adminExists === FALSE) {
-			if (strpos($adminExists,"Base table or view not found") !== FALSE) {
-				$userMessage = "The Users table does not exist.<br/>Please click the Create Table(s) button to create it.<br/><br/>";
-			} elseif (strpos($adminExists,"Access denied for user '" . $_POST['username'] . "'")) {$userMessage = "The username or password is incorrect.<br/><br/>";
+		} elseif (!$adminExists === false) {
+			if (strpos($adminExists, 'Base table or view not found') !== false) {
+				$userMessage = 'The Users table does not exist.<br/>Please click the Create Table(s) button to create it.<br/><br/>';
+			} elseif (strpos($adminExists, "Access denied for user '" . $_POST['username'] . "'")) {
+				$userMessage = 'The username or password is incorrect.<br/><br/>';
 			} else {$userMessage = $adminExists;}
-		} elseif($adminExists === FALSE) {require("../admin/secure.php");}
-	} else {$dbExists = FALSE;}
+		} elseif($adminExists === false) {require '../admin/secure.php';}
+	} else {$dbExists = false;}
 
-	if($dbExists) {if(tableExists("users")){require_once("include.php");}}
+	if($dbExists) {if (tableExists('users')) {require_once 'include.php';}}
 	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
 	if(isset($_POST['ownerAdd'])) {
-		$oInsert->bindParam(':name',$_POST['name']);
-		$oInsert->bindParam(':phone',$_POST['phone']);
-		$oInsert->bindParam(':email',$_POST['email']);
+		$oInsert->bindParam(':name',  $_POST['name']);
+		$oInsert->bindParam(':phone', $_POST['phone']);
+		$oInsert->bindParam(':email', $_POST['email']);
 		$oInsert->execute();
 		$_SESSION['settings'] = 'owners';
 	}
 	if(isset($_POST['userAdd'])) {
 		if($_POST['user']) {
 			if(!$_POST['isadmin']) {$_POST['isadmin']=0;}
-			$insertUsers->bindParam(':user',strtolower($_POST['user']));
-			$insertUsers->bindParam(':pass',password_hash($_POST['user'], PASSWORD_DEFAULT));
-			$insertUsers->bindParam(':fname',$_POST['fname']);
-			$insertUsers->bindParam(':lname',$_POST['lname']);
-			$insertUsers->bindParam(':isadmin',$_POST['isadmin'],PDO::PARAM_BOOL);
+			$insertUsers->bindParam(':user',    strtolower($_POST['user']));
+			$insertUsers->bindParam(':pass',    password_hash($_POST['user'], PASSWORD_DEFAULT));
+			$insertUsers->bindParam(':fname',   $_POST['fname']);
+			$insertUsers->bindParam(':lname',   $_POST['lname']);
+			$insertUsers->bindParam(':isadmin', $_POST['isadmin'], PDO::PARAM_BOOL);
 			$insertUsers->execute();
 		}
 		$_SESSION['settings'] = 'users';
 	}
 	if(isset($_POST['resetUser'])) {
-		$updateUsers->bindParam(':name',$_POST['user']);
-		$updateUsers->bindParam(':pass',password_hash($_POST['user'], PASSWORD_DEFAULT));
+		$updateUsers->bindParam(':name', $_POST['user']);
+		$updateUsers->bindParam(':pass', password_hash($_POST['user'], PASSWORD_DEFAULT));
 		$updateUsers->execute();
 		$_SESSION['settings'] = 'users';
 	}
 	if(isset($_POST['deleteUser'])) {
-		$deleteUser->bindParam(':id',$_POST['deleteID']);
+		$deleteUser->bindParam(':id', $_POST['deleteID']);
 		$deleteUser->execute();
 		$_SESSION['settings'] = 'users';
 	}
 	if(isset($_POST['deleteOwner'])) {
-		$deleteOwner->bindParam(':id',$_POST['deleteID']);
+		$deleteOwner->bindParam(':id', $_POST['deleteID']);
 		$deleteOwner->execute();
 		$_SESSION['settings'] = 'owners';
 	}
@@ -127,7 +129,7 @@
     		if ($res === true) {
     			for($i = 0; $i < $zip->numFiles; $i++) {
 	    			$name = $zip->getNameIndex($i);
-		    		if (strpos($name, "{$source}/") !== 0) continue;
+		    		if (strpos($name, $source . '/') !== 0) continue;
 				    $file = dirname(__DIR__) . '/' . substr($name, strlen($source) + 1);
     				if (substr($file, -1) != '/') {
     					if (!is_dir(dirname($file))) mkdir(dirname($file), 0777, true);
@@ -160,8 +162,8 @@
 	}
 
 	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
-		$_SESSION['run']=1;
-	} elseif (isset($_SESSION['run']) && $_SESSION['run']==3) {
+		$_SESSION['run'] = 1;
+	} elseif (isset($_SESSION['run']) && $_SESSION['run'] == 3) {
 		unset($_SESSION['results']);
 		unset($_SESSION['run']);
 	}
@@ -193,13 +195,13 @@
         elseif(isset($_ini['debug']))    {$debug    = $ini['debug'];}
         else                             {$debug    = 'false';}
 
-        if(isset($branch))               {$branch = $branch;}
-        elseif(isset($_ini['branch']))   {$branch = $ini['branch'];}
-        else                             {$branch = '';}
+        if(isset($branch))               {$branch   = $branch;}
+        elseif(isset($_ini['branch']))   {$branch   = $ini['branch'];}
+        else                             {$branch   = '';}
 
-        if(isset($commit))               {$commit = $commit;}
-        elseif(isset($_ini['commit']))   {$commit = $ini['commit'];}
-        else                             {$commit = '';}
+        if(isset($commit))               {$commit   = $commit;}
+        elseif(isset($_ini['commit']))   {$commit   = $ini['commit'];}
+        else                             {$commit   = '';}
 
 		file_put_contents('config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
@@ -262,7 +264,7 @@
 	}
 ?>
 <body class='settings darkbg'>
-	<div id='adminSidenav' class='adminsidenav'><?php require_once('menu.php');?></div>
+	<div id='adminSidenav' class='adminsidenav'><?php require_once 'menu.php';?></div>
 	<div id='adminMain'>
 		<div class='adminContainer' onclick='myFunction(this)'>
 		  <div class='bar1'></div>
@@ -273,36 +275,36 @@
 			<div class='settings-header'>Settings</div><br/>
 			<button class='tablink width25' value='General'
 				<?php 
-					if(strpos($dbChk,'pass')){
+					if(isset($dbChk) && strpos($dbChk, 'pass')){
 						echo "onclick=\"openTab('General', this, 'left')\"";
-						echo (!isset($_SESSION['settings'])?" id='defaultOpen'":'');
-					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
+						echo (!isset($_SESSION['settings']) ? " id='defaultOpen'" : '');
+					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
 			><span class='alt'>G</span>eneral</button>
 			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
-				<?php echo ((isset($_SESSION['settings']) && $_SESSION['settings']=='database') || !strpos($dbChk,'pass') ? " id='defaultOpen'" : '');?>
+				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || !strpos($dbChk, 'pass') ? " id='defaultOpen'" : '');?>
 			><span class='alt'>D</span>atabase</button>
 			<button class='tablink width25' value='Owners'
 				<?php 
-					if(strpos($dbChk,'pass')){
+					if(isset($dbChk) && strpos($dbChk, 'pass')){
 						echo "onclick=\"openTab('Owners', this, 'middle')\"";
-						echo ((isset($_SESSION['settings']) && $_SESSION['settings']=='owners') ? " id='defaultOpen'" : '');
-					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
+						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'owners') ? " id='defaultOpen'" : '');
+					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
+					} else {echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?> 
 			><span class='alt'>O</span>wners</button>
 			<button class='tablink width25'	value='Users'
 				<?php 
-					if(strpos($dbChk,'pass')){
+					if(isset($dbChk) && strpos($dbChk, 'pass')){
 						echo "onclick=\"openTab('Users', this, 'right')\"";
-						echo ((isset($_SESSION['settings']) && $_SESSION['settings']=='users') ? " id='defaultOpen'" : '');
-					} elseif(strpos($dbChk,'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
+						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'users') ? " id='defaultOpen'" : '');
+					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
 					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?>
 			><span class='alt'>U</span>sers</button>
 			<div id='General' class='tabcontent'>
-				<form action='<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
+				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings borderupdown'>
 						<tr><td>Bitly User Key:</td><td><input name='bitlyUser' type='textbox' value=''></td></tr>
 						<tr><td nowrap>Bitly API Key:</td><td><input name='bitlyAPI' type='textbox' value=''></td></tr>
@@ -310,8 +312,8 @@
 							<select name='branch'>
 								<?php 
 									foreach(getBranchInfo()['branches'] as $branch=>$value) {
-										if(!$ini['branch']) {$ini['branch']='master';}
-										echo "<option value='$branch'".($branch==$ini['branch']?' selected':'').">$branch</option>";
+										if(!$ini['branch']) {$ini['branch'] = 'master';}
+										echo '<option value="' . $branch . '"' . ($branch == $ini['branch'] ? ' selected' : '') . '>' . $branch . '</option>';
 									}
 								?>
 							</select>
@@ -319,36 +321,30 @@
 						<tr>
 							<td>Debug Mode:</td>
 							<td style='text-align:left;'>
-                                <input type="hidden" name="debug" value="<?php 
-								        if($_SESSION['debug'] === true) {
-								            echo '1';
-								        } elseif($_SESSION['debug'] === false) {
-								            echo '0';
-								        }
-							        ?>"
-                                ><input type='checkbox' onclick="this.previousSibling.value=1-this.previousSibling.value"
+                                <input type='hidden' name='debug' value='<?php 
+									if($_SESSION['debug'] === true) {echo '1';}
+									elseif($_SESSION['debug'] === false) {echo '0';}
+							    ?>'>
+								<input type='checkbox' onclick='this.previousSibling.value=1-this.previousSibling.value'
 								    <?php 
-								        if($_SESSION['debug'] === true) {
-								            echo 'value=true checked';
-								        } elseif($_SESSION['debug'] === false) {
-								            echo 'value=false unchecked';
-								        } else {
-								            echo "phpvalue=" . $ini['debug'];
-								        }
+								        if($_SESSION['debug'] === true) {echo 'value=true checked';}
+										elseif($_SESSION['debug'] === false) {echo 'value=false unchecked';}
+										else {echo 'phpvalue=' . $ini['debug'];}
 							        ?>
-						        >
+								>
 							</td>
 						</tr>
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {
-							echo $_SESSION['results'].'<br/><br/>';
-							$_SESSION['run']+=1;
+							echo $_SESSION['results'] . '<br/><br/>';
+							$_SESSION['run'] += 1;
 						}
-						echo (isset($createdTables) ? ($createdTables === true ? 
-							'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
+						echo (isset($createdTables) ? 
+							($createdTables === true ? 
+								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $userMessage;
-						$aheadBy = getBranchInfo($ini['commit'],$ini['branch']);
+						$aheadBy = getBranchInfo($ini['commit'], $ini['branch']);
 						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
 						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
@@ -356,19 +352,19 @@
 					?>
 				</form>
 			</div>
-			<div id="Database" class="tabcontent">
-				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+			<div id='Database' class='tabcontent'>
+				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings borderupdown'>
-						<tr><td>Host Address:</td><td><input name="host" type="textbox"<?php echo $hostChk;?> value="<?php echo $ini["host"];?>"></td></tr>
-						<tr><td nowrap>Database Name:</td><td><input name="dbname" type="textbox"<?php echo $dbChk;?> value="<?php echo $ini["dbname"];?>"></td></tr>
-						<tr><td>Username:</td><td><input name="username" type="textbox"<?php echo $userChk;?> value="<?php echo $ini["username"];?>" autocomplete='username'></td></tr>
-						<tr><td>Password:</td><td><input name="password" type="password"<?php echo $userChk;?> value="<?php echo $ini["password"];?>" autocomplete='current-password'></td></tr>
-						<tr><td>Git Branch:</td><td style="text-align:left;">
-							<select name="branch">
+						<tr><td>Host Address:</td><td><input name='host' type='textbox'<?= (isset($hostChk) ? $hostChk : '');?> value='<?= $ini['host'];?>'></td></tr>
+						<tr><td nowrap>Database Name:</td><td><input name='dbname' type='textbox'<?= (isset($dbChk) ? $dbChk : '');?> value='<?= $ini['dbname'];?>'></td></tr>
+						<tr><td>Username:</td><td><input name='username' type='textbox'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['username'];?>' autocomplete='username'></td></tr>
+						<tr><td>Password:</td><td><input name='password' type='password'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['password'];?>' autocomplete='current-password'></td></tr>
+						<tr><td>Git Branch:</td><td style='text-align:left;'>
+							<select name='branch'>
 								<?php 
 									foreach(getBranchInfo()['branches'] as $branch=>$value) {
-										if(!$ini["branch"]) {$ini["branch"]="master";}
-										echo "<option value='$branch'".($branch==$ini["branch"]?" selected":"").">$branch</option>";
+										if(!$ini['branch']) {$ini['branch'] = 'master';}
+										echo '<option value="' . $branch . '"' . ($branch == $ini['branch'] ? ' selected' : '') . '>' . $branch . '</option>';
 									}
 								?>
 							</select>
@@ -376,51 +372,50 @@
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {
-							echo $_SESSION['results']."<br/><br/>";
-							$_SESSION['run']+=1;
+							echo $_SESSION['results'] . '<br/><br/>';
+							$_SESSION['run'] += 1;
 						}
-						echo (isset($created_tables) ? ($created_tables === true ?
-							'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
+						echo (isset($created_tables) ? 
+							($created_tables === true ?
+								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $userMessage;
-						$aheadBy = getBranchInfo($ini['commit'],$ini['branch']);
+						$aheadBy = getBranchInfo($ini['commit'], $ini['branch']);
 						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
-						echo "<input type=\"Submit\" name=\"Save\" value=\"Save\">&nbsp;";
-						echo "<input type=\"Submit\" name=\"Update\" value=\"Update Application\" title=\"Install updates from GitHub\">";
+						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
+						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
 						if ($dbExists) {echo (isset($button) ? $button : '');}
 					?>
 				</form>
 			</div>
-			<div id="Owners" class="tabcontent">
+			<div id='Owners' class='tabcontent'>
 				<?php 
-					if($dbExists) {
-						if(tableExists('owners')){
-							require_once('include.php');
-							$oSelect->execute();
-							$oRows = $oSelect->fetchAll(PDO::FETCH_ASSOC);
-							$owners=$oRows;
-						}
+					if ($dbExists && tableExists('owners')) {
+						require_once 'include.php';
+						$oSelect->execute();
+						$oRows  = $oSelect->fetchAll(PDO::FETCH_ASSOC);
+						$owners = $oRows;
 					}
 				?>
-				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
-					<table class="settings">
-						<tr><td>Name:</td><td><input name="name" type="textbox" value=""></td></tr>
-						<tr><td>Phone:</td><td><input name="phone" type="textbox" value=""></td></tr>
-						<tr><td>Email:</td><td><input name="email" type="textbox" value=""></td></tr>
+				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
+					<table class='settings'>
+						<tr><td>Name:</td><td><input name='name' type='textbox' value=''></td></tr>
+						<tr><td>Phone:</td><td><input name='phone' type='textbox' value=''></td></tr>
+						<tr><td>Email:</td><td><input name='email' type='textbox' value=''></td></tr>
 					</table>
-					<input type="Submit" name="ownerAdd" value="Add"><br/>
+					<input type='Submit' name='ownerAdd' value='Add'><br/>
 				</form>
 				<hr class='hrsettings'>
-				<?php if (is_array($owners) || $owners instanceof Traversable) {?>
-					<table id="owners">
+				<?php if (isset($owners) && (is_array($owners) || $owners instanceof Traversable)) {?>
+					<table id='owners'>
 						<tr><th>Name</th><th>Phone</th><th>Email</th><th>Delete</th></tr>
-						<?php foreach($owners as $owner) {?>
+						<?php foreach ($owners as $owner) {?>
 							<tr>
-								<td><?php echo $owner['name']?></td>
-								<td><?php echo $owner['phone']?></td>
-								<td><?php echo $owner['email']?></td>
+								<td><?= $owner['name']?></td>
+								<td><?= $owner['phone']?></td>
+								<td><?= $owner['email']?></td>
 								<td>
-									<form action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>' method='post'>
-										<input type='hidden' name='deleteID' value='<?php echo $owner['id']?>'>
+									<form action='<?= htmlspecialchars($_SERVER['PHP_SELF'])?>' method='post'>
+										<input type='hidden' name='deleteID' value='<?= $owner['id']?>'>
 										<input type='submit' name='deleteOwner' value='Delete'>
 									</form>
 								</td>
@@ -429,57 +424,60 @@
 					</table>
 				<?php }?>
 			</div>
-			<div id="Users" class="tabcontent">
+			<div id='Users' class='tabcontent'>
  				<?php 
 				if($dbExists){
-					if(tableExists("users")){
-						require_once("include.php");
+					if(tableExists('users')){
+						require_once 'include.php';
 						$selectAllUsers->execute();
-						$users=$selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
+						$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
 					}
 				}?>
-				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
-					<table class="settings">
-						<tr><td>Username:</td><td><input id='newUsername' name="user" type="textbox" value=""></td></tr>
-						<tr><td nowrap>First Name:</td><td><input name="fname" type="textbox" value=""></td></tr>
-						<tr><td>Last Name:</td><td><input name="lname" type="textbox" value=""></td></tr>
-						<tr><td>Is Admin?</td><td style="text-align:left;"><input name="isadmin" type="checkbox" value="1"></td></tr>
+				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
+					<table class='settings'>
+						<tr><td>Username:</td><td><input id='newUsername' name='user' type='textbox' value=''></td></tr>
+						<tr><td nowrap>First Name:</td><td><input name='fname' type='textbox' value=''></td></tr>
+						<tr><td>Last Name:</td><td><input name='lname' type='textbox' value=''></td></tr>
+						<tr><td>Is Admin?</td><td style='text-align:left;'><input name='isadmin' type='checkbox' value='1'></td></tr>
 						<tr><td colspan=2>*On add and reset, password is equal to the username</td></tr>
 					</table>
-					<input type="submit" name="userAdd" id='userAdd' value="Add"><br/>
+					<input type='submit' name='userAdd' id='userAdd' value='Add'><br/>
 				</form>
 				<hr class='hrsettings'>
-				<table id="users">
+				<table id='users'>
 					<tr><th>Username</th><th>First Name</th><th>Last Name</th><th>Is Admin?</th><th>Password</th><th>Delete</th></tr>
-					<?php foreach($users as $user) {?>
+					<?php 
+						if (isset($users)) {
+							foreach($users as $user) {
+					?>
 							<tr>
-								<td><?php echo $user['username']?></td>
-								<td><?php echo $user['fname']?></td>
-								<td><?php echo $user['lname']?></td>
-								<td><input type='checkbox' disabled<?php echo $user['isadmin']==1?" checked":""?>></td>
+								<td><?= $user['username']?></td>
+								<td><?= $user['fname']?></td>
+								<td><?= $user['lname']?></td>
+								<td><input type='checkbox' disabled<?= ($user['isadmin'] == 1 ? ' checked' : '')?>></td>
 								<td>
-									<form action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>' method='post'>
-										<input type='hidden' name='user' value='<?php echo $user['username']?>'>
+									<form action='<?= htmlspecialchars($_SERVER['PHP_SELF'])?>' method='post'>
+										<input type='hidden' name='user' value='<?= $user['username']?>'>
 										<input type='submit' name='resetUser' value='Reset'>
 									</form>
 								</td>
 								<td>
-									<form action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>' method='post'>
-										<input type='hidden' name='deleteID' value='<?php echo $user['id']?>'>
-										<input type='hidden' name='user' value='<?php echo $user['username']?>'>
+									<form action='<?= htmlspecialchars($_SERVER['PHP_SELF'])?>' method='post'>
+										<input type='hidden' name='deleteID' value='<?= $user['id']?>'>
+										<input type='hidden' name='user' value='<?= $user['username']?>'>
 										<input type='submit' name='deleteUser' value='Delete'>
 									</form>
 								</td>
 							</tr>
-					<?php }?>
+					<?php }}?>
 				</table>
 				<?php if(isset($_POST['resetUser'])) {?>
-					<br><span class='red bold'><?php echo $_POST['user'];?>'s password has been reset.</span>
+					<br><span class='red bold'><?= $_POST['user'];?>'s password has been reset.</span>
 				<?php } elseif(isset($_POST['deleteUser'])) {?>
-					<br><span class='red bold'><?php echo $_POST['user'];?>'s account has been deleted.</span>
+					<br><span class='red bold'><?= $_POST['user'];?>'s account has been deleted.</span>
 				<?php } elseif(isset($_POST['userAdd'])) {
 							if($_POST['user']) {?>
-								<br><span class='red bold'><?php echo strtolower($_POST['user']);?>'s account has been created successfully.</span>
+								<br><span class='red bold'><?= strtolower($_POST['user']);?>'s account has been created successfully.</span>
 							<?php } else {?>
 								<br><span class='red bold'>Username must not be blank.</span>
 				<?php 		}
@@ -487,44 +485,42 @@
 			</div>
 		</div>
 	</div>
-	<div class="commit"><?php echo $ini['commit'];?></div>
-	<script src="admin.js"></script>
+	<div class='commit'><?= $ini['commit'];?></div>
+	<script src='admin.js'></script>
 	<script>
 		<?php
-			if($dbExists) {
-				if(tableExists('owners')) {
-				}
-				$selectAllUsernames = $db->prepare("SELECT username FROM users ORDER BY fname ASC");
+			if($dbExists && tableExists('owners')) {
+				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
 			}
 		?>
 
-		var usernames = <?php echo (isset($usernames) ? json_encode($usernames) : "''");?>;
+		var usernames = <?= (isset($usernames) ? json_encode($usernames) : "''");?>;
 		$(document).ready(function() {
 			var txtUsername = $('#newUsername');
 			document.getElementById('defaultOpen').click();
 			txtUsername.keyup(function(){
 				for (var i=0;usernames.length>i;i++) {
 					if (txtUsername.val().toLowerCase() == usernames[i].username) {
-						txtUsername.prop('title','Username exists').toggleClass('required',true);
+						txtUsername.prop('title', 'Username exists').toggleClass('required', true);
 						$('#userAdd').prop('disabled', true);
 						break;
 					} else {
-						txtUsername.prop('title','').toggleClass('required',false);
+						txtUsername.prop('title', '').toggleClass('required', false);
 						$('#userAdd').prop('disabled', false);
 					}
 				}
 			});			
 			$(document).keydown(function(e) {
-				if(e.altKey) {e.preventDefault();$('.alt').css('text-decoration','underline');}
+				if(e.altKey) {e.preventDefault();$('.alt').css('text-decoration', 'underline');}
 				if(e.altKey && e.keyCode == 71) {openTab('General', $("button[value='General']").get(0), 'left');}
 				else if(e.altKey && e.keyCode == 68) {
 					e.preventDefault();openTab('Database', $("button[value='Database']").get(0), 'middle');}
 				else if(e.altKey && e.keyCode == 79) {openTab('Owners', $("button[value='Owners']").get(0), 'middle');}
 				else if(e.altKey && e.keyCode == 85) {openTab('Users', $("button[value='Users']").get(0), 'right');}
 			});
-			$(document).keyup(function(e) {$('.alt').css('text-decoration','none');});
+			$(document).keyup(function(e) {$('.alt').css('text-decoration', 'none');});
 		});
 	</script>
 </body>
