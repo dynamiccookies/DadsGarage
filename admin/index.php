@@ -17,7 +17,7 @@
 			}
 
             if (!$duplicate_vin) {
-    			include_once 'vin-decoder.php';
+    			require_once '../includes/vin-decoder.php';
 
     			// decodeVIN function is in 'vin-decoder.php' file
     			$vinValues = decodeVIN($_POST['VIN'], ...$vehicle_attributes);
