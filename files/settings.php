@@ -175,31 +175,31 @@
 		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
 
         if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
-        elseif(isset($_ini['dbname']))   {$dbname   = $ini['dbname'];}
+        elseif(isset($ini['dbname']))    {$dbname   = $ini['dbname'];}
         else                             {$dbname   = '';}
 
         if(isset($_POST['host']))        {$host     = $_POST['host'];}
-        elseif(isset($_ini['host']))     {$host     = $ini['host'];}
+        elseif(isset($ini['host']))      {$host     = $ini['host'];}
         else                             {$host     = '';}
 
         if(isset($_POST['username']))    {$username = $_POST['username'];}
-        elseif(isset($_ini['username'])) {$username = $ini['username'];}
+        elseif(isset($ini['username']))  {$username = $ini['username'];}
         else                             {$username = '';}
 
         if(isset($_POST['password']))    {$password = $_POST['password'];}
-        elseif(isset($_ini['password'])) {$password = $ini['password'];}
+        elseif(isset($ini['password']))  {$password = $ini['password'];}
         else                             {$password = '';}
 
         if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
-        elseif(isset($_ini['debug']))    {$debug    = $ini['debug'];}
+        elseif(isset($ini['debug']))     {$debug    = $ini['debug'];}
         else                             {$debug    = 'false';}
 
         if(isset($branch))               {$branch   = $branch;}
-        elseif(isset($_ini['branch']))   {$branch   = $ini['branch'];}
+        elseif(isset($ini['branch']))    {$branch   = $ini['branch'];}
         else                             {$branch   = '';}
 
         if(isset($commit))               {$commit   = $commit;}
-        elseif(isset($_ini['commit']))   {$commit   = $ini['commit'];}
+        elseif(isset($ini['commit']))    {$commit   = $ini['commit'];}
         else                             {$commit   = '';}
 
 		file_put_contents('config.ini.php', 
