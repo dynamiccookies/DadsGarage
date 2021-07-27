@@ -174,33 +174,33 @@
 
 		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
 
-        if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
-        elseif(isset($ini['dbname']))    {$dbname   = $ini['dbname'];}
-        else                             {$dbname   = '';}
+		if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
+		elseif(isset($ini['dbname']))    {$dbname   = $ini['dbname'];}
+		else                             {$dbname   = '';}
 
-        if(isset($_POST['host']))        {$host     = $_POST['host'];}
-        elseif(isset($ini['host']))      {$host     = $ini['host'];}
-        else                             {$host     = '';}
+		if(isset($_POST['host']))        {$host     = $_POST['host'];}
+		elseif(isset($ini['host']))      {$host     = $ini['host'];}
+		else                             {$host     = '';}
 
-        if(isset($_POST['username']))    {$username = $_POST['username'];}
-        elseif(isset($ini['username']))  {$username = $ini['username'];}
-        else                             {$username = '';}
+		if(isset($_POST['username']))    {$username = $_POST['username'];}
+		elseif(isset($ini['username']))  {$username = $ini['username'];}
+		else                             {$username = '';}
 
-        if(isset($_POST['password']))    {$password = $_POST['password'];}
-        elseif(isset($ini['password']))  {$password = $ini['password'];}
-        else                             {$password = '';}
+		if(isset($_POST['password']))    {$password = $_POST['password'];}
+		elseif(isset($ini['password']))  {$password = $ini['password'];}
+		else                             {$password = '';}
 
-        if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
-        elseif(isset($ini['debug']))     {$debug    = $ini['debug'];}
-        else                             {$debug    = 'false';}
+		if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
+		elseif(isset($ini['debug']))     {$debug    = $ini['debug'];}
+		else                             {$debug    = 'false';}
 
-        if(isset($branch))               {$branch   = $branch;}
-        elseif(isset($ini['branch']))    {$branch   = $ini['branch'];}
-        else                             {$branch   = '';}
+		if(isset($branch))               {}
+		elseif(isset($ini['branch']))    {$branch   = $ini['branch'];}
+		else                             {$branch   = '';}
 
-        if(isset($commit))               {$commit   = $commit;}
-        elseif(isset($ini['commit']))    {$commit   = $ini['commit'];}
-        else                             {$commit   = '';}
+		if(isset($commit))               {}
+		elseif(isset($ini['commit']))    {$commit   = $ini['commit'];}
+		else                             {$commit   = '';}
 
 		file_put_contents('config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
@@ -213,7 +213,8 @@
 				"commit		= '" . $commit   . "'\n" .
 				"bitlyuser	= '" . ''        . "'\n" .
 				"bitlyAPI	= '" . ''        . "'\n" . 
-			"*/\n?>");
+			"*/\n?>"
+		);
 	}
 	
 	//Iterate through retreived branch info - create/return multidimentional array
