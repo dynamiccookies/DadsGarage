@@ -21,10 +21,10 @@
 	if ($currentPath == 'admin') {$files = '../files/';} elseif ($currentPath == 'files') {$files = '';} else {$files = 'files/';}
 	if ($currentPath == 'files') {$admin = '../admin/';} elseif ($currentPath == 'admin') {$admin = '';} else {$admin = 'admin/';}
 	
-	define('included', TRUE);
+	if(!defined('included')) define('included', TRUE);
 
-	require_once($files . 'header.php');
-	require($files . 'conn.php');
+	require_once $files . 'header.php';
+	require $files . 'conn.php';
 
 	$success = 'noscreen ';
 
@@ -41,10 +41,10 @@
 	$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);	//Should this be moved too?
 
 	//Vehicles - Prepare query to insert year, make, model, & trim as new record into database
-	$insert = $db->prepare("INSERT INTO vehicles (vin,year,make,model,trim) VALUES (:vin,:year,:make,:model,:trim)");
+	$insert = $db->prepare('INSERT INTO vehicles (vin,year,make,model,trim) VALUES (:vin,:year,:make,:model,:trim)');
 	
 	//Vehicles - Prepare query to update all fields (except purchprice and purchdate) where ID=$_GET['ID']
-	$update = $db->prepare("UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes, sold_date=:sold_date " . (isset($_GET['id']) ? "WHERE ID=" . $_GET['id'] : ''));
+	$update = $db->prepare('UPDATE vehicles SET vin=:vin, year=:year, make=:make, model=:model, trim=:trim, miles=:miles, owner=:owner, askprice=:askprice, status=:status, insured=:insured, payment=:payment, paynotes=:paynotes, sold_date=:sold_date ' . (isset($_GET['id']) ? 'WHERE ID=' . $_GET['id'] : ''));
 
 	if (isset($_GET['id'])){
 		$updateDesc = $db->prepare("UPDATE vehicles SET pubnotes=:pubnotes WHERE ID=" . $_GET['id']);
@@ -54,7 +54,7 @@
 	//Vehicles - Prepare query to select (if $_GET[;ID;] exists, return all info for only that vehicle; else return all info for all vehicles) [may want to break into two 
 	//select statements for efficiency]
 	//$select = $db->prepare("SELECT * FROM vehicles ".$where." ORDER BY year ASC");
-	$select = $db->prepare("SELECT * FROM vehicles " . (isset($_GET['id']) ? "WHERE ID=" . $_GET['id'] : '') . " ORDER BY year ASC");
+	$select = $db->prepare('SELECT * FROM vehicles ' . (isset($_GET['id']) ? 'WHERE ID=' . $_GET['id'] : '') . ' ORDER BY year ASC');
 	$select->execute();																//Execute select query
 	$rows = $select->fetchAll(PDO::FETCH_ASSOC);									//Fill array with select query results
 

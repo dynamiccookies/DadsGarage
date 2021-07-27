@@ -36,13 +36,13 @@
 		$_SESSION['branch'] = $repBranch;
 		
 		// Store selected branch's commit SHA into session variable for use later
-		foreach ($branches as $branch) {if($branch['name']==$repBranch) {$_SESSION['inicommit']=$branch['commit']['sha'];}}
+		foreach ($branches as $branch) {if ($branch['name'] == $repBranch) {$_SESSION['inicommit'] = $branch['commit']['sha'];}}
 
 		// Download repository files as 'install.zip' and store in '$file' variable
 		$file = file_put_contents('install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
 
 		// If '$file' variable does not contain data, present error message to screen and kill script
-		if($file === FALSE) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
+		if ($file === FALSE) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
 
 		// Create '$zip' variable as ZipArchive object
 		$zip = new ZipArchive;
@@ -53,8 +53,8 @@
 			for($i=0; $i<$zip->numFiles; $i++) {
 				$name = $zip->getNameIndex($i);
 				if (strpos($name, "{$source}/") !== 0) continue;
-				$file = getcwd() . '/' . substr($name, strlen($source)+1);
-				if (substr($file,-1) != '/') {
+				$file = getcwd() . '/' . substr($name, strlen($source) + 1);
+				if (substr($file, -1) != '/') {
 					$dir = dirname($file);
 					if (!is_dir($dir)) mkdir($dir, 0777, true);
 					$fread = $zip->getStream($name);

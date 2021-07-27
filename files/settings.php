@@ -8,7 +8,6 @@
 
 	//Create/update config.ini.php on page load/save
 	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
-
 		updateConfig(
 			($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), 
 			($_SESSION['inicommit'] ?: '')
@@ -38,6 +37,7 @@
 	// Check existence/create database tables
 	if (strpos($hostChk, 'pass') && strpos($dbChk, 'pass') && strpos($userChk, 'pass') && strpos($passChk, 'pass')) {
 		$dbExists = true;
+
 		if (
 			!tableExists('customers') ||
 			!tableExists('expenses')  ||
@@ -170,10 +170,9 @@
 
 	//(Re)Create config.ini.php file
 	function updateConfig($branch = null, $commit = null) {
-		require('password.php');
+		require 'password.php';
 
 		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
-
 
         if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
         elseif(isset($_ini['dbname']))   {$dbname   = $ini['dbname'];}
