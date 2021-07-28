@@ -7,7 +7,7 @@
 	} else {unset($_SESSION['include']);}
 
 	$_SESSION['include'] = true;
-	require_once '../files/password.php';
+	require_once '../includes/password.php';
 
 	if (isset($_GET['logout'])) {
 		echo "<meta http-equiv=refresh content=\"0; URL=" . $_SERVER['SCRIPT_URI'] . "\">";
