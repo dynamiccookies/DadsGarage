@@ -1,6 +1,5 @@
 <?php
 
-	if(!isset($_SESSION)){session_start();} 
 	ini_set('display_errors', (isset($_SESSION['debug']) ? $_SESSION['debug'] : false));
 	register_shutdown_function(function(){
 		$last_error = error_get_last();

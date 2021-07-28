@@ -1,5 +1,7 @@
 <?php
 
+	if (!isset($_SESSION)) {session_start();}
+
 	require_once 'files/include.php';
 	
 	// Log date/time and IP data
