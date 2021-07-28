@@ -1,7 +1,18 @@
 <?php
 
+	// Do not allow a direct connection to this file
+	if (!isset($_POST['include'])) {
+		header('HTTP/1.0 403 Forbidden');
+		exit;
+	} 
+
+	$_SESSION['include'] = true;
+	require_once '../files/header.php';
+
+	$_SESSION['include'] = true;
+	require_once '../files/include.php';
+
 	ini_set('memory_limit', '128M');
-	include 'secure.php';
 
 	function rearrange($arr){
 		foreach ($arr as $key => $all) {

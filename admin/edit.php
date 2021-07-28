@@ -342,7 +342,8 @@
 					Files:<br>
 					<div>
 						<form action='upload_file.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
-						  <input name='files[]' type='file' multiple /><input type='submit' value='Upload files' />
+						    <input type='hidden' name='include' value='true'>
+							<input name='files[]' type='file' multiple /><input type='submit' value='Upload files' />
 						</form>
 						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading1' width=100px></center>
 					</div>
@@ -386,7 +387,8 @@
 					Photos:<br>
 					<div>
 						<form action='upload_file.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
-						  <input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' onclick='loading2()' value='Upload photos' />
+						    <input type='hidden' name='include' value='true'>
+							<input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' onclick='loading2()' value='Upload photos' />
 						</form>
 						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading2' width=100px></center>
 					</div>
