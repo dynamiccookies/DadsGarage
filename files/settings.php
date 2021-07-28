@@ -4,7 +4,7 @@
 
 	//Create/update config.ini.php on page load/save
 	$_SESSION['include'] = true;
-	require_once 'header.php';
+	require_once '../includes/header.php';
 
 	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
 		updateConfig(

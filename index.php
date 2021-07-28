@@ -3,7 +3,7 @@
 	if (!isset($_SESSION)) {session_start();}
 
 	$_SESSION['include'] = true;
-	require_once 'header.php';
+	require_once 'includes/header.php';
 
 	$_SESSION['include'] = true;
 	require_once 'files/include.php';

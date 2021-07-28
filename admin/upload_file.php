@@ -7,7 +7,7 @@
 	} 
 
 	$_SESSION['include'] = true;
-	require_once '../files/header.php';
+	require_once '../includes/header.php';
 
 	$_SESSION['include'] = true;
 	require_once '../files/include.php';
