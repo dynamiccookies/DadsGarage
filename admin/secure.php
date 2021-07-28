@@ -1,7 +1,5 @@
 <?php
 
-	if(isset($_GET['logout'])) {
-		echo "<meta http-equiv=refresh content=\"0; URL=" . (isset($_SESSION['isadmin']) ? "." : "..\\") . "\">";
 	// Do not allow a direct connection to this file
 	if (!isset($_SESSION['include']) && !isset($_GET['logout'])) {
 		header('HTTP/1.0 403 Forbidden');
@@ -11,21 +9,22 @@
 	$_SESSION['include'] = true;
 	require_once '../files/password.php';
 
+	if (isset($_GET['logout'])) {
+		echo "<meta http-equiv=refresh content=\"0; URL=" . $_SERVER['SCRIPT_URI'] . "\">";
 		session_unset();     // unset $_SESSION variable for the run-time 
 		session_destroy();   // destroy session data in storage
 	}
-	if(!function_exists('showLoginPasswordProtect')) {
+
+	if (!function_exists('showLoginPasswordProtect')) {
 		// show login form
 		function showLoginPasswordProtect($error_msg) {
 ?>
 			<html>
 			<head>
-				<title>Please enter password to access this page</title>
 				<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='NO-CACHE'>
 				<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
-				<script src='http://code.jquery.com/jquery-latest.min.js'></script>
 				<script src='https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js'></script>
-				<script language='JavaScript' type='text/javascript'>
+				<script>
 					$(document).ready(function() {
 						$('#newpass,#confirmpass').keyup(function(){
 							if($('#newpass').val() != $('#confirmpass').val()) {
@@ -40,22 +39,19 @@
 						});
 						var strength = {0:'Worst',1:'Bad',2:'Weak',3:'Good',4:'Strong'};
 						var password = document.getElementById('newpass');
-						var meter = document.getElementById('password-strength-meter');
-						var text = document.getElementById('password-strength-text');
+						var meter    = document.getElementById('password-strength-meter');
+						var text     = document.getElementById('password-strength-text');
 
 						password.addEventListener('input', function() {
-						  var val = password.value;
-						  var result = zxcvbn(val);
+							var val    = password.value;
+							var result = zxcvbn(val);
 
-						  // Update the password strength meter
-						  meter.value = result.score;
+							// Update the password strength meter
+							meter.value = result.score;
 
-						  // Update the text indicator
-						  if (val !== '') {
-							text.innerHTML = strength[result.score]; 
-						  } else {
-							text.innerHTML = '';
-						  }
+							// Update the text indicator
+							if (val !== '') {text.innerHTML = strength[result.score];}
+							else {text.innerHTML = '';}
 						});
 					});
 

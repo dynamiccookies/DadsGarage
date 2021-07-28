@@ -138,10 +138,10 @@
 					}
 				}
 			}	
-		}else {echo 'You have attempted to upload too many files at one time. <br>Please try again with a smaller quantity.';}
+		} else {echo 'You have attempted to upload too many files at one time. <br>Please try again with a smaller quantity.';}
 	} catch (Exception $e) {
-    echo 'Error Message: ',  $e->getMessage(), '\n<br><br>You have most likely attempted to upload too many files at one time.';
-}
+		echo 'Error Message: ',  $e->getMessage(), '\n<br><br>You have most likely attempted to upload too many files at one time.';
+	}
 	echo "\n<p>Go Back to <a href='edit.php?id=" . $id . "'>" . trim($rows[0]['year'] . ' ' . $rows[0]['make'] . 
 		' ' . $rows[0]['model'] . ' ' . $rows[0]['trim']) . '</a>.</p></div></body>';
 ?>

@@ -131,5 +131,4 @@
 	$eTots = $db->prepare("SELECT SUM(cost) as 'Total' FROM expenses " . (isset($_GET['id']) ? "WHERE vehicle=" . $_GET['id'] : ''));
 	$eTots->execute();
 	$eTotal = $eTots->fetchAll(PDO::FETCH_ASSOC);
-	?>
-
+?>

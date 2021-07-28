@@ -15,7 +15,6 @@
 		
 		if (!empty($_POST['VIN'])) {
 			$duplicate_vin      = false;
-			$vehicle_attributes = array('Make', 'Model', 'ModelYear', 'Trim', 'VIN');
 
 			foreach ($rows as $row) {
 				if (!empty($row['vin']) && $row['vin'] == $_POST['VIN']) {
@@ -25,10 +24,11 @@
 			}
 
             if (!$duplicate_vin) {
+				$vehicle_attributes  = array('Make', 'Model', 'ModelYear', 'Trim', 'VIN');
 				$_SESSION['include'] = true;
     			require_once '../includes/vin-decoder.php';
 
-    			// decodeVIN function is in 'vin-decoder.php' file
+    			// The decodeVIN function is in the '../includes/vin-decoder.php' file
     			$vinValues = decodeVIN($_POST['VIN'], ...$vehicle_attributes);
     
     			$insert->bindParam(':vin',   $vinValues['VIN']);

@@ -1,8 +1,8 @@
 <?php
 
-	if(!$_GET['id']) {
 	if (!isset($_SESSION)) {session_start();}
 	
+	if (!$_GET['id']) {
 		header('Location: index.php');
 		exit;
 	}
