@@ -2,11 +2,10 @@
 
 	if (!isset($_SESSION)) {session_start();}
 
-	define('included', TRUE);
-
-	require_once 'header.php' ;
-
 	//Create/update config.ini.php on page load/save
+	$_SESSION['include'] = true;
+	require_once 'header.php';
+
 	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
 		updateConfig(
 			($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), 
@@ -22,6 +21,7 @@
 
 	//Test validity of database, host, & credentials
 	if (isset($ini['host'])) {
+    	$_SESSION['include'] = true;
 		require_once 'dbcheck.php';
 
 		$hostChk = (isset($array['connTest']) && $array['connTest'] != 'Pass' ? $array['connTest'] : '');
@@ -66,10 +66,18 @@
 			} elseif (strpos($adminExists, "Access denied for user '" . $_POST['username'] . "'")) {
 				$userMessage = 'The username or password is incorrect.<br/><br/>';
 			} else {$userMessage = $adminExists;}
-		} elseif($adminExists === false) {require '../admin/secure.php';}
+		} elseif ($adminExists === false) {
+			$_SESSION['include'] = true;
+			require_once '../admin/secure.php';
+		}
 	} else {$dbExists = false;}
 
-	if($dbExists) {if (tableExists('users')) {require_once 'include.php';}}
+	if($dbExists) {
+		if (tableExists('users')) {
+			$_SESSION['include'] = true;
+			require_once 'include.php';
+		}
+	}
 	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
 	if(isset($_POST['ownerAdd'])) {
 		$oInsert->bindParam(':name',  $_POST['name']);
@@ -170,7 +178,8 @@
 
 	//(Re)Create config.ini.php file
 	function updateConfig($branch = null, $commit = null) {
-		require 'password.php';
+		$_SESSION['include'] = true;
+		require_once '../admin/secure.php';
 
 		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
 
@@ -264,7 +273,12 @@
 	}
 ?>
 <body class='settings darkbg'>
-	<div id='adminSidenav' class='adminsidenav'><?php require_once 'menu.php';?></div>
+	<div id='adminSidenav' class='adminsidenav'>
+		<?php 
+			$_SESSION['include'] = true;
+			require_once '../includes/menu.php';
+		?>
+	</div>
 	<div id='adminMain'>
 		<div class='adminContainer' onclick='myFunction(this)'>
 		  <div class='bar1'></div>
@@ -390,6 +404,7 @@
 			<div id='Owners' class='tabcontent'>
 				<?php 
 					if ($dbExists && tableExists('owners')) {
+						$_SESSION['include'] = true;
 						require_once 'include.php';
 						$oSelect->execute();
 						$oRows  = $oSelect->fetchAll(PDO::FETCH_ASSOC);
@@ -428,6 +443,7 @@
  				<?php 
 				if($dbExists){
 					if(tableExists('users')){
+						$_SESSION['include'] = true;
 						require_once 'include.php';
 						$selectAllUsers->execute();
 						$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);

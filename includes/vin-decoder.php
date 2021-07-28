@@ -28,6 +28,12 @@
      *
      * @return object Vehicle
      */
+	// Do not allow a direct connection to this file
+	if (!isset($_SESSION['include'])) {
+		header('HTTP/1.0 403 Forbidden');
+		exit;
+	} else {unset($_SESSION['include']);}
+
 
 	function decodeVIN($vin, ...$keys) {
 		$message = '';

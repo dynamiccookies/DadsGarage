@@ -7,7 +7,14 @@
 		exit;
 	}
 
-	include '../admin/secure.php';
+	$_SESSION['include'] = true;
+	require_once '../files/header.php';
+
+	$_SESSION['include'] = true;
+	require_once '../admin/secure.php';
+
+	$_SESSION['include'] = true;
+	require_once '../files/include.php';
 
 	$dir     = '../vehicles';
 	$id      = $_GET['id'];
@@ -121,7 +128,12 @@
 	}
 ?>
 <body class='darkbg' onLoad='updateOwner()'>
-	<div id='adminSidenav' class='adminsidenav'><?php require_once('../files/menu.php');?></div>
+	<div id='adminSidenav' class='adminsidenav'>
+		<?php 
+			$_SESSION['include'] = true;
+			require_once '../includes/menu.php';
+		?>
+	</div>
 	<div id='adminMain'>
 		<div class='adminContainer' onclick='myFunction(this)'><div class='bar1'></div><div class='bar2'></div><div class='bar3'></div></div>
 		<div id='mainContainer' class='bgblue bord5 b-rad15 clear m-lrauto m-bottom25 bold'>

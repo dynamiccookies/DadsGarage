@@ -1,10 +1,13 @@
 <?php
 
-	if(!defined('included')) {
+	if (!isset($_SESSION['include'])) {
 		header('HTTP/1.0 403 Forbidden');
 		exit;
-	}
-	require 'password.php';
+	} else {unset($_SESSION['include']);}
+
+	$_SESSION['include'] = true;
+	require_once '../admin/secure.php';
+
 	ini_set('display_errors', $_SESSION['debug']);
 	$server      = $ini['host'];
 	$port        = 3306;

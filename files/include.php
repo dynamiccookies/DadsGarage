@@ -1,5 +1,11 @@
 <?php
 
+	// Do not allow a direct connection to this file
+	if (!isset($_SESSION['include'])) {
+		header('HTTP/1.0 403 Forbidden');
+		exit;
+	} else {unset($_SESSION['include']);}
+
 	ini_set('display_errors', (isset($_SESSION['debug']) ? $_SESSION['debug'] : false));
 	register_shutdown_function(function(){
 		$last_error = error_get_last();
@@ -20,9 +26,7 @@
 	if ($currentPath == 'admin') {$files = '../files/';} elseif ($currentPath == 'files') {$files = '';} else {$files = 'files/';}
 	if ($currentPath == 'files') {$admin = '../admin/';} elseif ($currentPath == 'admin') {$admin = '';} else {$admin = 'admin/';}
 	
-	if(!defined('included')) define('included', TRUE);
 
-	require_once $files . 'header.php';
 	require $files . 'conn.php';
 
 	$success = 'noscreen ';

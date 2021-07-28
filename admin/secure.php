@@ -1,10 +1,16 @@
 <?php
 
-	require '../files/password.php';
-	require '../files/include.php';
-	
 	if(isset($_GET['logout'])) {
 		echo "<meta http-equiv=refresh content=\"0; URL=" . (isset($_SESSION['isadmin']) ? "." : "..\\") . "\">";
+	// Do not allow a direct connection to this file
+	if (!isset($_SESSION['include']) && !isset($_GET['logout'])) {
+		header('HTTP/1.0 403 Forbidden');
+		exit;
+	} else {unset($_SESSION['include']);}
+
+	$_SESSION['include'] = true;
+	require_once '../files/password.php';
+
 		session_unset();     // unset $_SESSION variable for the run-time 
 		session_destroy();   // destroy session data in storage
 	}
@@ -157,6 +163,10 @@
 		}
 	}
 	if (isset($_POST['access_login'])) {
+
+		$_SESSION['include'] = true;
+		require_once '../files/include.php';
+
 		$lowercase = strtolower($_POST['access_login']);
 		$selectUsers->bindParam(':name',$lowercase);
 		$selectUsers->execute();

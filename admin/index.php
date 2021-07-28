@@ -1,8 +1,15 @@
 <?php
 
-	include 'secure.php';
 	if (!isset($_SESSION)) {session_start();}
 
+	$_SESSION['include'] = true;
+	require_once '../files/header.php';
+
+	$_SESSION['include'] = true;
+	require_once '../files/include.php';
+
+	$_SESSION['include'] = true;
+	require_once 'secure.php';
 
 	if (isset($_POST['submit'])) {
 		
@@ -18,6 +25,7 @@
 			}
 
             if (!$duplicate_vin) {
+				$_SESSION['include'] = true;
     			require_once '../includes/vin-decoder.php';
 
     			// decodeVIN function is in 'vin-decoder.php' file
@@ -49,7 +57,10 @@
 <body class='darkbg'>
 
 	<div id='adminSidenav' class='adminsidenav'>
-		<?php require_once '../files/menu.php';?>
+		<?php 
+			$_SESSION['include'] = true;
+			require_once '../includes/menu.php';
+		?>
 	</div>
 	<div id='adminMain'>
 		<div class='adminContainer' onclick='myFunction(this)'>

@@ -1,5 +1,11 @@
 <?php
 
+	// Do not allow a direct connection to this file
+	if (!isset($_SESSION['include'])) {
+		header('HTTP/1.0 403 Forbidden');
+		exit;
+	} else {unset($_SESSION['include']);}
+
 	if (preg_match('/admin|files/', getcwd())) {$css = '../';}
 	else {$css = '';}
 ?>

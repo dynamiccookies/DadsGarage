@@ -6,7 +6,13 @@
 		header('Location: index.php');
 		exit;
 	}
-	require("files/include.php");
+
+	$_SESSION['include'] = true;
+	require_once 'files/header.php';
+
+	$_SESSION['include'] = true;
+	require_once 'files/include.php';
+
 	date_default_timezone_set("America/Chicago"); //What is this for??
 
 	$id=$_GET['id'];	//Vehicle ID

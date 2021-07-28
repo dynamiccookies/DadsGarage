@@ -2,6 +2,10 @@
 
 	if (!isset($_SESSION)) {session_start();}
 
+	$_SESSION['include'] = true;
+	require_once 'header.php';
+
+	$_SESSION['include'] = true;
 	require_once 'files/include.php';
 	
 	// Log date/time and IP data
