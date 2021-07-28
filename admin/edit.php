@@ -341,7 +341,7 @@
 				<div class='bgblue p15 b-rad15 bord5'>
 					Files:<br>
 					<div>
-						<form action='upload_file.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
+						<form action='../admin/upload.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
 						    <input type='hidden' name='include' value='true'>
 							<input name='files[]' type='file' multiple /><input type='submit' value='Upload files' />
 						</form>
@@ -386,7 +386,7 @@
 				<div class='bgblue p15 b-rad15 bord5'>
 					Photos:<br>
 					<div>
-						<form action='upload_file.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
+						<form action='../admin/upload.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
 						    <input type='hidden' name='include' value='true'>
 							<input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' onclick='loading2()' value='Upload photos' />
 						</form>
