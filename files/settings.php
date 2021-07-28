@@ -22,7 +22,7 @@
 	//Test validity of database, host, & credentials
 	if (isset($ini['host'])) {
     	$_SESSION['include'] = true;
-		require_once 'dbcheck.php';
+		require_once '../includes/initialize_database.php';
 
 		$hostChk = (isset($array['connTest']) && $array['connTest'] != 'Pass' ? $array['connTest'] : '');
 		$dbChk = (!$ini['dbname']?'Required Field':($array['dbTest']?($array['dbTest']!='Pass'?$array['dbTest']:''):''));
