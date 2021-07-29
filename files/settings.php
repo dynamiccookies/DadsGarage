@@ -75,7 +75,7 @@
 	if($dbExists) {
 		if (tableExists('users')) {
 			$_SESSION['include'] = true;
-			require_once 'include.php';
+			require_once '../includes/include.php';
 		}
 	}
 	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
@@ -405,7 +405,7 @@
 				<?php 
 					if ($dbExists && tableExists('owners')) {
 						$_SESSION['include'] = true;
-						require_once 'include.php';
+						require_once '../includes/include.php';
 						$oSelect->execute();
 						$oRows  = $oSelect->fetchAll(PDO::FETCH_ASSOC);
 						$owners = $oRows;
@@ -444,7 +444,7 @@
 				if($dbExists){
 					if(tableExists('users')){
 						$_SESSION['include'] = true;
-						require_once 'include.php';
+						require_once '../includes/include.php';
 						$selectAllUsers->execute();
 						$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
 					}

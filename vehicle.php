@@ -11,7 +11,7 @@
 	require_once 'includes/header.php';
 
 	$_SESSION['include'] = true;
-	require_once 'files/include.php';
+	require_once 'includes/include.php';
 
 	date_default_timezone_set("America/Chicago"); //What is this for??
 

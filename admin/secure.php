@@ -161,7 +161,7 @@
 	if (isset($_POST['access_login'])) {
 
 		$_SESSION['include'] = true;
-		require_once '../files/include.php';
+		require_once '../includes/include.php';
 
 		$lowercase = strtolower($_POST['access_login']);
 		$selectUsers->bindParam(':name',$lowercase);

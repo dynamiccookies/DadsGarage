@@ -6,7 +6,7 @@
 	require_once '../includes/header.php';
 
 	$_SESSION['include'] = true;
-	require_once '../files/include.php';
+	require_once '../includes/include.php';
 
 	$_SESSION['include'] = true;
 	require_once 'secure.php';

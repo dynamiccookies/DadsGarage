@@ -14,7 +14,7 @@
 	require_once '../admin/secure.php';
 
 	$_SESSION['include'] = true;
-	require_once '../files/include.php';
+	require_once '../includes/include.php';
 
 	$dir     = '../vehicles';
 	$id      = $_GET['id'];

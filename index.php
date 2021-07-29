@@ -6,7 +6,7 @@
 	require_once 'includes/header.php';
 
 	$_SESSION['include'] = true;
-	require_once 'files/include.php';
+	require_once 'includes/include.php';
 	
 	// Log date/time and IP data
 	file_put_contents('files/log.txt', date('Y-m-d H:i:s') . ', ' . $_SERVER['REMOTE_ADDR'] . '\n', FILE_APPEND);
