@@ -58,7 +58,7 @@
 	}
 ?>
 <script>function clickpic ($inc){return document.getElementById('preview').src=document.getElementById('img' + $inc).src;}</script>
-<link rel="stylesheet" type="text/css" href="files/slider.css">
+<link rel='stylesheet' href='css/slider.css'>
 <body class="darkbg">
 								<!-- START OF ON SCREEN -->
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center noprint' style='width:66%;max-width:80%;'>
