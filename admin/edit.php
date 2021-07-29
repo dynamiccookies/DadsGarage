@@ -428,8 +428,8 @@
 			</div>
 		</div>
 	</div>
-	<script src='../files/admin.js'></script>
-	<script src='../files/edit.js'></script>
+	<script src='../scripts/admin.js'></script>
+	<script src='../scripts/edit.js'></script>
 	<script>
 		var ownersArray = <?= json_encode($oRows); ?>;
 		var thissite = 'http://<?= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];?>';

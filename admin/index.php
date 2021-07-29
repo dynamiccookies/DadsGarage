@@ -142,7 +142,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="../files/admin.js"></script>
+	<script src='../scripts/admin.js'></script>
 	<script type="text/javascript">
 		document.getElementById("defaultTab").click();
 /* 		<?php if(isset($_SESSION['view'])) {if ($_SESSION['view']=='sold') {echo 'viewSold();';} else {echo 'viewSale();';}} else {echo 'viewSale();';}?>

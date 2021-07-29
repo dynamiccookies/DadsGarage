@@ -502,7 +502,7 @@
 		</div>
 	</div>
 	<div class='commit'><?= $ini['commit'];?></div>
-	<script src='admin.js'></script>
+	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
 			if($dbExists && tableExists('owners')) {
