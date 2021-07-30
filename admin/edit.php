@@ -128,6 +128,7 @@
 	}
 ?>
 <body class='darkbg' onLoad='updateOwner()'>
+	<link rel='stylesheet' href='../css/spinner.css'>
 	<div id='adminSidenav' class='adminsidenav'>
 		<?php 
 			$_SESSION['include'] = true;
@@ -343,9 +344,9 @@
 					<div>
 						<form action='../admin/upload.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
 						    <input type='hidden' name='include' value='true'>
-							<input name='files[]' type='file' multiple /><input type='submit' value='Upload files' />
+							<input name='files[]' type='file' multiple /><input type='submit' name='upload_files' onclick='progress_spinner(this.name)' value='Upload files' />
 						</form>
-						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading1' width=100px></center>
+						<br><div id='upload_files' class='lds-ring noscreen'><div></div><div></div><div></div><div></div></div>
 					</div>
 					<hr class='m-top25 m-bottom25 center red' style='width:80%;' />
 					<div><center>
@@ -388,9 +389,9 @@
 					<div>
 						<form action='../admin/upload.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
 						    <input type='hidden' name='include' value='true'>
-							<input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' onclick='loading2()' value='Upload photos' />
+							<input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' name='upload_photos' onclick='progress_spinner(this.name)' value='Upload photos' />
 						</form>
-						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading2' width=100px></center>
+						<br><div id='upload_photos' class='lds-ring noscreen'><div></div><div></div><div></div><div></div></div>
 					</div>
 					<hr class='m-top25 m-bottom25 center red' style='width:80%;' />
 					<div><center>
