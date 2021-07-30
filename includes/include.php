@@ -19,11 +19,15 @@
 		}
 	});
 
+
+	if (preg_match('/admin|files/', getcwd())) {$path = '../';}
+	else {$path = '';}
+
 	// If the 'config.ini.php' file does not exist, redirect to the 'settings.php' page so it can be created
-	if (!(file_exists('../includes/config.ini.php'))) {echo "<meta http-equiv=refresh content=\"0; URL=../files/settings.php\">";} 
+	if (!(file_exists($path . 'includes/config.ini.php'))) {echo "<meta http-equiv=refresh content=\"0; URL=" . $path . "files/settings.php\">";} 
 
 	// Store the contents of 'config.ini.php' into the $ini variable
-	$ini = parse_ini_file('../includes/config.ini.php');
+	$ini = parse_ini_file($path . 'includes/config.ini.php');
 
 	// Try to create a connection to the database with the username and password stored in the 'config.ini.php' file
 	try {$db = new PDO('mysql:dbname=' . $ini['dbname'] . ';host=' . $ini['host'], $ini['username'], $ini['password']);} 
