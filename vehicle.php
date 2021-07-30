@@ -36,8 +36,10 @@
 	//QR Code -----------------------------------------------------
 	$qr = (isset($_GET['qr']) ? $_GET['qr'] : '');	//get 'qr' param for qr code
 	if ($qr == 1) {		//if qr scanned
-		$qrlog = date('Y-m-d H:i:s') . "," . $base_name . "," . $_SERVER['REMOTE_ADDR'] . ($loc ? ',' . $loc : "") . "\n";	//get date/time and IP qr code scanned on
-		file_put_contents("files/qr.log",$qrlog,FILE_APPEND);	//log date/time and IP data
+		// Create logs folder if needed, build a string of the date/time, vehicle, user IP, and optional $loc variable, and log to qr.log file
+		if (!file_exists('logs')) {mkdir('logs');}
+		$log_qr = date('Y-m-d H:i:s') . ',' . $base_name . ',' . $_SERVER['REMOTE_ADDR'] . ($loc ? ',' . $loc : '') . "\n";
+		file_put_contents('logs/qr.log', $log_qr, FILE_APPEND);
 	}
 	//bit.ly variables-Used for short URL on QR code.--------------
 	$login = 'o_31ku8f5rm';

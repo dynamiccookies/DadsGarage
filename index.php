@@ -9,7 +9,8 @@
 	require_once 'includes/include.php';
 	
 	// Log date/time and IP data
-	file_put_contents('files/log.txt', date('Y-m-d H:i:s') . ', ' . $_SERVER['REMOTE_ADDR'] . '\n', FILE_APPEND);
+	if (!file_exists('logs')) {mkdir('logs');}
+	file_put_contents('logs/traffic.log', date('Y-m-d H:i:s') . ', ' . $_SERVER['REMOTE_ADDR'] . "\n", FILE_APPEND);
 
 	// Build and write opening body, h1, and div tag HTML to page
 	echo "<body id='main' class='darkbg'><h1 style='text-align:center;color:white;'>Vehicles For Sale:</h1>\n<div class='holder'>\n";
