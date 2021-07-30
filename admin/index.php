@@ -109,7 +109,7 @@
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 								
 								(isset($photo1[0]['filename']) 
-									? $src = "<img src='../vehicles/" . $row['id'] . "/" . $photo1[0]['filename'] . "' width=100px>" 
+									? $src = "<img src='../files/" . $row['id'] . '/' . $photo1[0]['filename'] . "' width=100px>" 
 									: $src = '(no photo)');
 
 								($row['status']=='Draft'?$color=' red':$color=' blue');
@@ -130,7 +130,7 @@
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 
 								(isset($photo1[0]['filename']) 
-									? $src = "<img src='../vehicles/" . $row['id'] . "/" . $photo1[0]['filename'] . "' width=100px>"
+									? $src = "<img src='../files/" . $row['id'] . '/' . $photo1[0]['filename'] . "' width=100px>"
 									: $src = '(no photo)');
 
 								$name = $row["year"]." ".$row["make"]." ".$row["model"]." ".$row["trim"];

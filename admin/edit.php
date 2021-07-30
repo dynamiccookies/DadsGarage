@@ -16,7 +16,7 @@
 	$_SESSION['include'] = true;
 	require_once '../includes/include.php';
 
-	$dir     = '../vehicles';
+	$dir     = '../files';
 	$id      = $_GET['id'];
 	$reload  = '<meta http-equiv=refresh content="0; URL=' . $_SERVER['REQUEST_URI'] . '">';
 	$vehicle = trim(($rows[0]['year'] == 0000 ? '' : $rows[0]['year']) . ' ' . $rows[0]['make'] . ' ' . $rows[0]['model'] . ' ' . $rows[0]['trim']);
@@ -170,7 +170,7 @@
 							</select>
 						</td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-						<td rowspan=5><?= (isset($pRows[0]['filename']) ? "<img src='../vehicles/" . $id . '/' . $pRows[0]['filename'] . "' width=200px />" : '');?></td>
+						<td rowspan=5><?= (isset($pRows[0]['filename']) ? "<img src='../files/" . $id . '/' . $pRows[0]['filename'] . "' width=200px />" : '');?></td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 					</tr>
 					<tr><!-- Row 3 -->
@@ -354,7 +354,7 @@
 							if ($fRows) {
 								echo "<table class='photos'>";
 								foreach ($fRows as $file) {
-									$path='../vehicles/' . $id . '/' . $file['filename'];
+									$path='../files/' . $id . '/' . $file['filename'];
 						?>
 									<tr>
 										<td nowrap align='right'>
@@ -399,7 +399,7 @@
 							if ($pRows) {
 								echo "<table class='photos'>";
 								foreach ($pRows as $image) {
-									$path = '../vehicles/' . $id . '/' . $image['filename'];
+									$path = '../files/' . $id . '/' . $image['filename'];
 						?>
 									<tr>
 										<td><a href='<?= $path?>' target='_blank' id='<?= $image['filename']?>'><img src='<?= $path?>' width=200px /></a></td>

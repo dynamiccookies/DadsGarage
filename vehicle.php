@@ -78,7 +78,7 @@
 					$z = 1; 
 					foreach ($img as $pic) {
 						echo "<input type='radio' name='radio-btn' id='img-".$z."' ".($z==1?"checked":"")." />\n<li class='slide-container'>\n";
-						echo "<div class='slide'>\n<img src='vehicles/".$rows[0]['id']."/".$pic['filename']."' />\n</div>\n";
+						echo "<div class='slide'>\n<img src='files/" . $rows[0]['id'] . '/' . $pic['filename'] . "' />\n</div>\n";
 						echo "<div class='nav'>\n<label for='img-".($z==1?count($img):$z-1)."' class='prev'>&#x2039;</label>\n";
 						echo "<label for='img-".($z==count($img)?1:$z+1)."' class='next'>&#x203a;</label>\n</div>\n</li>\n";
 						$z = $z + 1;
@@ -110,7 +110,7 @@
 		<div class='topspacer'></div><div class='content'>	<!-- Content -->
 			<?php if (strlen($txt)>0) {echo ("<h3>" . $txt . "</h3>");}?>
 		</div>
-		<img id="preview" align="center" src='vehicles/<?php echo $rows[0]['id']."/".$img[0]['filename'] ?>' alt="No Image Loaded" />
+		<img id='preview' align='center' src='files/<?php echo $rows[0]['id'] . '/' . $img[0]['filename'] ?>' alt='No Image Loaded' />
 	</div>	
 	<div class='scan noscreen'>Scan the QR code with your phone to view more pictures and details, or go to <?php echo $bitly;?>.</div>
 	<table class='noscreen'>	<!--Tear Off Section-->

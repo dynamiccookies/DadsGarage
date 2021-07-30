@@ -27,7 +27,7 @@
 			$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 
 			// If an image file exists for the vehicle, build the path - Else default to the 'noimage.jpg' file page
-			if (isset($photo1[0]['filename'])) $src = 'vehicles/' . $row['id'] . '/' . $photo1[0]['filename'];
+			if (isset($photo1[0]['filename'])) $src = 'files/' . $row['id'] . '/' . $photo1[0]['filename'];
 			else $src = 'images/noimage.jpg';
 
 // NEED TO REVIEW - Replacing zeroes isn't necessary if they can't be entered
