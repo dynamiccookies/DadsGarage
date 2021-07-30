@@ -18,17 +18,9 @@
 			exit();
 		}
 	});
-	
-	//Get current path
-	$currentPath = substr(getcwd(), strrpos(getcwd(), '/') + 1);
-
-	//Set paths to 'admin' & 'files'
-	if ($currentPath == 'admin') {$files = '../files/';} elseif ($currentPath == 'files') {$files = '';} else {$files = 'files/';}
-	if ($currentPath == 'files') {$admin = '../admin/';} elseif ($currentPath == 'admin') {$admin = '';} else {$admin = 'admin/';}
-	
 
 	// If the 'config.ini.php' file does not exist, redirect to the 'settings.php' page so it can be created
-	if (!(file_exists('../includes/config.ini.php'))) {echo "<meta http-equiv=refresh content=\"0; URL=" . $files . "settings.php\">";} 
+	if (!(file_exists('../includes/config.ini.php'))) {echo "<meta http-equiv=refresh content=\"0; URL=../files/settings.php\">";} 
 
 	// Store the contents of 'config.ini.php' into the $ini variable
 	$ini = parse_ini_file('../includes/config.ini.php');
