@@ -100,23 +100,26 @@
 		catch (PDOException $e) {return 'There was a problem: ' . $e;}
 	}
 
-	//check if a specific table exists
-	function tableExists($table) {	//https://stackoverflow.com/questions/1717495/check-if-a-database-table-exists-using-php-pdo
+	function check_tables(...$tables) {
+        if (!$tables) {$tables = array('customers', 'expenses', 'files', 'owners', 'photos', 'users', 'vehicles');}
 		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
-		// Set options
+
+		// Set PDO options
 		$options = array(
 			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_PERSISTENT         => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		);
+
 		//Create a new PDO instance
 		try {
 			$conn = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
-			$temp = "SELECT 1 FROM ".$table." LIMIT 1";
-			$temp = $conn->query($temp);
+			foreach ($tables as $table) {$conn->query('SELECT 1 FROM ' . $table . ' LIMIT 1');}
+
 			return true;
 		}
 		catch (PDOException $e) {
+			error_log("\n\nERROR in check_tables(): " . $e . "\n\n", 3, 'error_log');
 			return false;
 		}
 	}

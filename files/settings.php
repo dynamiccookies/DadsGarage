@@ -38,16 +38,8 @@
 	if (strpos($hostChk, 'pass') && strpos($dbChk, 'pass') && strpos($userChk, 'pass') && strpos($passChk, 'pass')) {
 		$dbExists = true;
 
-		if (
-			!tableExists('customers') ||
-			!tableExists('expenses')  ||
-			!tableExists('files')     ||
-			!tableExists('owners')    ||
-			!tableExists('photos')    ||
-			!tableExists('users')	  ||
-			!tableExists('vehicles')
-		) {
-			if ($_POST['createTables']) {
+		if (!check_tables()) {
+			if (isset($_POST['createTables'])) {
 				$createdTables = createTables();
 			} else {
 				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
@@ -73,7 +65,7 @@
 	} else {$dbExists = false;}
 
 	if($dbExists) {
-		if (tableExists('users')) {
+		if (check_tables('users')) {
 			$_SESSION['include'] = true;
 			require_once '../includes/include.php';
 		}
@@ -403,7 +395,7 @@
 			</div>
 			<div id='Owners' class='tabcontent'>
 				<?php 
-					if ($dbExists && tableExists('owners')) {
+					if ($dbExists && check_tables('owners')) {
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$oSelect->execute();
@@ -442,7 +434,7 @@
 			<div id='Users' class='tabcontent'>
  				<?php 
 				if($dbExists){
-					if(tableExists('users')){
+					if(check_tables('users')){
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$selectAllUsers->execute();
@@ -505,7 +497,7 @@
 	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
-			if($dbExists && tableExists('owners')) {
+			if($dbExists && check_tables('owners')) {
 				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
