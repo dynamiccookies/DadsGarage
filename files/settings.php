@@ -2,11 +2,11 @@
 
 	if (!isset($_SESSION)) {session_start();}
 
-	//Create/update config.ini.php on page load/save
 	$_SESSION['include'] = true;
 	require_once '../includes/header.php';
 
-	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
+	//Create/update config.ini.php on page load/save
+	if(!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
 		updateConfig(
 			($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), 
 			($_SESSION['inicommit'] ?: '')
@@ -14,7 +14,7 @@
 	}
 
 	//Read config.ini.php and set variables
-	$ini                   = parse_ini_file('config.ini.php');
+	$ini                   = parse_ini_file('../includes/config.ini.php');
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
 	$userMessage           = '';
@@ -181,7 +181,7 @@
 		$_SESSION['include'] = true;
 		require_once '../admin/secure.php';
 
-		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
+		if(file_exists('../includes/config.ini.php')) $ini = parse_ini_file('../includes/config.ini.php');
 
 		if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
 		elseif(isset($ini['dbname']))    {$dbname   = $ini['dbname'];}
@@ -211,7 +211,7 @@
 		elseif(isset($ini['commit']))    {$commit   = $ini['commit'];}
 		else                             {$commit   = '';}
 
-		file_put_contents('config.ini.php', 
+		file_put_contents('../includes/config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
 				"dbname		= '" . $dbname   . "'\n" .
 				"host 		= '" . $host     . "'\n" .
