@@ -173,34 +173,34 @@
 		$_SESSION['include'] = true;
 		require_once '../admin/secure.php';
 
-		if(file_exists('../includes/config.ini.php')) $ini = parse_ini_file('../includes/config.ini.php');
+		if (file_exists('../includes/config.ini.php')) $ini = parse_ini_file('../includes/config.ini.php');
 
-		if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
-		elseif(isset($ini['dbname']))    {$dbname   = $ini['dbname'];}
+		if (isset($_POST['dbname']))     {$dbname   = $_POST['dbname'];}
+		elseif (isset($ini['dbname']))   {$dbname   = $ini['dbname'];}
 		else                             {$dbname   = '';}
 
-		if(isset($_POST['host']))        {$host     = $_POST['host'];}
-		elseif(isset($ini['host']))      {$host     = $ini['host'];}
+		if (isset($_POST['host']))       {$host     = $_POST['host'];}
+		elseif (isset($ini['host']))     {$host     = $ini['host'];}
 		else                             {$host     = '';}
 
-		if(isset($_POST['username']))    {$username = $_POST['username'];}
-		elseif(isset($ini['username']))  {$username = $ini['username'];}
+		if( isset($_POST['username']))   {$username = $_POST['username'];}
+		elseif (isset($ini['username'])) {$username = $ini['username'];}
 		else                             {$username = '';}
 
-		if(isset($_POST['password']))    {$password = $_POST['password'];}
-		elseif(isset($ini['password']))  {$password = $ini['password'];}
+		if (isset($_POST['password']))   {$password = $_POST['password'];}
+		elseif (isset($ini['password'])) {$password = $ini['password'];}
 		else                             {$password = '';}
 
-		if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
-		elseif(isset($ini['debug']))     {$debug    = $ini['debug'];}
+		if (isset($_POST['debug']))      {$debug    = $_POST['debug'];}
+		elseif (isset($ini['debug']))    {$debug    = $ini['debug'];}
 		else                             {$debug    = 'false';}
 
-		if(isset($branch))               {}
-		elseif(isset($ini['branch']))    {$branch   = $ini['branch'];}
+		if (isset($branch))              {}
+		elseif (isset($ini['branch']))   {$branch   = $ini['branch'];}
 		else                             {$branch   = '';}
 
-		if(isset($commit))               {}
-		elseif(isset($ini['commit']))    {$commit   = $ini['commit'];}
+		if (isset($commit))              {}
+		elseif (isset($ini['commit']))   {$commit   = $ini['commit'];}
 		else                             {$commit   = '';}
 
 		file_put_contents('../includes/config.ini.php', 
