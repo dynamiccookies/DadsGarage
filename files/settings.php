@@ -7,10 +7,22 @@
 
 	//Create/update config.ini.php on page load/save
 	if(!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
-		updateConfig(
-			($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), 
-			($_SESSION['inicommit'] ?: '')
-		);
+
+		if (isset($_POST['branch'])) {
+			$branch = $_POST['branch'];
+		} elseif (isset($_SESSION['branch'])) {
+			$branch = $_SESSION['branch'];
+		} else {
+			$branch = '';
+		}
+
+		if (isset($_SESSION['inicommit'])) {
+			$commit = $_SESSION['inicommit'];
+		} else {
+			$commit = '';
+		}
+
+		updateConfig($branch, $commit);
 	}
 
 	//Read config.ini.php and set variables
@@ -20,7 +32,7 @@
 	$userMessage           = '';
 
 	//Test validity of database, host, & credentials
-	if (isset($ini['host'])) {
+	if (!empty($ini['host'])) {
     	$_SESSION['include'] = true;
 		require_once '../includes/initialize-database.php';
 
@@ -289,7 +301,7 @@
 				?> 
 			><span class='alt'>G</span>eneral</button>
 			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
-				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || !strpos($dbChk, 'pass') ? " id='defaultOpen'" : '');?>
+				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || (!isset($dbChk) || !strpos($dbChk, 'pass')) ? " id='defaultOpen'" : '');?>
 			><span class='alt'>D</span>atabase</button>
 			<button class='tablink width25' value='Owners'
 				<?php 
