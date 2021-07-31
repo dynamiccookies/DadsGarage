@@ -53,7 +53,7 @@
 		justify-content: center;
 		align-items: baseline;
 	}
-	#main .vehicle {
+	#main .listing {
 		background-color:#daecee;
 		border: 2px;
 		border-radius: 25px;
@@ -63,7 +63,7 @@
 		width: 500px;
 		text-align: center;
 	}
-	#main .vehicle img {height: 200px;}
+	#main .listing img {height: 200px;}
 	#main .red {border-color: red;}
 	table#users, table#owners, .tabcontent table.table {
 		margin-left:auto;

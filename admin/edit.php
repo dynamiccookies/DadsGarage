@@ -16,7 +16,7 @@
 	$_SESSION['include'] = true;
 	require_once '../includes/include.php';
 
-	$dir     = '../vehicles';
+	$dir     = '../files';
 	$id      = $_GET['id'];
 	$reload  = '<meta http-equiv=refresh content="0; URL=' . $_SERVER['REQUEST_URI'] . '">';
 	$vehicle = trim(($rows[0]['year'] == 0000 ? '' : $rows[0]['year']) . ' ' . $rows[0]['make'] . ' ' . $rows[0]['model'] . ' ' . $rows[0]['trim']);
@@ -128,6 +128,7 @@
 	}
 ?>
 <body class='darkbg' onLoad='updateOwner()'>
+	<link rel='stylesheet' href='../css/spinner.css'>
 	<div id='adminSidenav' class='adminsidenav'>
 		<?php 
 			$_SESSION['include'] = true;
@@ -141,7 +142,7 @@
 				<table style='padding:15px;'>
 					<tr><!-- Row 1 -->
 						<td colspan='12' class='center huge bold'>
-							<a href='../vehicle.php?id=<?= $rows[0]['id'];?>' target='_blank'><?= $vehicle;?></a><br/><hr size='3px'/>
+							<a href='../listing.php?id=<?= $rows[0]['id'];?>' target='_blank'><?= $vehicle;?></a><br/><hr size='3px'/>
 						</td>
 					</tr>
 					<tr><!-- Row 2 -->
@@ -169,7 +170,7 @@
 							</select>
 						</td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-						<td rowspan=5><?= (isset($pRows[0]['filename']) ? "<img src='../vehicles/" . $id . '/' . $pRows[0]['filename'] . "' width=200px />" : '');?></td>
+						<td rowspan=5><?= (isset($pRows[0]['filename']) ? "<img src='../files/" . $id . '/' . $pRows[0]['filename'] . "' width=200px />" : '');?></td>
 						<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 					</tr>
 					<tr><!-- Row 3 -->
@@ -343,9 +344,9 @@
 					<div>
 						<form action='../admin/upload.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
 						    <input type='hidden' name='include' value='true'>
-							<input name='files[]' type='file' multiple /><input type='submit' value='Upload files' />
+							<input name='files[]' type='file' multiple /><input type='submit' name='upload_files' onclick='progress_spinner(this.name)' value='Upload files' />
 						</form>
-						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading1' width=100px></center>
+						<br><div id='upload_files' class='lds-ring noscreen'><div></div><div></div><div></div><div></div></div>
 					</div>
 					<hr class='m-top25 m-bottom25 center red' style='width:80%;' />
 					<div><center>
@@ -353,7 +354,7 @@
 							if ($fRows) {
 								echo "<table class='photos'>";
 								foreach ($fRows as $file) {
-									$path='../vehicles/' . $id . '/' . $file['filename'];
+									$path='../files/' . $id . '/' . $file['filename'];
 						?>
 									<tr>
 										<td nowrap align='right'>
@@ -388,9 +389,9 @@
 					<div>
 						<form action='../admin/upload.php?id=<?= $rows[0]['id'];?>' method='post' enctype='multipart/form-data'>
 						    <input type='hidden' name='include' value='true'>
-							<input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' onclick='loading2()' value='Upload photos' />
+							<input name='photos[]' type='file' multiple accept='image/*' /><input type='submit' name='upload_photos' onclick='progress_spinner(this.name)' value='Upload photos' />
 						</form>
-						<br><center><img src='../files/loading_anim.gif' class='noscreen' id='loading2' width=100px></center>
+						<br><div id='upload_photos' class='lds-ring noscreen'><div></div><div></div><div></div><div></div></div>
 					</div>
 					<hr class='m-top25 m-bottom25 center red' style='width:80%;' />
 					<div><center>
@@ -398,7 +399,7 @@
 							if ($pRows) {
 								echo "<table class='photos'>";
 								foreach ($pRows as $image) {
-									$path = '../vehicles/' . $id . '/' . $image['filename'];
+									$path = '../files/' . $id . '/' . $image['filename'];
 						?>
 									<tr>
 										<td><a href='<?= $path?>' target='_blank' id='<?= $image['filename']?>'><img src='<?= $path?>' width=200px /></a></td>
