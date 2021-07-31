@@ -126,7 +126,7 @@
         	$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
         	$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
         	$source      = 'DadsGarage-' . $repBranch;
-        	$redirectURL = 'settings.php';
+        	$redirectURL = '../admin/settings.php';
 
     		// Download repository files as 'install.zip' and store in '$file' variable
     		$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);

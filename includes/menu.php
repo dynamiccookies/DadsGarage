@@ -8,5 +8,5 @@
 ?>
 <a href='../'>Home</a>
 <a href='../admin'>Admin</a>
-<a href='../files/settings.php'>Settings</a><br/><br/>
+<a href='../admin/settings.php'>Settings</a><br/><br/>
 <a href='../admin/secure.php?logout'>Logout</a>

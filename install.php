@@ -12,7 +12,7 @@
 	$title          = "Dad's Garage Management System";
 
 	// URL to open after install is completed
-	$redirectURL    = 'files/settings.php';
+	$redirectURL    = 'admin/settings.php';
 
 
 	//-------------DO NOT EDIT BELOW------------------------------

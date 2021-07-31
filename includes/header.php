@@ -6,7 +6,7 @@
 		exit;
 	} else {unset($_SESSION['include']);}
 
-	if (preg_match('/admin|files/', getcwd())) {$css = '../';}
+	if (preg_match('/admin|includes/', getcwd())) {$css = '../';}
 	else {$css = '';}
 ?>
 <!DOCTYPE html>

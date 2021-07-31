@@ -10,21 +10,20 @@
 	register_shutdown_function(function(){
 		$last_error = error_get_last();
 		if (!empty($last_error) && $last_error['type'] & (E_ERROR | E_COMPILE_ERROR | E_PARSE | E_CORE_ERROR | E_USER_ERROR)){
-			$path = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/'));
-			$path = substr($path, strrpos($path, '/')+1);
-			if ($path=='admin') {$path='../files/settings.php';} elseif ($path=='files') {$path='settings.php';} else {$path='files/settings.php';}
-			echo "<meta http-equiv=refresh content=\"5; URL=" . $path . "\">";
+			if (preg_match('/admin|includes/', getcwd())) {$path = '../';}
+			else {$path = '';}
+			echo "<meta http-equiv=refresh content=\"5; URL=" . $path . "admin/settings.php\">";
 			echo "<p style='font-weight:bold;font-size:24px;color:red;'>Settings are missing!<br/>Redirecting there now.</p>";
 			exit();
 		}
 	});
 
 
-	if (preg_match('/admin|files/', getcwd())) {$path = '../';}
+	if (preg_match('/admin|includes/', getcwd())) {$path = '../';}
 	else {$path = '';}
 
 	// If the 'config.ini.php' file does not exist, redirect to the 'settings.php' page so it can be created
-	if (!(file_exists($path . 'includes/config.ini.php'))) {echo "<meta http-equiv=refresh content=\"0; URL=" . $path . "files/settings.php\">";} 
+	if (!(file_exists($path . 'includes/config.ini.php'))) {echo "<meta http-equiv=refresh content=\"0; URL=" . $path . "admin/settings.php\">";} 
 
 	// Store the contents of 'config.ini.php' into the $ini variable
 	$ini = parse_ini_file($path . 'includes/config.ini.php');
