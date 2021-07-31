@@ -75,20 +75,20 @@
 			// If '$redirectURL' variable exists, redirect page to that URL
 			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
 		} else {echo "Error Extracting Zip: Please <a href='" . $repository . "issues/new?title=Installation - Error Extracting'>submit an issue</a>.";}
-	}
+	} else {
 ?>
 
 <!doctype html>
 <html>
-	<head><title><?php echo $title;?> Installer</title></head>
+	<head><title><?= $title;?> Installer</title></head>
 	<body>
 		<div style='text-align:center;'>
-			<span style='font-weight:bold;font-size:24px;'>Welcome to the <?php echo $title;?> Installer!</span><br/><br/>
+			<span style='font-weight:bold;font-size:24px;'>Welcome to the <?= $title;?> Installer!</span><br/><br/>
 			<span style='font-size:18px;'>
 				Make sure this file is saved to the root of your install directory.<br/><br/>
-				If you'd like to install a repository other than the default, select it here:
+				If you'd like to install a repository other than <strong><?= $repBranch?></strong>, select it here:
 			</span><br/>
-			<form action='<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
+			<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 				<select name='branches'>
 					<?php 
 						foreach ($branches as $branch) {
@@ -102,3 +102,4 @@
 		</div>
 	</body>
 </html>
+<?php }?>
