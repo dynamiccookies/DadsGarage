@@ -2,25 +2,37 @@
 
 	if (!isset($_SESSION)) {session_start();}
 
-	//Create/update config.ini.php on page load/save
 	$_SESSION['include'] = true;
 	require_once '../includes/header.php';
 
-	if(!file_exists('config.ini.php') || isset($_POST['Save'])) {
-		updateConfig(
-			($_POST['branch'] ?: ($_SESSION['branch'] ?: '')), 
-			($_SESSION['inicommit'] ?: '')
-		);
+	//Create/update config.ini.php on page load/save
+	if (!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
+
+		if (isset($_POST['branch'])) {
+			$branch = $_POST['branch'];
+		} elseif (isset($_SESSION['branch'])) {
+			$branch = $_SESSION['branch'];
+		} else {
+			$branch = '';
+		}
+
+		if (isset($_SESSION['inicommit'])) {
+			$commit = $_SESSION['inicommit'];
+		} else {
+			$commit = '';
+		}
+
+		update_config($branch, $commit);
 	}
 
 	//Read config.ini.php and set variables
-	$ini                   = parse_ini_file('config.ini.php');
+	$ini                   = parse_ini_file('../includes/config.ini.php');
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
 	$userMessage           = '';
 
 	//Test validity of database, host, & credentials
-	if (isset($ini['host'])) {
+	if (!empty($ini['host'])) {
     	$_SESSION['include'] = true;
 		require_once '../includes/initialize-database.php';
 
@@ -38,16 +50,8 @@
 	if (strpos($hostChk, 'pass') && strpos($dbChk, 'pass') && strpos($userChk, 'pass') && strpos($passChk, 'pass')) {
 		$dbExists = true;
 
-		if (
-			!tableExists('customers') ||
-			!tableExists('expenses')  ||
-			!tableExists('files')     ||
-			!tableExists('owners')    ||
-			!tableExists('photos')    ||
-			!tableExists('users')	  ||
-			!tableExists('vehicles')
-		) {
-			if ($_POST['createTables']) {
+		if (!check_tables()) {
+			if (isset($_POST['createTables'])) {
 				$createdTables = createTables();
 			} else {
 				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
@@ -58,7 +62,7 @@
 
 		// Create/check default Admin user
 		$adminExists = adminExists();
- 		if ($adminExists === TRUE) {
+ 		if ($adminExists === true) {
 			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
 		} elseif (!$adminExists === false) {
 			if (strpos($adminExists, 'Base table or view not found') !== false) {
@@ -72,23 +76,23 @@
 		}
 	} else {$dbExists = false;}
 
-	if($dbExists) {
-		if (tableExists('users')) {
+	if ($dbExists) {
+		if (check_tables('users')) {
 			$_SESSION['include'] = true;
 			require_once '../includes/include.php';
 		}
 	}
-	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
-	if(isset($_POST['ownerAdd'])) {
+	if (!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
+	if (isset($_POST['ownerAdd'])) {
 		$oInsert->bindParam(':name',  $_POST['name']);
 		$oInsert->bindParam(':phone', $_POST['phone']);
 		$oInsert->bindParam(':email', $_POST['email']);
 		$oInsert->execute();
 		$_SESSION['settings'] = 'owners';
 	}
-	if(isset($_POST['userAdd'])) {
-		if($_POST['user']) {
-			if(!$_POST['isadmin']) {$_POST['isadmin']=0;}
+	if (isset($_POST['userAdd'])) {
+		if ($_POST['user']) {
+			if (!$_POST['isadmin']) {$_POST['isadmin']=0;}
 			$insertUsers->bindParam(':user',    strtolower($_POST['user']));
 			$insertUsers->bindParam(':pass',    password_hash($_POST['user'], PASSWORD_DEFAULT));
 			$insertUsers->bindParam(':fname',   $_POST['fname']);
@@ -98,18 +102,18 @@
 		}
 		$_SESSION['settings'] = 'users';
 	}
-	if(isset($_POST['resetUser'])) {
+	if (isset($_POST['resetUser'])) {
 		$updateUsers->bindParam(':name', $_POST['user']);
 		$updateUsers->bindParam(':pass', password_hash($_POST['user'], PASSWORD_DEFAULT));
 		$updateUsers->execute();
 		$_SESSION['settings'] = 'users';
 	}
-	if(isset($_POST['deleteUser'])) {
+	if (isset($_POST['deleteUser'])) {
 		$deleteUser->bindParam(':id', $_POST['deleteID']);
 		$deleteUser->execute();
 		$_SESSION['settings'] = 'users';
 	}
-	if(isset($_POST['deleteOwner'])) {
+	if (isset($_POST['deleteOwner'])) {
 		$deleteOwner->bindParam(':id', $_POST['deleteID']);
 		$deleteOwner->execute();
 		$_SESSION['settings'] = 'owners';
@@ -122,7 +126,7 @@
         	$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
         	$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
         	$source      = 'DadsGarage-' . $repBranch;
-        	$redirectURL = 'settings.php';
+        	$redirectURL = '../admin/settings.php';
 
     		// Download repository files as 'install.zip' and store in '$file' variable
     		$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
@@ -135,7 +139,7 @@
     		// Open zip file and store contents in '$res' variable
     		$res = $zip->open(dirname(__DIR__) . '/install.zip');
     		if ($res === true) {
-    			for($i = 0; $i < $zip->numFiles; $i++) {
+    			for ($i = 0; $i < $zip->numFiles; $i++) {
 	    			$name = $zip->getNameIndex($i);
 		    		if (strpos($name, $source . '/') !== 0) continue;
 				    $file = dirname(__DIR__) . '/' . substr($name, strlen($source) + 1);
@@ -156,7 +160,7 @@
     			unlink(dirname(__DIR__) . '/.gitignore');
     			unlink(dirname(__DIR__) . '/install.php');
 
-				updateConfig($repBranch, getBranchInfo(null, $repBranch)['new']['commit']);
+				update_config($repBranch, getBranchInfo(null, $repBranch)['new']['commit']);
 
     			// If '$redirectURL' variable exists, redirect page to that URL
     			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
@@ -177,41 +181,44 @@
 	}
 
 	//(Re)Create config.ini.php file
-	function updateConfig($branch = null, $commit = null) {
-		$_SESSION['include'] = true;
-		require_once '../admin/secure.php';
+	function update_config($branch = null, $commit = null) {
 
-		if(file_exists('config.ini.php')) $ini = parse_ini_file('config.ini.php');
+		if (file_exists('../includes/config.ini.php')) {
+			$_SESSION['include'] = true;
+			require_once '../admin/secure.php';
 
-		if(isset($_POST['dbname']))      {$dbname   = $_POST['dbname'];}
-		elseif(isset($ini['dbname']))    {$dbname   = $ini['dbname'];}
+			$ini = parse_ini_file('../includes/config.ini.php');
+		}
+
+		if (isset($_POST['dbname']))     {$dbname   = $_POST['dbname'];}
+		elseif (isset($ini['dbname']))   {$dbname   = $ini['dbname'];}
 		else                             {$dbname   = '';}
 
-		if(isset($_POST['host']))        {$host     = $_POST['host'];}
-		elseif(isset($ini['host']))      {$host     = $ini['host'];}
+		if (isset($_POST['host']))       {$host     = $_POST['host'];}
+		elseif (isset($ini['host']))     {$host     = $ini['host'];}
 		else                             {$host     = '';}
 
-		if(isset($_POST['username']))    {$username = $_POST['username'];}
-		elseif(isset($ini['username']))  {$username = $ini['username'];}
+		if( isset($_POST['username']))   {$username = $_POST['username'];}
+		elseif (isset($ini['username'])) {$username = $ini['username'];}
 		else                             {$username = '';}
 
-		if(isset($_POST['password']))    {$password = $_POST['password'];}
-		elseif(isset($ini['password']))  {$password = $ini['password'];}
+		if (isset($_POST['password']))   {$password = $_POST['password'];}
+		elseif (isset($ini['password'])) {$password = $ini['password'];}
 		else                             {$password = '';}
 
-		if(isset($_POST['debug']))       {$debug    = $_POST['debug'];}
-		elseif(isset($ini['debug']))     {$debug    = $ini['debug'];}
+		if (isset($_POST['debug']))      {$debug    = $_POST['debug'];}
+		elseif (isset($ini['debug']))    {$debug    = $ini['debug'];}
 		else                             {$debug    = 'false';}
 
-		if(isset($branch))               {}
-		elseif(isset($ini['branch']))    {$branch   = $ini['branch'];}
+		if (isset($branch))              {}
+		elseif (isset($ini['branch']))   {$branch   = $ini['branch'];}
 		else                             {$branch   = '';}
 
-		if(isset($commit))               {}
-		elseif(isset($ini['commit']))    {$commit   = $ini['commit'];}
+		if (isset($commit))              {}
+		elseif (isset($ini['commit']))   {$commit   = $ini['commit'];}
 		else                             {$commit   = '';}
 
-		file_put_contents('config.ini.php', 
+		file_put_contents('../includes/config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
 				"dbname		= '" . $dbname   . "'\n" .
 				"host 		= '" . $host     . "'\n" .
@@ -297,7 +304,7 @@
 				?> 
 			><span class='alt'>G</span>eneral</button>
 			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
-				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || !strpos($dbChk, 'pass') ? " id='defaultOpen'" : '');?>
+				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || (!isset($dbChk) || !strpos($dbChk, 'pass')) ? " id='defaultOpen'" : '');?>
 			><span class='alt'>D</span>atabase</button>
 			<button class='tablink width25' value='Owners'
 				<?php 
@@ -403,7 +410,7 @@
 			</div>
 			<div id='Owners' class='tabcontent'>
 				<?php 
-					if ($dbExists && tableExists('owners')) {
+					if ($dbExists && check_tables('owners')) {
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$oSelect->execute();
@@ -442,7 +449,7 @@
 			<div id='Users' class='tabcontent'>
  				<?php 
 				if($dbExists){
-					if(tableExists('users')){
+					if(check_tables('users')){
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$selectAllUsers->execute();
@@ -505,7 +512,7 @@
 	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
-			if($dbExists && tableExists('owners')) {
+			if($dbExists && check_tables('owners')) {
 				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);

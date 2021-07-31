@@ -96,8 +96,9 @@ function statusChange() {
 		document.getElementById('payment').className     = 'noscreen';
 	}
 }
-function loading1() {document.getElementById('loading1').style.display = 'block';}
-function loading2() {document.getElementById('loading2').style.display = 'block';}
+
+function progress_spinner(id) {document.getElementById(id).style.display = 'inline-block';}
+
 function valPhone(num) {
 	var arr = num.match(/\d+/g);
 	var str = '';
