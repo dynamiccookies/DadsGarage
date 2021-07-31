@@ -6,7 +6,7 @@
 	require_once '../includes/header.php';
 
 	//Create/update config.ini.php on page load/save
-	if(!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
+	if (!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
 
 		if (isset($_POST['branch'])) {
 			$branch = $_POST['branch'];
@@ -182,10 +182,13 @@
 
 	//(Re)Create config.ini.php file
 	function updateConfig($branch = null, $commit = null) {
-		$_SESSION['include'] = true;
-		require_once '../admin/secure.php';
 
-		if (file_exists('../includes/config.ini.php')) $ini = parse_ini_file('../includes/config.ini.php');
+		if (file_exists('../includes/config.ini.php')) {
+            $_SESSION['include'] = true;
+		    require_once '../admin/secure.php';
+
+		    $ini = parse_ini_file('../includes/config.ini.php');
+		}
 
 		if (isset($_POST['dbname']))     {$dbname   = $_POST['dbname'];}
 		elseif (isset($ini['dbname']))   {$dbname   = $ini['dbname'];}
