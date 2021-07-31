@@ -40,7 +40,7 @@
 			
 			// Build and write formatted HTML to page for listing image, title, and asking price
 			echo "<div class='listing'>\n<a href='listing.php?id=" . $row['id'] . "'>";
-			echo "<img src='" . $src . "'></a><br />\n<a href='lising.php?id=" . $row['id'] . "'>" . $name . $asking . " </a>\n</div>\n\n";
+			echo "<img src='" . $src . "'></a><br />\n<a href='listing.php?id=" . $row['id'] . "'>" . $name . $asking . " </a>\n</div>\n\n";
 		}
 	}
 
