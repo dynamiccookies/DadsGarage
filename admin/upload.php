@@ -7,10 +7,10 @@
 	} 
 
 	$_SESSION['include'] = true;
-	require_once '../files/header.php';
+	require_once '../includes/header.php';
 
 	$_SESSION['include'] = true;
-	require_once '../files/include.php';
+	require_once '../includes/include.php';
 
 	ini_set('memory_limit', '128M');
 
@@ -75,18 +75,18 @@
 
 				if (in_array($ext, $allowedExts) && in_array($photo['type'], $types) && $photo['size'] < 10000000 && $photo['error'] == 0) {
 
-					// Check if folder exists - create if false
-					if (!file_exists('../vehicles')) {mkdir('../vehicles');}
+					// Check if files folder exists - create if false
+					if (!file_exists('../files')) {mkdir('../files');}
 
-					// Check if folder exists - create if false
-					if (!file_exists('../vehicles/' . $id)) {mkdir('../vehicles/' . $id);}
+					// Check if ID folder exists - create if false
+					if (!file_exists('../files/' . $id)) {mkdir('../files/' . $id);}
 
 					// Check if photo exists - show error if true, create if false
-					if (file_exists('../vehicles/' . $id . '/' . $photo['name'])) {
+					if (file_exists('../files/' . $id . '/' . $photo['name'])) {
 						echo $inc . '. <b>File Already Exists</b>: ' . $photo['name'] . '<br><br>';
 					} else {
 						$filename = $photo['name'];
-						move_uploaded_file($photo['tmp_name'], '../vehicles/' . $id . '/' . $photo['name']);
+						move_uploaded_file($photo['tmp_name'], '../files/' . $id . '/' . $photo['name']);
 						$pinsert->execute();
 						echo $inc . '. <b>Photo Successfully Saved</b>: ' . $photo['name'] . '<br><br>';
 					}
@@ -112,18 +112,18 @@
 				$inc += 1; 
 				if ($file['size'] < 10000000 && $file['error'] == 0) {
 					
-					// Check if folder exists - create if false
-					if (!file_exists('../vehicles')) {mkdir('../vehicles');}
+					// Check if files folder exists - create if false
+					if (!file_exists('../files')) {mkdir('../files');}
 
-					// Check if folder exists - create if false
-					if (!file_exists('../vehicles/' . $id)) {mkdir('../vehicles/' . $id);}
+					// Check if ID folder exists - create if false
+					if (!file_exists('../files/' . $id)) {mkdir('../files/' . $id);}
 					
 					// Check if file exists - show error if true, create if false
-					if (file_exists('../vehicles/' . $id . '/' . $file['name'])) {
+					if (file_exists('../files/' . $id . '/' . $file['name'])) {
 						echo $inc . '. <b>File Already Exists</b>: ' . $file['name'] . '<br><br>';
 					} else {
 						$filename = $file['name'];
-						move_uploaded_file($file['tmp_name'], '../vehicles/' . $id . '/' . $file['name']);
+						move_uploaded_file($file['tmp_name'], '../files/' . $id . '/' . $file['name']);
 						$finsert->execute();
 						echo $inc . '. <b>File Successfully Saved</b>: ' . $file['name'] . '<br><br>';
 					}

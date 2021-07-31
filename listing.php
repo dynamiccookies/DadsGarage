@@ -8,10 +8,10 @@
 	}
 
 	$_SESSION['include'] = true;
-	require_once 'files/header.php';
+	require_once 'includes/header.php';
 
 	$_SESSION['include'] = true;
-	require_once 'files/include.php';
+	require_once 'includes/include.php';
 
 	date_default_timezone_set("America/Chicago"); //What is this for??
 
@@ -36,8 +36,10 @@
 	//QR Code -----------------------------------------------------
 	$qr = (isset($_GET['qr']) ? $_GET['qr'] : '');	//get 'qr' param for qr code
 	if ($qr == 1) {		//if qr scanned
-		$qrlog = date('Y-m-d H:i:s') . "," . $base_name . "," . $_SERVER['REMOTE_ADDR'] . ($loc ? ',' . $loc : "") . "\n";	//get date/time and IP qr code scanned on
-		file_put_contents("files/qr.log",$qrlog,FILE_APPEND);	//log date/time and IP data
+		// Create logs folder if needed, build a string of the date/time, vehicle, user IP, and optional $loc variable, and log to qr.log file
+		if (!file_exists('logs')) {mkdir('logs');}
+		$log_qr = date('Y-m-d H:i:s') . ',' . $base_name . ',' . $_SERVER['REMOTE_ADDR'] . ($loc ? ',' . $loc : '') . "\n";
+		file_put_contents('logs/qr.log', $log_qr, FILE_APPEND);
 	}
 	//bit.ly variables-Used for short URL on QR code.--------------
 	$login = 'o_31ku8f5rm';
@@ -58,7 +60,7 @@
 	}
 ?>
 <script>function clickpic ($inc){return document.getElementById('preview').src=document.getElementById('img' + $inc).src;}</script>
-<link rel="stylesheet" type="text/css" href="files/slider.css">
+<link rel='stylesheet' href='css/slider.css'>
 <body class="darkbg">
 								<!-- START OF ON SCREEN -->
 	<div class='bgblue bord5 p15 b-rad15 m-lrauto center noprint' style='width:66%;max-width:80%;'>
@@ -76,7 +78,7 @@
 					$z = 1; 
 					foreach ($img as $pic) {
 						echo "<input type='radio' name='radio-btn' id='img-".$z."' ".($z==1?"checked":"")." />\n<li class='slide-container'>\n";
-						echo "<div class='slide'>\n<img src='vehicles/".$rows[0]['id']."/".$pic['filename']."' />\n</div>\n";
+						echo "<div class='slide'>\n<img src='files/" . $rows[0]['id'] . '/' . $pic['filename'] . "' />\n</div>\n";
 						echo "<div class='nav'>\n<label for='img-".($z==1?count($img):$z-1)."' class='prev'>&#x2039;</label>\n";
 						echo "<label for='img-".($z==count($img)?1:$z+1)."' class='next'>&#x203a;</label>\n</div>\n</li>\n";
 						$z = $z + 1;
@@ -108,7 +110,7 @@
 		<div class='topspacer'></div><div class='content'>	<!-- Content -->
 			<?php if (strlen($txt)>0) {echo ("<h3>" . $txt . "</h3>");}?>
 		</div>
-		<img id="preview" align="center" src='vehicles/<?php echo $rows[0]['id']."/".$img[0]['filename'] ?>' alt="No Image Loaded" />
+		<img id='preview' align='center' src='files/<?php echo $rows[0]['id'] . '/' . $img[0]['filename'] ?>' alt='No Image Loaded' />
 	</div>	
 	<div class='scan noscreen'>Scan the QR code with your phone to view more pictures and details, or go to <?php echo $bitly;?>.</div>
 	<table class='noscreen'>	<!--Tear Off Section-->

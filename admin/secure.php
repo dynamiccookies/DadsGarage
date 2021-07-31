@@ -7,7 +7,7 @@
 	} else {unset($_SESSION['include']);}
 
 	$_SESSION['include'] = true;
-	require_once '../files/password.php';
+	require_once '../includes/password.php';
 
 	if (isset($_GET['logout'])) {
 		echo "<meta http-equiv=refresh content=\"0; URL=" . $_SERVER['SCRIPT_URI'] . "\">";
@@ -161,7 +161,7 @@
 	if (isset($_POST['access_login'])) {
 
 		$_SESSION['include'] = true;
-		require_once '../files/include.php';
+		require_once '../includes/include.php';
 
 		$lowercase = strtolower($_POST['access_login']);
 		$selectUsers->bindParam(':name',$lowercase);

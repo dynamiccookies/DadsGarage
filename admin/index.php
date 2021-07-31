@@ -3,10 +3,10 @@
 	if (!isset($_SESSION)) {session_start();}
 
 	$_SESSION['include'] = true;
-	require_once '../files/header.php';
+	require_once '../includes/header.php';
 
 	$_SESSION['include'] = true;
-	require_once '../files/include.php';
+	require_once '../includes/include.php';
 
 	$_SESSION['include'] = true;
 	require_once 'secure.php';
@@ -109,7 +109,7 @@
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 								
 								(isset($photo1[0]['filename']) 
-									? $src = "<img src='../vehicles/" . $row['id'] . "/" . $photo1[0]['filename'] . "' width=100px>" 
+									? $src = "<img src='../files/" . $row['id'] . '/' . $photo1[0]['filename'] . "' width=100px>" 
 									: $src = '(no photo)');
 
 								($row['status']=='Draft'?$color=' red':$color=' blue');
@@ -130,7 +130,7 @@
 								$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 
 								(isset($photo1[0]['filename']) 
-									? $src = "<img src='../vehicles/" . $row['id'] . "/" . $photo1[0]['filename'] . "' width=100px>"
+									? $src = "<img src='../files/" . $row['id'] . '/' . $photo1[0]['filename'] . "' width=100px>"
 									: $src = '(no photo)');
 
 								$name = $row["year"]." ".$row["make"]." ".$row["model"]." ".$row["trim"];
@@ -142,7 +142,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="../files/admin.js"></script>
+	<script src='../scripts/admin.js'></script>
 	<script type="text/javascript">
 		document.getElementById("defaultTab").click();
 /* 		<?php if(isset($_SESSION['view'])) {if ($_SESSION['view']=='sold') {echo 'viewSold();';} else {echo 'viewSale();';}} else {echo 'viewSale();';}?>
