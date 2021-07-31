@@ -1,0 +1,412 @@
+@media screen {
+	.noscreen {display: none;}
+	html, body { min-height: 100%;}
+	input[type="Submit"] {
+		padding: 5px 10px;
+	}
+	table.settings {
+		margin: auto;
+		padding: 15px;
+	}
+	table.settings td:first-child {
+		text-align:right;
+		font-weight:bold;
+	}
+	table.settings input[type=textbox], table.settings input[type=password] {
+		width:350px;
+		border-radius:4px;
+		outline:none;
+	}
+	button.active {
+		background-color: gray;
+		color: white;
+	}
+	div > button {
+		font-size: 24px;
+		font-weight: bold;
+	}
+	input[name=createTables] {
+		background: red;
+		color: white;
+		font-weight: bold;
+	}
+	#main > .disclaimer {
+		font-size: 10px;
+		text-align: center;
+		padding-top: 50px;
+		margin: 50px 175px;
+		clear: left;
+		bottom: 0;
+	}
+	#main > p {
+		font-size: 24px;
+		text-align: center;
+		font-weight: bold;
+	}
+	#main .holder {
+		font-size: 24px;
+		font-weight: bold;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-content: stretch;
+		justify-content: center;
+		align-items: baseline;
+	}
+	#main .listing {
+		background-color:#daecee;
+		border: 2px;
+		border-radius: 25px;
+		border-style: solid;
+		float: left;
+		padding: 5px 5px 10px 10px;
+		width: 500px;
+		text-align: center;
+	}
+	#main .listing img {height: 200px;}
+	#main .red {border-color: red;}
+	table#users, table#owners, .tabcontent table.table {
+		margin-left:auto;
+		margin-right:auto;
+		border-collapse: collapse;
+		box-shadow: 10px 10px 10px grey;
+	}
+	table#owners tr:nth-child(odd), .tabcontent table.table tr:nth-child(odd) {
+		background-color: #daecee;
+	}
+	table#owners tr:nth-child(even), .tabcontent table.table tr:nth-child(even) {
+		background-color: white;
+	}
+	table#users tr:nth-child(odd){
+		background-color: #daecee;
+	}
+	table#users tr:nth-child(even){
+		background-color: white;
+	}
+	table#users th, table#owners th {
+		font-weight:bold;
+	}
+	table#owners td, table#owners th {
+		border: 1px solid silver;
+		padding: 5px;
+	}
+	table#users td, table#users th {
+		border: 1px solid silver;
+		padding: 5px;
+	}
+	#SubmitInternal,#SubmitDesc {
+		float:right;
+		margin:25px;
+		margin-right:100px;
+	}
+	#ForSale td, #Sold td {
+		padding: 10px;
+		font-weight: bold;
+	}
+	#ForSale table.tbl-align.htmlTable.table, #Sold table.tbl-align.htmlTable.table {
+		border: 1px solid;
+	}
+	.tablink {
+		float: left;
+		border: none;
+		outline: none;
+		cursor: pointer;
+		padding: 14px 16px;
+		font-size: 17px;
+	}
+	.tablink:hover {font-weight:bold !important;}
+	.width20 {width: 20%;}
+	.width25 {width: 25%;}
+	.width33 {width: 33.333333%;}
+	.width50 {width: 50%;}
+	.borderupdown {
+		border-top: 2px solid;
+		border-bottom: 2px solid;
+	}
+	.tabcontent {
+		color: black;
+		display: none;
+		padding: 20px;
+		padding-top:75px;
+		text-align: center;
+		background-color: silver;
+		border-radius: 0 0 10px 10px;
+	}
+	.hrsettings {
+		border: 1px solid black;
+		margin: 25px auto;
+		width: 80%;
+	}
+	#Description, #Internal {
+		padding-bottom:79px;
+	}
+	.bb, table.photos td, .tbl-align td  {
+		border-bottom: 1px solid black!important;
+	}
+	.photos {border-collapse:collapse;}
+	.td-align {padding-left:10px;text-align:left !important;}
+	.content {
+		width: 80%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.darkbg {
+		background-color:black;
+	}
+	.settings-header {
+		font-size:36px;
+		font-weight:bold;
+		padding-top: 15px;
+	}
+	.required {
+		box-shadow:0 0 5px #ff0000;
+		border:2px solid #ff0000;
+	}
+	.warn {
+		box-shadow:0 0 5px #ffff00;
+		border:2px solid #ffff00;
+	}
+	.pass {
+		box-shadow:0 0 5px #00c600;
+		border:2px solid #00c600;
+	}
+	.htmlTable {
+		margin-top:5px;
+		text-align:left;
+		border-top:1px solid;
+		font-weight:normal;
+		margin: 0 auto;
+		border-collapse: collapse;
+	}
+	.tb-p15 {padding: 15px 0;}
+	.tdcenter {
+		align: center;
+		padding-left: 10px;
+	}
+	.commit {position: fixed; bottom: 0; right: 0; color: white;}
+	.block {display: block;}
+	.p15 {padding: 15px;}
+	.clear {clear: both;}
+	.m-lrauto {margin-left: auto; margin-right: auto;}
+	.m-bottom15 {margin-bottom:15px;}
+	.m-bottom25 {margin-bottom:25px;}
+	.m-top25 {margin-top:25px;}
+	.m-right {margin-right:25px;}
+	.viewing {border-collapse: collapse;border-spacing: 25px 0;}
+	.bgblue {background-color:#daecee;}
+	.bord5, textarea {border: 5px solid gray;}
+	.b-right1 {border-right: 1px solid;}
+	.b-rad15, textarea {border-radius: 15px;}
+	.center {text-align: center;}
+	.fleft {float: left;}
+	.fright {float: right;}
+	.inline {display: inline;}
+	.huge {font-size: 28px;}
+	.big {font-size: 24px;}
+	.med {font-size: 20px;}
+	.small {font-size: 18px;}
+	.bold {font-weight: bold;}
+	.u {text-decoration: underline;}
+	.blue {color: blue;}
+	.red {color: red;}
+	.bgyellow {background-color: yellow;}
+	.gallery .thumbnails {
+		width: 70%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.gallery .thumbnails img {
+		height: 6vw; /**80px;**/
+		border: 4px solid #555;
+		padding: 1px;
+		margin: 0 10px 10px 0;
+	}
+	.gallery .thumbnails img:hover {
+		border: 4px solid #00ccff;
+		cursor:pointer;
+	}
+	.gallery .preview img {
+		border: 4px solid #444;
+		padding: 1px;
+		height: 35vw; /**500px**/
+	}
+	.gallery > .thumbnails > p {padding: 25px 0;}
+	.boxsizingBorder {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+	}
+/* TESTING Admin Left Navigation */	
+	.adminsidenav {
+		height: 100%;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		opacity:.75;
+		background-color: white;
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+	}
+
+	.adminsidenav a {
+		padding: 8px 8px 8px 32px;
+		text-decoration: none;
+		font-size: 25px;
+		color: #818181;
+		display: block;
+		transition: 0.3s;
+	}
+
+	.adminsidenav a:hover, .offcanvas a:focus{
+		font-weight:bold;
+	}
+
+	.adminsidenav .closebtn {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+	}
+
+	#adminMain {
+		transition: margin-left .5s;
+		padding: 16px;
+		margin-left: 0;
+	}
+
+	#adminSidenav {
+		width: 0;
+		transition: width .5s;
+	}
+
+	@media screen and (max-height: 450px) {
+	  .sidenav {padding-top: 15px;}
+	  .sidenav a {font-size: 18px;}
+	}
+	.adminContainer {
+		display: inline-block;
+		cursor: pointer;
+	}
+
+	.bar1, .bar2, .bar3 {
+		width: 35px;
+		height: 5px;
+		background-color: white;
+		margin: 6px 0;
+		transition: 0.6s;
+	}
+
+	.change .bar1 {
+		-webkit-transform: rotate(-45deg) translate(-9px, 6px) ;
+		transform: rotate(-45deg) translate(-9px, 6px) ;
+	}
+
+	.change .bar2 {opacity: 0;}
+
+	.change .bar3 {
+		-webkit-transform: rotate(45deg) translate(-8px, -8px) ;
+		transform: rotate(45deg) translate(-8px, -8px) ;
+	}
+
+	#adminSidenav.change {
+		width:175px;
+		transition: width .5s;
+	}
+
+	#adminMain.change {
+		margin-left:175px;
+		transition: margin-left .5s;
+	}
+	div#mainContainer {
+		margin-top: -50px;
+		min-width: 609px;
+		max-width:66%;
+		display:table;
+	}
+	
+	
+/* End of TESTING Admin Left Navigation */	
+}
+@media print {
+	.noprint {display: none;}
+	body {
+		background-color: white;
+		height: 236mm;
+	}
+	img:not(.qr) {
+		height: 400px; 
+		width:auto;
+	}
+	.img {
+		position: absolute;
+		bottom: 315px;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 100%
+	}
+	#main {
+		float: left;
+		width: 70%;
+	}
+	body > img.qr {
+		float: right;
+		vertical-align: top;
+		margin-top: -20px;
+	}
+	span > img {margin: 0 0 0 53px;}
+	.leftspacer {
+		float: left;
+		width: 15%;
+	}
+	.topspacer {
+		clear: left;
+		width: 100%;
+		line-height: 50%;
+	}
+	.center {text-align: center;}
+	.big {font-size: 24px;}
+	.med {font-size: 20px;}
+	.small {font-size: 18px;}
+	.bold {font-weight: bold;}
+	.prtblue {color: blue;}
+	.prtred {color: red;}
+	.content {
+		clear: left; 
+		height:175px;
+		margin-top: -20px;
+	}
+	.scan {
+		bottom:307px;
+		position: absolute;
+		color: red;
+		font-weight: bold;
+	    margin-left: auto;
+		margin-right: auto;
+		text-indent: 30px;
+		}
+	
+	/*Borrowed the following CSS from http://css-tricks.com/rotated-table-column-headers/ and tweaked it.*/
+	tr:first-child {height: 210px;}
+	td.rotate {
+	  white-space: nowrap;
+	  border-left: dashed;
+	}
+	td:first-child {border-left: none;}
+	td.rotate > div {
+	  transform: 
+		/* Magic Numbers */
+		translate(0px, -40px)
+		/* 45 is really 360 - 45 */
+		rotate(90deg);
+	  width: 76px;
+	}
+	table {
+		position: absolute;
+		bottom: 10px;
+		border-top: solid;
+	}
+}
