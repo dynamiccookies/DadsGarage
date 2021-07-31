@@ -26,7 +26,7 @@
 			$pSelect1->execute();
 			$photo1 = $pSelect1->fetchAll(PDO::FETCH_ASSOC);
 
-			// If an image file exists for the vehicle, build the path - Else default to the 'noimage.jpg' file page
+			// If an image file exists for the listing, build the path - Else default to the 'noimage.jpg' file page
 			if (isset($photo1[0]['filename'])) $src = 'files/' . $row['id'] . '/' . $photo1[0]['filename'];
 			else $src = 'images/noimage.jpg';
 
@@ -38,9 +38,9 @@
 			if (trim($row['askprice']) != '0') $asking = ' - $' . $row['askprice'];
 			else $asking = '';
 			
-			// Build and write formatted HTML to page for vehicle image, title, and asking price
-			echo "<div class='vehicle'>\n<a href='vehicle.php?id=" . $row['id'] . "'>";
-			echo "<img src='" . $src . "'></a><br />\n<a href='vehicle.php?id=" . $row['id'] . "'>" . $name . $asking . " </a>\n</div>\n\n";
+			// Build and write formatted HTML to page for listing image, title, and asking price
+			echo "<div class='listing'>\n<a href='listing.php?id=" . $row['id'] . "'>";
+			echo "<img src='" . $src . "'></a><br />\n<a href='lising.php?id=" . $row['id'] . "'>" . $name . $asking . " </a>\n</div>\n\n";
 		}
 	}
 
