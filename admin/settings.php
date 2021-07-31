@@ -22,7 +22,7 @@
 			$commit = '';
 		}
 
-		updateConfig($branch, $commit);
+		update_config($branch, $commit);
 	}
 
 	//Read config.ini.php and set variables
@@ -62,7 +62,7 @@
 
 		// Create/check default Admin user
 		$adminExists = adminExists();
- 		if ($adminExists === TRUE) {
+ 		if ($adminExists === true) {
 			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
 		} elseif (!$adminExists === false) {
 			if (strpos($adminExists, 'Base table or view not found') !== false) {
@@ -76,23 +76,23 @@
 		}
 	} else {$dbExists = false;}
 
-	if($dbExists) {
+	if ($dbExists) {
 		if (check_tables('users')) {
 			$_SESSION['include'] = true;
 			require_once '../includes/include.php';
 		}
 	}
-	if(!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
-	if(isset($_POST['ownerAdd'])) {
+	if (!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
+	if (isset($_POST['ownerAdd'])) {
 		$oInsert->bindParam(':name',  $_POST['name']);
 		$oInsert->bindParam(':phone', $_POST['phone']);
 		$oInsert->bindParam(':email', $_POST['email']);
 		$oInsert->execute();
 		$_SESSION['settings'] = 'owners';
 	}
-	if(isset($_POST['userAdd'])) {
-		if($_POST['user']) {
-			if(!$_POST['isadmin']) {$_POST['isadmin']=0;}
+	if (isset($_POST['userAdd'])) {
+		if ($_POST['user']) {
+			if (!$_POST['isadmin']) {$_POST['isadmin']=0;}
 			$insertUsers->bindParam(':user',    strtolower($_POST['user']));
 			$insertUsers->bindParam(':pass',    password_hash($_POST['user'], PASSWORD_DEFAULT));
 			$insertUsers->bindParam(':fname',   $_POST['fname']);
@@ -102,18 +102,18 @@
 		}
 		$_SESSION['settings'] = 'users';
 	}
-	if(isset($_POST['resetUser'])) {
+	if (isset($_POST['resetUser'])) {
 		$updateUsers->bindParam(':name', $_POST['user']);
 		$updateUsers->bindParam(':pass', password_hash($_POST['user'], PASSWORD_DEFAULT));
 		$updateUsers->execute();
 		$_SESSION['settings'] = 'users';
 	}
-	if(isset($_POST['deleteUser'])) {
+	if (isset($_POST['deleteUser'])) {
 		$deleteUser->bindParam(':id', $_POST['deleteID']);
 		$deleteUser->execute();
 		$_SESSION['settings'] = 'users';
 	}
-	if(isset($_POST['deleteOwner'])) {
+	if (isset($_POST['deleteOwner'])) {
 		$deleteOwner->bindParam(':id', $_POST['deleteID']);
 		$deleteOwner->execute();
 		$_SESSION['settings'] = 'owners';
@@ -139,7 +139,7 @@
     		// Open zip file and store contents in '$res' variable
     		$res = $zip->open(dirname(__DIR__) . '/install.zip');
     		if ($res === true) {
-    			for($i = 0; $i < $zip->numFiles; $i++) {
+    			for ($i = 0; $i < $zip->numFiles; $i++) {
 	    			$name = $zip->getNameIndex($i);
 		    		if (strpos($name, $source . '/') !== 0) continue;
 				    $file = dirname(__DIR__) . '/' . substr($name, strlen($source) + 1);
@@ -160,7 +160,7 @@
     			unlink(dirname(__DIR__) . '/.gitignore');
     			unlink(dirname(__DIR__) . '/install.php');
 
-				updateConfig($repBranch, getBranchInfo(null, $repBranch)['new']['commit']);
+				update_config($repBranch, getBranchInfo(null, $repBranch)['new']['commit']);
 
     			// If '$redirectURL' variable exists, redirect page to that URL
     			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
@@ -181,13 +181,13 @@
 	}
 
 	//(Re)Create config.ini.php file
-	function updateConfig($branch = null, $commit = null) {
+	function update_config($branch = null, $commit = null) {
 
 		if (file_exists('../includes/config.ini.php')) {
-            $_SESSION['include'] = true;
-		    require_once '../admin/secure.php';
+			$_SESSION['include'] = true;
+			require_once '../admin/secure.php';
 
-		    $ini = parse_ini_file('../includes/config.ini.php');
+			$ini = parse_ini_file('../includes/config.ini.php');
 		}
 
 		if (isset($_POST['dbname']))     {$dbname   = $_POST['dbname'];}
