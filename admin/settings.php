@@ -401,8 +401,7 @@
 								<input type='checkbox' onclick='this.previousSibling.value=1-this.previousSibling.value'
 								    <?php 
 								        if ($_SESSION['debug'] === true) {echo 'value=true checked';}
-										elseif ($_SESSION['debug'] === false) {echo 'value=false unchecked';}
-										else {echo 'phpvalue=' . $ini['debug'];}
+										else {echo 'value=false unchecked';}
 							        ?>
 								>
 							</td>
