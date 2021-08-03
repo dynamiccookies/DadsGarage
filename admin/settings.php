@@ -329,16 +329,68 @@
 					<table class='settings borderupdown'>
 						<tr><td>Bitly User Key:</td><td><input name='bitlyUser' type='textbox' value=''></td></tr>
 						<tr><td nowrap>Bitly API Key:</td><td><input name='bitlyAPI' type='textbox' value=''></td></tr>
-						<tr><td>Git Branch:</td><td style='text-align:left;'>
-							<select name='branch'>
-								<?php 
-									foreach(getBranchInfo()['branches'] as $branch=>$value) {
-										if(!$ini['branch']) {$ini['branch'] = 'master';}
-										echo '<option value="' . $branch . '"' . ($branch == $ini['branch'] ? ' selected' : '') . '>' . $branch . '</option>';
+						<tr>
+							<td>Git Branch:</td>
+							<td style='text-align:left;'>
+								<?php
+									if (!isset($_SESSION['branches'])) {
+										$branches = getJSON('branches');
+
+										// IF ERROR MESSAGE
+										if (isset($branches['message'])) {
+											if ($ini['debug']) error_log("\n" . $branches['message'] . "\n");
+
+											if (strpos($branches['message'], 'API rate limit exceeded')) {
+												$select_title = ' title="Please check back later for the complete list of branches."';
+											} else {
+												$select_title = '';
+												$user_message = $branches['message'];
+											}
+
+											echo '<select name="branch"' . $select_title . ' disabled>';
+											echo '<option value="' . $ini['branch'] . '" selected>' . $ini['branch'] . '</option>';
+											echo '</select>';
+
+										// ELSE IF NO ERROR MESSAGE
+										} else {
+											$selected_branch      = $ini['branch'];
+											$_SESSION['branches'] = array();
+
+											echo '<select name="branch">';
+
+											foreach ($branches as $branch) {
+												$branch_exists = false;
+												if ($branch['name'] == $selected_branch) $branch_exists = true;
+												array_push(
+													$_SESSION['branches'], 
+													array(
+														'name'     => $branch['name'],
+														'selected' => $branch_exists
+													)
+												);
+											}
+
+											if (!branch_exists) $selected_branch = 'master';
+
+											foreach ($_SESSION['branches'] as $branch) {
+												echo '<option value="' . $branch . '"' . ($branch == $selected_branch ? ' selected' : '') . '>' . $branch . '</option>';
+											}
+
+											if (!$branch_exists && !empty($ini['branch'])) {
+												$user_message = 'Your installed branch (' . $ini['branch'] . ') no longer exists.<br>Please select another branch and click save.';
+											}
+											echo '</select>';
+										}
+									} else {
+										echo '<select name="branch">';
+										foreach ($_SESSION['branches'] as $branch) {
+											echo '<option value="' . $branch['name'] . '"' . ($branch['selected'] ? ' selected' : '') . '>' . $branch['name'] . '</option>';
+										}
+										echo '</select>';
 									}
 								?>
-							</select>
-						</td></tr>
+							</td>
+						</tr>
 						<tr>
 							<td>Debug Mode:</td>
 							<td style='text-align:left;'>
@@ -380,16 +432,6 @@
 						<tr><td nowrap>Database Name:</td><td><input name='dbname' type='textbox'<?= (isset($dbChk) ? $dbChk : '');?> value='<?= $ini['dbname'];?>'></td></tr>
 						<tr><td>Username:</td><td><input name='username' type='textbox'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['username'];?>' autocomplete='username'></td></tr>
 						<tr><td>Password:</td><td><input name='password' type='password'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['password'];?>' autocomplete='current-password'></td></tr>
-						<tr><td>Git Branch:</td><td style='text-align:left;'>
-							<select name='branch'>
-								<?php 
-									foreach(getBranchInfo()['branches'] as $branch=>$value) {
-										if(!$ini['branch']) {$ini['branch'] = 'master';}
-										echo '<option value="' . $branch . '"' . ($branch == $ini['branch'] ? ' selected' : '') . '>' . $branch . '</option>';
-									}
-								?>
-							</select>
-						</td></tr>
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {
