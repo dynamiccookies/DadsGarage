@@ -27,9 +27,9 @@
 
 	//Read config.ini.php and set variables
 	$ini                   = parse_ini_file('../includes/config.ini.php');
+	$user_message          = '';
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
-	$userMessage           = '';
 
 	//Test validity of database, host, & credentials
 	if (!empty($ini['host'])) {
@@ -63,16 +63,16 @@
 		// Create/check default Admin user
 		$adminExists = adminExists();
  		if ($adminExists === true) {
-			$userMessage = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
-		} elseif (!$adminExists === false) {
-			if (strpos($adminExists, 'Base table or view not found') !== false) {
-				$userMessage = 'The Users table does not exist.<br/>Please click the Create Table(s) button to create it.<br/><br/>';
-			} elseif (strpos($adminExists, "Access denied for user '" . $_POST['username'] . "'")) {
-				$userMessage = 'The username or password is incorrect.<br/><br/>';
-			} else {$userMessage = $adminExists;}
+			$user_message = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
 		} elseif ($adminExists === false) {
 			$_SESSION['include'] = true;
 			require_once '../admin/secure.php';
+		} else {
+			if (strpos($adminExists, 'Base table or view not found')) {
+				$user_message = 'The Users table does not exist.<br/>Please click the Create Table(s) button to create it.<br/><br/>';
+			} elseif (strpos($adminExists, "Access denied for user '" . $_POST['username'] . "'")) {
+				$user_message = 'The username or password is incorrect.<br/><br/>';
+			} else {$user_message = $adminExists;}
 		}
 	} else {$dbExists = false;}
 
@@ -321,7 +321,7 @@
 						echo "onclick=\"openTab('Users', this, 'right')\"";
 						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'users') ? " id='defaultOpen'" : '');
 					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
+					} else {echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
 				?>
 			><span class='alt'>U</span>sers</button>
 			<div id='General' class='tabcontent'>
@@ -343,13 +343,13 @@
 							<td>Debug Mode:</td>
 							<td style='text-align:left;'>
                                 <input type='hidden' name='debug' value='<?php 
-									if($_SESSION['debug'] === true) {echo '1';}
-									elseif($_SESSION['debug'] === false) {echo '0';}
+									if ($_SESSION['debug'] === true) {echo '1';}
+									elseif ($_SESSION['debug'] === false) {echo '0';}
 							    ?>'>
 								<input type='checkbox' onclick='this.previousSibling.value=1-this.previousSibling.value'
 								    <?php 
-								        if($_SESSION['debug'] === true) {echo 'value=true checked';}
-										elseif($_SESSION['debug'] === false) {echo 'value=false unchecked';}
+								        if ($_SESSION['debug'] === true) {echo 'value=true checked';}
+										elseif ($_SESSION['debug'] === false) {echo 'value=false unchecked';}
 										else {echo 'phpvalue=' . $ini['debug'];}
 							        ?>
 								>
@@ -364,7 +364,7 @@
 						echo (isset($createdTables) ? 
 							($createdTables === true ? 
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
-						echo $userMessage;
+						echo $user_message;
 						$aheadBy = getBranchInfo($ini['commit'], $ini['branch']);
 						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
@@ -399,7 +399,7 @@
 						echo (isset($created_tables) ? 
 							($created_tables === true ?
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
-						echo $userMessage;
+						echo $user_message;
 						$aheadBy = getBranchInfo($ini['commit'], $ini['branch']);
 						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
