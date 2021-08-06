@@ -8,6 +8,9 @@
 	//Create/update config.ini.php on page load/save
 	if (!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
 
+		unset($_SESSION['branches']);
+		unset($_SESSION['compare']);
+
 		if (isset($_POST['branch'])) {
 			$branch = $_POST['branch'];
 		} elseif (isset($_SESSION['branch'])) {
@@ -160,12 +163,14 @@
     			unlink(dirname(__DIR__) . '/.gitignore');
     			unlink(dirname(__DIR__) . '/install.php');
 
-				update_config($repBranch, getBranchInfo(null, $repBranch)['new']['commit']);
+				update_config($repBranch, $_SESSION['branches'][$repBranch]['sha']);
+
+				$_SESSION['results'] = 'Application Updated Successfully!';
+				unset($_SESSION['branches']);
+				unset($_SESSION['compare']);
 
     			// If '$redirectURL' variable exists, redirect page to that URL
     			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
-				$_SESSION['results'] = 'Application Updated Successfully!';
-
     		} else {
     		    echo "Error Extracting Zip: Please <a href='" . $repository . "issues/new?title=Installation - Error Extracting'>submit an issue</a>.";
 				$_SESSION['results'] = 'Something went wrong!';
@@ -234,7 +239,7 @@
 	}
 	
 	//Iterate through retreived branch info - create/return multidimentional array
-	function getBranchInfo($commit = null, $branch = null) {
+/*	function getBranchInfo($commit = null, $branch = null) {
 		if (isset($_SESSION['json'])) {$json = $_SESSION['json'];}
 		else {$json = getJSON('branches');}
 
@@ -267,7 +272,7 @@
 
 		return $info;
 	}
-	
+*/	
 	//Pull branch info from GitHub
 	function getJSON($url) {
 		$ch = curl_init();
@@ -333,12 +338,15 @@
 							<td>Git Branch:</td>
 							<td style='text-align:left;'>
 								<?php
+                                    // If the GitHub API JSON query has not happened during this session or it needs to be updated
 									if (!isset($_SESSION['branches'])) {
 										$branches = getJSON('branches');
 
-										// IF ERROR MESSAGE
+										if ($ini['debug']) error_log('GitHub Branches: ' . json_encode($branches));
+
+										// If the GitHub API JSON query returned an error
 										if (isset($branches['message'])) {
-											if ($ini['debug']) error_log("\n" . $branches['message'] . "\n");
+											if ($ini['debug']) error_log($branches['message']);
 
 											if (strpos($branches['message'], 'API rate limit exceeded')) {
 												$select_title = ' title="Please check back later for the complete list of branches."';
@@ -351,40 +359,42 @@
 											echo '<option value="' . $ini['branch'] . '" selected>' . $ini['branch'] . '</option>';
 											echo '</select>';
 
-										// ELSE IF NO ERROR MESSAGE
+										// Otherwise, if there's no error
 										} else {
-											$selected_branch      = $ini['branch'];
-											$_SESSION['branches'] = array();
-
-											echo '<select name="branch">';
+											$selected_branch        = $ini['branch'];
+											$selected_branch_exists = false;
+											$_SESSION['branches']   = array();
 
 											foreach ($branches as $branch) {
 												$branch_exists = false;
-												if ($branch['name'] == $selected_branch) $branch_exists = true;
-												array_push(
-													$_SESSION['branches'], 
-													array(
-														'name'     => $branch['name'],
-														'selected' => $branch_exists
-													)
+												if ($branch['name'] == $selected_branch) $branch_exists = $selected_branch_exists = true;
+												$_SESSION['branches'][$branch['name']] = array(
+													'selected' => $branch_exists,
+													'sha'      => $branch['commit']['sha']
 												);
 											}
 
-											if (!branch_exists) $selected_branch = 'master';
+    										if ($ini['debug']) error_log('New Session Branches: ' . json_encode($_SESSION['branches']));
 
-											foreach ($_SESSION['branches'] as $branch) {
-												echo '<option value="' . $branch . '"' . ($branch == $selected_branch ? ' selected' : '') . '>' . $branch . '</option>';
+                                            if (!$selected_branch_exists) $selected_branch = 'master';
+
+											echo '<select name="branch">';
+
+											foreach ($_SESSION['branches'] as $branch => $value) {
+												echo '<option value="' . $branch . '"' . ($value['selected'] ? ' selected' : '') . '>' . $branch . '</option>';
 											}
 
-											if (!$branch_exists && !empty($ini['branch'])) {
-												$user_message = 'Your installed branch (' . $ini['branch'] . ') no longer exists.<br>Please select another branch and click save.';
+											if (!$selected_branch_exists && !empty($ini['branch'])) {
+												$_SESSION['compare'] = 'Your installed branch (' . $ini['branch'] . ') no longer exists.<br>Please select another branch and click save.';
 											}
 											echo '</select>';
 										}
 									} else {
+										if ($ini['debug']) error_log('Stored Session Branches: ' . json_encode($_SESSION['branches']));
+
 										echo '<select name="branch">';
-										foreach ($_SESSION['branches'] as $branch) {
-											echo '<option value="' . $branch['name'] . '"' . ($branch['selected'] ? ' selected' : '') . '>' . $branch['name'] . '</option>';
+										foreach ($_SESSION['branches'] as $branch => $value) {
+											echo '<option value="' . $branch . '"' . ($value['selected'] ? ' selected' : '') . '>' . $branch . '</option>';
 										}
 										echo '</select>';
 									}
@@ -412,15 +422,53 @@
 							echo $_SESSION['results'] . '<br/><br/>';
 							$_SESSION['run'] += 1;
 						}
+						
 						echo (isset($createdTables) ? 
 							($createdTables === true ? 
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
-						$aheadBy = getBranchInfo($ini['commit'], $ini['branch']);
-						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
-						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
 						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
+
+						if (!isset($_SESSION['compare']) && isset($_SESSION['branches'][$ini['branch']])) {
+							$compare = getJSON('compare/' . $_SESSION['branches'][$ini['branch']]['sha'] . '...' . $ini['commit']);
+
+							if ($ini['debug']) {
+							    error_log('GitHub Commits: ' . $_SESSION['branches'][$ini['branch']]['sha'] . ' vs ' . $ini['commit']);
+							    error_log('GitHub Compare: ' . json_encode($compare));
+							}
+
+							if (isset($compare['message'])) {
+								if ($ini['debug']) error_log($compare['message']);
+								if (!strpos($compare['message'], 'API rate limit exceeded')) $_SESSION['compare'] = $compare['message'];
+							} else {
+    							switch ($compare['status']) {
+    							  case 'ahead':
+    								$_SESSION['compare'] = 'BETA RELEASE. ' . $compare['ahead_by'] . ' commit(s) ahead.';
+    								break;
+    							  case 'behind':
+    								$_SESSION['compare'] = 'Update available. ' . $compare['behind_by'] . ' commit(s) behind.';
+    								break;
+    							  case 'diverged':
+    								$_SESSION['compare'] = 'Application out of sync. ' . $compare['ahead_by'] . ' commit(s) behind and ' . $compare['behind_by'] . ' commit(s) ahead.';
+    								break;
+    							  case 'identical':
+    								// The application is up to date
+    								$_SESSION['compare'] = '';
+    								break;
+    							  default:
+    								$_SESSION['compare'] = 'How did you get here? ' . (!$ini['debug'] ? 'Enable Debug Mode and c' : 'C') . 'heck the logs.';
+    							}
+							}
+						}
+
+						if (empty($_SESSION['compare'])) {echo '';}
+						else {echo "<div class='red bold bgyellow' style='width:505px;margin:auto;'>" . $_SESSION['compare'] . '</div><br/>';}
+
+						echo "<input type='Submit' name='Save' value='Save'>";
+						
+						if (!empty($_SESSION['compare'])) echo "&nbsp;<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
 						if ($dbExists) {echo (isset($button) ? $button : '');}
+
 					?>
 				</form>
 			</div>
@@ -441,8 +489,6 @@
 							($created_tables === true ?
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
-						$aheadBy = getBranchInfo($ini['commit'], $ini['branch']);
-						echo (isset($aheadBy['new']['aheadby']) ? $aheadBy['new']['aheadby'] : '');
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
 						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
 						if ($dbExists) {echo (isset($button) ? $button : '');}
