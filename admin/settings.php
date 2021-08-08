@@ -393,7 +393,6 @@
 							($createdTables === true ? 
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
-						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
 
 						if (!isset($_SESSION['compare']) && isset($_SESSION['branches'][$ini['branch']])) {
 							$compare = getJSON('compare/' . $_SESSION['branches'][$ini['branch']]['sha'] . '...' . $ini['commit']);
@@ -427,12 +426,15 @@
 							}
 						}
 
-						if (empty($_SESSION['compare'])) {echo '';}
-						else {echo "<div class='red bold bgyellow' style='width:505px;margin:auto;'>" . $_SESSION['compare'] . '</div><br/>';}
+						if (empty($_SESSION['compare'])) {
+							echo '';
+						} else {
+							echo "<div class='red bold bgyellow' style='width:505px;margin:auto;'>" . $_SESSION['compare'] . '</div><br/>';
+							echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>&nbsp;&nbsp;";
+						}
 
 						echo "<input type='Submit' name='Save' value='Save'>";
 						
-						if (!empty($_SESSION['compare'])) echo "&nbsp;<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
 						if ($dbExists) {echo (isset($button) ? $button : '');}
 
 					?>
@@ -456,7 +458,6 @@
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
-						echo "<input type='Submit' name='Update' value='Update Application' title='Install updates from GitHub'>";
 						if ($dbExists) {echo (isset($button) ? $button : '');}
 					?>
 				</form>
