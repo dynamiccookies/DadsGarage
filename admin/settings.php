@@ -236,41 +236,7 @@
 				"bitlyAPI	= '" . ''        . "'\n" . 
 			"*/\n?>"
 		);
-	}
-	
-	//Iterate through retreived branch info - create/return multidimentional array
-/*	function getBranchInfo($commit = null, $branch = null) {
-		if (isset($_SESSION['json'])) {$json = $_SESSION['json'];}
-		else {$json = getJSON('branches');}
 
-		foreach ($json as $item) {$info['branches'][$item['name']] = $item['commit']['sha'];}
-
-		if ($commit) {
-			$json            = getJSON('commits/' . $commit);
-			$info['current'] = array(
-				'commit' => $json['sha'],
-				'date'   => str_replace(array('T', 'Z'), '', $json['commit']['committer']['date']),
-				'notes'  => $json['commit']['message']
-			);
-		}
-
-		if ($branch) {
-			$json        = getJSON('branches/' . $branch);
-			$info['new'] = array(
-				'name'   => $json['name'],
-				'commit' => $json['commit']['sha'],
-				'date'   => str_replace(array('T', 'Z'), '', $json['commit']['commit']['committer']['date'])
-			);
-		}
-
-		if ($commit && $branch && $info['current']['commit'] != $info['new']['commit']) {
-			$json = getJSON('compare/' . $info['current']['commit'] . '...' . $info['new']['commit']);
-			if ($json['status'] == 'ahead' || $json['status'] == 'diverged') {
-				$info['new']['aheadby'] = "<div class='red bold bgyellow'>Update available. " . $json['ahead_by'] . ' commit(s) behind.</div><br/>';
-			}
-		}
-
-		return $info;
 	}
 */	
 	//Pull branch info from GitHub
