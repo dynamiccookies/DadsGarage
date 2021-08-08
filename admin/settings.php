@@ -316,11 +316,12 @@
 										if (isset($branches['message'])) {
 											if ($ini['debug']) error_log($branches['message']);
 
-											if (strpos($branches['message'], 'API rate limit exceeded')) {
-												$select_title = ' title="Please check back later for the complete list of branches."';
+											if (str_starts_with($branches['message'], 'API rate limit exceeded')) {
+												$_SESSION['compare'] = 'Please check back later for the complete list of branches.';
+												$select_title        = ' title="' . $_SESSION['compare'] . '"';
 											} else {
 												$select_title = '';
-												$user_message = $branches['message'];
+												$_SESSION['compare'] = $branches['message'];
 											}
 
 											echo '<select name="branch"' . $select_title . ' disabled>';
@@ -406,7 +407,7 @@
 
 							if (isset($compare['message'])) {
 								if ($ini['debug']) error_log($compare['message']);
-								if (!strpos($compare['message'], 'API rate limit exceeded')) $_SESSION['compare'] = $compare['message'];
+								if (!str_starts_with($compare['message'], 'API rate limit exceeded')) $_SESSION['compare'] = $compare['message'];
 							} else {
     							switch ($compare['status']) {
     							  case 'ahead':
