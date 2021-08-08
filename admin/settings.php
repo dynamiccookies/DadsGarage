@@ -25,11 +25,11 @@
 			$commit = '';
 		}
 
-		update_config($branch, $commit);
+		$ini = update_config($branch, $commit);
+	} else {
+		$ini = parse_ini_file('../includes/config.ini.php');
 	}
 
-	//Read config.ini.php and set variables
-	$ini                   = parse_ini_file('../includes/config.ini.php');
 	$user_message          = '';
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
@@ -163,11 +163,12 @@
     			unlink(dirname(__DIR__) . '/.gitignore');
     			unlink(dirname(__DIR__) . '/install.php');
 
-				update_config($repBranch, $_SESSION['branches'][$repBranch]['sha']);
+				$ini = update_config($repBranch, $_SESSION['branches'][$repBranch]['sha']);
 
-				$_SESSION['results'] = 'Application Updated Successfully!';
 				unset($_SESSION['branches']);
 				unset($_SESSION['compare']);
+
+				$_SESSION['results'] = 'Application Updated Successfully!';
 
     			// If '$redirectURL' variable exists, redirect page to that URL
     			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
@@ -237,8 +238,9 @@
 			"*/\n?>"
 		);
 
+		return parse_ini_file('../includes/config.ini.php');
 	}
-*/	
+
 	//Pull branch info from GitHub
 	function getJSON($url) {
 		$ch = curl_init();
