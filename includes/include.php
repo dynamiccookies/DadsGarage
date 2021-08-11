@@ -12,7 +12,7 @@
 		if (!empty($last_error) && $last_error['type'] & (E_ERROR | E_COMPILE_ERROR | E_PARSE | E_CORE_ERROR | E_USER_ERROR)){
 			if (preg_match('/admin|includes/', getcwd())) {$path = '../';}
 			else {$path = '';}
-			echo "<meta http-equiv=refresh content=\"5; URL=" . $path . "admin/settings.php\">";
+			echo "<meta http-equiv=refresh content=\"5; URL=" . $path . "settings.php\">";
 			echo "<p style='font-weight:bold;font-size:24px;color:red;'>Settings are missing!<br/>Redirecting there now.</p>";
 			exit();
 		}
