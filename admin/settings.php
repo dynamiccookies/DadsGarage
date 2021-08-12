@@ -30,13 +30,14 @@
 		$ini = parse_ini_file('../includes/config.ini.php');
 	}
 
+	$create_tables_button  = false;
 	$user_message          = '';
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
 
 	//Test validity of database, host, & credentials
 	if (!empty($ini['host'])) {
-    	$_SESSION['include'] = true;
+		$_SESSION['include'] = true;
 		require_once '../includes/initialize-database.php';
 
 		$hostChk = (isset($array['connTest']) && $array['connTest'] != 'Pass' ? $array['connTest'] : '');
@@ -57,9 +58,9 @@
 			if (isset($_POST['createTables'])) {
 				$createdTables = createTables();
 			} else {
-				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
 				$dbChk  = str_replace('pass', 'warn', $dbChk);
 				$dbChk  = str_replace('Database Connection Successful', 'One or more tables are missing from the database.', $dbChk);
+				$create_tables_button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
 			}
 		}
 
@@ -77,7 +78,7 @@
 				$user_message = 'The username or password is incorrect.<br/><br/>';
 			} else {$user_message = $adminExists;}
 		}
-	} else {$dbExists = false;}
+	} else {$database_exists = false;}
 
 	if ($dbExists) {
 		if (check_tables('users')) {
@@ -313,7 +314,7 @@
 										if ($ini['debug']) error_log('GitHub Branches: ' . json_encode($github_branches));
 
 										// If the GitHub API JSON query returned an error
-											if ($ini['debug']) error_log($branches['message']);
+										if (isset($github_branches['message'])) {
 											if ($ini['debug']) error_log($github_branches['message']);
 
 											if (str_starts_with($github_branches['message'], 'API rate limit exceeded')) {
@@ -437,7 +438,7 @@
 
 						echo "<input type='Submit' name='Save' value='Save'>";
 						
-						if ($dbExists) {echo (isset($button) ? $button : '');}
+						if ($database_exists) echo ($create_tables_button ?: '');
 
 					?>
 				</form>
@@ -460,13 +461,13 @@
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
-						if ($dbExists) {echo (isset($button) ? $button : '');}
+						if ($database_exists) echo ($create_tables_button ?: '');
 					?>
 				</form>
 			</div>
 			<div id='Owners' class='tabcontent'>
 				<?php 
-					if ($dbExists && check_tables('owners')) {
+					if ($database_exists && check_tables('owners')) {
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$oSelect->execute();
@@ -504,14 +505,13 @@
 			</div>
 			<div id='Users' class='tabcontent'>
  				<?php 
-				if($dbExists){
-					if(check_tables('users')){
+					if($database_exists && check_tables('users')){
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$selectAllUsers->execute();
 						$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
 					}
-				}?>
+				?>
 				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings'>
 						<tr><td>Username:</td><td><input id='newUsername' name='user' type='textbox' value=''></td></tr>
@@ -568,7 +568,7 @@
 	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
-			if($dbExists && check_tables('owners')) {
+			if($database_exists && check_tables('owners')) {
 				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
