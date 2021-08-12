@@ -171,8 +171,9 @@
 
 				$_SESSION['results'] = 'Application Updated Successfully!';
 
-    			// If '$redirectURL' variable exists, redirect page to that URL
-    			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
+				// If '$redirectURL' variable exists, redirect page to that URL
+    			if ($redirectURL) header('Location: ' . $redirectURL . '?updated=' . date('YmdHis'));
+
     		} else {
     		    echo "Error Extracting Zip: Please <a href='" . $repository . "issues/new?title=Installation - Error Extracting'>submit an issue</a>.";
 				$_SESSION['results'] = 'Something went wrong!';
