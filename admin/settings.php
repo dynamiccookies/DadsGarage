@@ -308,20 +308,20 @@
 								<?php
                                     // If the GitHub API JSON query has not happened during this session or it needs to be updated
 									if (!isset($_SESSION['branches'])) {
-										$branches = getJSON('branches');
+										$github_branches = getJSON('branches');
 
-										if ($ini['debug']) error_log('GitHub Branches: ' . json_encode($branches));
+										if ($ini['debug']) error_log('GitHub Branches: ' . json_encode($github_branches));
 
 										// If the GitHub API JSON query returned an error
-										if (isset($branches['message'])) {
 											if ($ini['debug']) error_log($branches['message']);
+											if ($ini['debug']) error_log($github_branches['message']);
 
-											if (str_starts_with($branches['message'], 'API rate limit exceeded')) {
+											if (str_starts_with($github_branches['message'], 'API rate limit exceeded')) {
 												$_SESSION['compare'] = 'Please check back later for the complete list of branches.';
 												$select_title        = ' title="' . $_SESSION['compare'] . '"';
 											} else {
-												$select_title = '';
-												$_SESSION['compare'] = $branches['message'];
+												$select_title = 'An error has occurred.';
+												$_SESSION['compare'] = $github_branches['message'];
 											}
 
 											echo '<select name="branch"' . $select_title . ' disabled>';
@@ -330,22 +330,21 @@
 
 										// Otherwise, if there's no error
 										} else {
-											$selected_branch        = $ini['branch'];
 											$selected_branch_exists = false;
 											$_SESSION['branches']   = array();
 
-											foreach ($branches as $branch) {
-												$branch_exists = false;
-												if ($branch['name'] == $selected_branch) $branch_exists = $selected_branch_exists = true;
-												$_SESSION['branches'][$branch['name']] = array(
-													'selected' => $branch_exists,
-													'sha'      => $branch['commit']['sha']
+											foreach ($github_branches as $github_branch) {
+												$branch_selected = false;
+												if ($github_branch['name'] == $ini['branch']) $branch_selected = $selected_branch_exists = true;
+												$_SESSION['branches'][$github_branch['name']] = array(
+													'selected' => $branch_selected,
+													'sha'      => $github_branch['commit']['sha']
 												);
 											}
 
     										if ($ini['debug']) error_log('New Session Branches: ' . json_encode($_SESSION['branches']));
 
-                                            if (!$selected_branch_exists) $selected_branch = 'master';
+                                            if (!$selected_branch_exists) $_SESSION['branches']['master']['selected'] = true;
 
 											echo '<select name="branch">';
 
