@@ -125,44 +125,44 @@
 	
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
-  		try {
+		try {
 			ini_set('allow_url_fopen', 1);
-        	$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
-        	$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
-        	$source      = 'DadsGarage-' . $repBranch;
-        	$redirectURL = '../admin/settings.php';
+			$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
+			$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
+			$source      = 'DadsGarage-' . $repBranch;
+			$redirectURL = '../admin/settings.php';
 
-    		// Download repository files as 'install.zip' and store in '$file' variable
-    		$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
+			// Download repository files as 'install.zip' and store in '$file' variable
+			$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
 
-    		// If '$file' variable does not contain data, present error message to screen and kill script
-    		if ($file === false) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
-    
-    		$zip = new ZipArchive;
+			// If '$file' variable does not contain data, present error message to screen and kill script
+			if ($file === false) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
 
-    		// Open zip file and store contents in '$res' variable
-    		$res = $zip->open(dirname(__DIR__) . '/install.zip');
-    		if ($res === true) {
-    			for ($i = 0; $i < $zip->numFiles; $i++) {
+			$zip = new ZipArchive;
+
+			// Open zip file and store contents in '$res' variable
+			$res = $zip->open(dirname(__DIR__) . '/install.zip');
+			if ($res === true) {
+				for ($i = 0; $i < $zip->numFiles; $i++) {
 	    			$name = $zip->getNameIndex($i);
 		    		if (strpos($name, $source . '/') !== 0) continue;
 				    $file = dirname(__DIR__) . '/' . substr($name, strlen($source) + 1);
-    				if (substr($file, -1) != '/') {
-    					if (!is_dir(dirname($file))) mkdir(dirname($file), 0777, true);
-    					$fread  = $zip->getStream($name);
-    					$fwrite = fopen($file, 'w');
-    					while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
-    					fclose($fread);
-    					fclose($fwrite);
-    				}
-    			}
-    			$zip->close();
+					if (substr($file, -1) != '/') {
+						if (!is_dir(dirname($file))) mkdir(dirname($file), 0777, true);
+						$fread  = $zip->getStream($name);
+						$fwrite = fopen($file, 'w');
+						while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
+						fclose($fread);
+						fclose($fwrite);
+					}
+				}
+				$zip->close();
 			
-    			// Delete the following files
-    			unlink(dirname(__DIR__) . '/install.zip');
-    			unlink(dirname(__DIR__) . '/README.md');
-    			unlink(dirname(__DIR__) . '/.gitignore');
-    			unlink(dirname(__DIR__) . '/install.php');
+				// Delete the following files
+				unlink(dirname(__DIR__) . '/install.zip');
+				unlink(dirname(__DIR__) . '/README.md');
+				unlink(dirname(__DIR__) . '/.gitignore');
+				unlink(dirname(__DIR__) . '/install.php');
 
 				$ini = update_config($repBranch, $_SESSION['branches'][$repBranch]['sha']);
 
