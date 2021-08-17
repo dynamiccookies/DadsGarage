@@ -218,11 +218,11 @@
 		elseif (isset($ini['debug']))    {$debug    = $ini['debug'];}
 		else                             {$debug    = 'false';}
 
-		if (isset($branch))              {}
+		if (!empty($branch))             {}
 		elseif (isset($ini['branch']))   {$branch   = $ini['branch'];}
 		else                             {$branch   = '';}
 
-		if (isset($commit))              {}
+		if (!empty($commit))             {}
 		elseif (isset($ini['commit']))   {$commit   = $ini['commit'];}
 		else                             {$commit   = '';}
 
