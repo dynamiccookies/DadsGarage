@@ -9,13 +9,13 @@
 	require_once '../admin/secure.php';
 
 	ini_set('display_errors', $_SESSION['debug']);
-	$server      = $ini['host'];
 	$port        = 3306;
-	$dbName      = $ini['dbname'];
-	$dbUsername  = $ini['username'];
-	$dbPassword  = $ini['password'];
 	$array       = array();
 	$dbSelected  = 0;
+	$server     = $ini['host'];
+	$dbName     = $ini['dbname'];
+	$dbUsername = $ini['username'];
+	$dbPassword = $ini['password'];
 
 	// Check server connectivity
 	try {
@@ -25,7 +25,7 @@
 		fclose($handle);
 	}
 	catch(PDOException $e){$array['connTest'] = 'Failure Caught - Cannot connect to ' . $server . ':' . $port;}
-	
+
 	// Check Username/Password 
 	try {
 		$conn = new PDO('mysql:host='.$server, $dbUsername, $dbPassword);
@@ -74,14 +74,15 @@
 		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
 		// Set options
 		$options = array(
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_PERSISTENT => true,
+			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_PERSISTENT         => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		);
 		// Create a new PDO instance
 		try {
 			$conn        = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
 			$adminExists = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
+			
 			$adminExists = $adminExists->fetchColumn();
 			if($adminExists == 0) {
  				$createAdmin = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) VALUES ('admin','" . 
@@ -92,7 +93,7 @@
    				$findAdmin = $conn->prepare("SELECT * FROM users WHERE username='admin'");
 				$findAdmin->execute();
 				$findAdmin = $findAdmin->fetchAll(PDO::FETCH_ASSOC);
-				if(!empty($findAdmin) && password_verify('admin',$findAdmin[0]['hash'])) {return TRUE;}
+				if(!empty($findAdmin) && password_verify('admin', $findAdmin[0]['hash'])) {return TRUE;}
 				else {return FALSE;}
  				return 'How did you get here?';
 			}
@@ -196,8 +197,6 @@
 				`sold_date` DATE NULL DEFAULT NULL`,
 				PRIMARY KEY (`id`));
 		";
-
-
 
 		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
 

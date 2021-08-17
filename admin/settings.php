@@ -96,7 +96,7 @@
 	}
 	if (isset($_POST['userAdd'])) {
 		if ($_POST['user']) {
-			if (!$_POST['isadmin']) {$_POST['isadmin']=0;}
+			if (!$_POST['isadmin']) {$_POST['isadmin'] = 0;}
 			$insertUsers->bindParam(':user',    strtolower($_POST['user']));
 			$insertUsers->bindParam(':pass',    password_hash($_POST['user'], PASSWORD_DEFAULT));
 			$insertUsers->bindParam(':fname',   $_POST['fname']);
@@ -228,15 +228,15 @@
 
 		file_put_contents('../includes/config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
-				"dbname		= '" . $dbname   . "'\n" .
-				"host 		= '" . $host     . "'\n" .
-				"username 	= '" . $username . "'\n" .
-				"password 	= '" . $password . "'\n" .
-				"debug		= '" . $debug    . "'\n" .
-				"branch		= '" . $branch   . "'\n" .
-				"commit		= '" . $commit   . "'\n" .
-				"bitlyuser	= '" . ''        . "'\n" .
-				"bitlyAPI	= '" . ''        . "'\n" . 
+				"dbname    = '" . $dbname   . "'\n" .
+				"host      = '" . $host     . "'\n" .
+				"username  = '" . $username . "'\n" .
+				"password  = '" . $password . "'\n" .
+				"debug     = '" . $debug    . "'\n" .
+				"branch    = '" . $branch   . "'\n" .
+				"commit    = '" . $commit   . "'\n" .
+				"bitlyuser = '" . ''        . "'\n" .
+				"bitlyAPI  = '" . ''        . "'\n" . 
 			"*/\n?>"
 		);
 
