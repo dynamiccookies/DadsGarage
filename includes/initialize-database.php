@@ -8,80 +8,111 @@
 	$_SESSION['include'] = true;
 	require_once '../admin/secure.php';
 
-	ini_set('display_errors', $_SESSION['debug']);
-	$server      = $ini['host'];
-	$port        = 3306;
-	$dbName      = $ini['dbname'];
-	$dbUsername  = $ini['username'];
-	$dbPassword  = $ini['password'];
-	$array       = array();
-	$dbSelected  = 0;
+	ini_set('display_errors', $ini['debug']);
+	$server     = $ini['host'];
+	$port       = $ini['port'];
+	$dbName     = $ini['dbname'];
+	$dbUsername = $ini['username'];
+	$dbPassword = $ini['password'];
 
 	// Check server connectivity
-	try {
-		$handle = fsockopen($server, $port);
-		if ($handle) {$array['connTest'] = 'Pass';} 
-		else {$array['connTest'] = 'Fail - Cannot connect to ' . $server . ':' . $port;}
-		fclose($handle);
-	}
-	catch(PDOException $e){$array['connTest'] = 'Failure Caught - Cannot connect to ' . $server . ':' . $port;}
-	
-	// Check Username/Password 
-	try {
-		$conn = new PDO('mysql:host='.$server, $dbUsername, $dbPassword);
-		
-		// Set the PDO error mode to exception
-		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$array['credTest'] = 'Pass';
-	}
-	catch(PDOException $e){
-		$array['credTest'] = 'Fail - Check ' . ($array['connTest'] != 'Pass' ? 'the host address and ' : '') . 'your username & password.';
-	}
-	
-	// Check if DB exists
-	if(!empty($dbName)){
+	function check_server($ini) {
+		$server = $ini['host'];
+		$port   = $ini['port'];
 
-		// Create connection string
-		$dsn = 'mysql:host=' . $server . ';dbname=' . $dbName . ';port=' . $port;
+		$handle = fsockopen($server, $port, $error_code, $error_message);
 
-		// Set options
-		$options = array(
-			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_PERSISTENT         => true,
-			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-		);
+		if ($handle) {
+			fclose($handle);
 
-		// Create a new PDO instance
-		try {
-			$conn        = new PDO($dsn, $dbUsername, $dbPassword, $options);
-			$stmt        = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $dbName . "'");
-			$dbSelected  = $stmt->fetchColumn();
+			return true;
+		} else {
+			if ($_SESSION['debug']) error_log('Error Connecting to ' . $server . ':' . $port . ': (' . $error_code . ') ' . $error_message);
+
+			return false;
 		}
-		catch (PDOException $e) {
-			$sqlError = $e->getMessage();
-			if ($_SESSION['debug']) echo "<script>console.log('SQL Error: " . $sqlError . "');</script>";
-		}  
-		
-		if ($dbSelected == 1) {$array['dbTest'] = 'Pass';} 
-		elseif ($dbSelected == 0 && $array['credTest'] == 'Pass') {$array['dbTest'] = 'Fail - ' . $dbName . ' does not exist.';}
-		elseif ($dbSelected == 0 && $array['credTest'] != 'Pass' && $array['connTest'] == 'Pass') {$array['dbTest'] = 'Fail - Check your username & password.';}
-		elseif ($dbSelected == 0 && $array['credTest'] != 'Pass') {$array['dbTest'] = 'Fail - Double check host address.';}
 	}
-	$conn = null;
+
+	// Check Username/Password 
+	function check_credentials($ini) {
+		$server     = $ini['host'];
+		$username   = $ini['username'];
+		$password   = $ini['password'];
+
+		try {
+			$conn = new PDO('mysql:host=' . $server, $username, $password);
+			
+			// Set the PDO error mode to exception
+			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$conn = null;
+
+			return true;
+
+		} catch (PDOException $e) {
+			if ($_SESSION['debug']) error_log('Error Logging into ' . $server . ': ' . $e->getMessage());
+
+			return false;
+		}
+	}
+
+	// Check if DB exists
+	function check_database($ini) {
+		$server         = $ini['host'];
+		$port           = $ini['port'];
+		$database       = $ini['dbname'];
+		$username       = $ini['username'];
+		$password       = $ini['password'];
+		$database_found = false;
+
+		if (!empty($database)) {
+
+			// Create connection string
+			$dsn = 'mysql:host=' . $server . ';dbname=' . $database . ';port=' . $port;
+
+			// Set options
+			$options = array(
+				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_PERSISTENT         => true,
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+			);
+
+			// Create a new PDO instance
+			try {
+				$conn           = new PDO($dsn, $username, $password, $options);
+				$statement      = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $database . "'");
+				$database_found = $statement->fetchColumn();
+				$conn           = null;
+
+				if ($database_found) {
+					return true;
+				} else {
+					return false;
+				}
+
+			} catch (PDOException $e) {
+				if ($_SESSION['debug']) error_log('Database Error: ' . $e->getMessage());
+				
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 
 	// Check if admin exists
  	function adminExists() {
 		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
 		// Set options
 		$options = array(
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_PERSISTENT => true,
+			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_PERSISTENT         => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		);
 		// Create a new PDO instance
 		try {
 			$conn        = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
 			$adminExists = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
+			
 			$adminExists = $adminExists->fetchColumn();
 			if($adminExists == 0) {
  				$createAdmin = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) VALUES ('admin','" . 
@@ -92,7 +123,7 @@
    				$findAdmin = $conn->prepare("SELECT * FROM users WHERE username='admin'");
 				$findAdmin->execute();
 				$findAdmin = $findAdmin->fetchAll(PDO::FETCH_ASSOC);
-				if(!empty($findAdmin) && password_verify('admin',$findAdmin[0]['hash'])) {return TRUE;}
+				if(!empty($findAdmin) && password_verify('admin', $findAdmin[0]['hash'])) {return TRUE;}
 				else {return FALSE;}
  				return 'How did you get here?';
 			}
@@ -196,8 +227,6 @@
 				`sold_date` DATE NULL DEFAULT NULL`,
 				PRIMARY KEY (`id`));
 		";
-
-
 
 		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
 

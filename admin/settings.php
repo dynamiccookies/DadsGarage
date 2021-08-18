@@ -30,36 +30,90 @@
 		$ini = parse_ini_file('../includes/config.ini.php');
 	}
 
+	$check_credentials     = false;
+	$check_database        = false;
+	$check_host            = false;
+	$create_tables_button  = '';
 	$user_message          = '';
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
+	$_SESSION['include']   = true;
+	require_once '../includes/initialize-database.php';
 
-	//Test validity of database, host, & credentials
-	if (!empty($ini['host'])) {
-    	$_SESSION['include'] = true;
-		require_once '../includes/initialize-database.php';
+	// Database Textboxes
+	if ($ini['host']) {
+		$check_server      = check_server($ini);
+		$check_database    = check_database($ini);
+		$check_credentials = check_credentials($ini);
 
-		$hostChk = (isset($array['connTest']) && $array['connTest'] != 'Pass' ? $array['connTest'] : '');
-		$dbChk = (!$ini['dbname']?'Required Field':($array['dbTest']?($array['dbTest']!='Pass'?$array['dbTest']:''):''));
-		$dbChk = ($dbChk!=''?" class='required' title='".$dbChk."'":" class='pass' title='Database Connection Successful'");
-		$userChk = (!$ini['username']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
-		$userChk = ($userChk!=''?" class='required' title='".$userChk."'":" class='pass' title='Login Successful'");
-		$passChk = (!$ini['password']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
-		$passChk = ($passChk!=''?" class='required' title='".$passChk."'":" class='pass' title='Login Successful'");
-	} else {$hostChk = 'Required Field';}
-	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
+		if ($check_server) {
+			$host_textbox_attributes = "class='pass' title='Host Connection Successful'";
+		} else {
+			$host_textbox_attributes = "class='required' title='Fail - Cannot connect to " . $ini['host'] . ":" . $ini['port'] . "'";
+		}
+
+		if (!$ini['username'] || !$ini['password']) {
+			$credentials_textbox_attributes = "class='required' title='Username & Password Required'";
+		} elseif ($check_credentials) {
+			$credentials_textbox_attributes = "class='pass' title='Login Successful'";
+		} else {
+			if ($check_server) {
+				$credentials_textbox_attributes = "class='required' title='Login Failed - Check your username & password.'";
+			} else {
+				$credentials_textbox_attributes = "class='required' title='Cannot Login - Host is invalid.'";
+			}
+		}
+
+		if (!$ini['dbname']) {
+			$database_textbox_attributes = "class='required' title='Required Field'";
+		} elseif ($check_database) {
+			$database_textbox_attributes = "class='pass' title='Database Connection Successful'";
+		} else {
+			if ($check_credentials) {
+				$database_textbox_attributes = "class='required' title='Fail - " . $ini['dbname'] . " database does not exist.'";
+			} elseif ($check_server) {
+				$database_textbox_attributes = "class='required' title='Fail - Check your username & password.'";
+			} else {
+				$database_textbox_attributes = "class='required' title='Fail - Double check host address.'";
+			}
+		}
+	} else {
+		$credentials_textbox_attributes = '';
+		$database_textbox_attributes    = '';
+		$host_textbox_attributes        = "class='required' title='Host is a required field'";
+	}
+
+	// Tabs
+	if ($check_database) {
+		$general_tab  = "onclick=\"openTab('General', this, 'left')\"";
+		$database_tab = "onclick=\"openTab('Database', this, 'middle')\"";
+		$owners_tab   = "onclick=\"openTab('Owners', this, 'middle')\"";
+		$users_tab    = "onclick=\"openTab('Users', this, 'right')\"";
+
+		if (isset($_SESSION['settings'])) {
+			if ($_SESSION['settings'] == 'database') $database_tab  .= " id='defaultOpen'";
+			if ($_SESSION['settings'] == 'owners')   $owners_tab    .= " id='defaultOpen'";
+			if ($_SESSION['settings'] == 'users')    $users_tab     .= " id='defaultOpen'";
+		} else {
+			$general_tab .= " id='defaultOpen'";
+		}
+	} else {
+		$database_tab = "onclick=\"openTab('Database', this, 'middle')\" id='defaultOpen'";
+		$general_tab  = $owners_tab = $users_tab = "title='Database information is missing.' style='cursor:not-allowed;'";
+	}
+
 
 	// Check existence/create database tables
-	if (strpos($hostChk, 'pass') && strpos($dbChk, 'pass') && strpos($userChk, 'pass') && strpos($passChk, 'pass')) {
-		$dbExists = true;
-
+	if ($check_database) {
 		if (!check_tables()) {
 			if (isset($_POST['createTables'])) {
 				$createdTables = createTables();
 			} else {
-				$button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
-				$dbChk  = str_replace('pass', 'warn', $dbChk);
-				$dbChk  = str_replace('Database Connection Successful', 'One or more tables are missing from the database.', $dbChk);
+				$create_tables_button        = " <input type='Submit' name='createTables' value='Create Table(s)'>";
+				$database_textbox_attributes = "class='warn' title='One or more tables are missing from the database.'";
+
+				$database_tab = " id='defaultOpen'";
+				$general_tab  = $owners_tab = $users_tab = "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";
 			}
 		}
 
@@ -77,13 +131,11 @@
 				$user_message = 'The username or password is incorrect.<br/><br/>';
 			} else {$user_message = $adminExists;}
 		}
-	} else {$dbExists = false;}
+	}
 
-	if ($dbExists) {
-		if (check_tables('users')) {
-			$_SESSION['include'] = true;
-			require_once '../includes/include.php';
-		}
+	if ($check_database && check_tables('users')) {
+		$_SESSION['include'] = true;
+		require_once '../includes/include.php';
 	}
 	if (!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
 	if (isset($_POST['ownerAdd'])) {
@@ -95,7 +147,7 @@
 	}
 	if (isset($_POST['userAdd'])) {
 		if ($_POST['user']) {
-			if (!$_POST['isadmin']) {$_POST['isadmin']=0;}
+			if (!$_POST['isadmin']) {$_POST['isadmin'] = 0;}
 			$insertUsers->bindParam(':user',    strtolower($_POST['user']));
 			$insertUsers->bindParam(':pass',    password_hash($_POST['user'], PASSWORD_DEFAULT));
 			$insertUsers->bindParam(':fname',   $_POST['fname']);
@@ -124,44 +176,44 @@
 	
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
-  		try {
+		try {
 			ini_set('allow_url_fopen', 1);
-        	$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
-        	$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
-        	$source      = 'DadsGarage-' . $repBranch;
-        	$redirectURL = '../admin/settings.php';
+			$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
+			$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
+			$source      = 'DadsGarage-' . $repBranch;
+			$redirectURL = '../admin/settings.php';
 
-    		// Download repository files as 'install.zip' and store in '$file' variable
-    		$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
+			// Download repository files as 'install.zip' and store in '$file' variable
+			$file = file_put_contents(dirname(__DIR__) . '/install.zip', fopen($repository . 'archive/' . $repBranch . '.zip', 'r'), LOCK_EX);
 
-    		// If '$file' variable does not contain data, present error message to screen and kill script
-    		if ($file === false) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
-    
-    		$zip = new ZipArchive;
+			// If '$file' variable does not contain data, present error message to screen and kill script
+			if ($file === false) die("Error Writing to File: Please <a href='" . $repository . "issues/new?title=Installation - Error Writing to File'>submit an issue</a>.");
 
-    		// Open zip file and store contents in '$res' variable
-    		$res = $zip->open(dirname(__DIR__) . '/install.zip');
-    		if ($res === true) {
-    			for ($i = 0; $i < $zip->numFiles; $i++) {
+			$zip = new ZipArchive;
+
+			// Open zip file and store contents in '$res' variable
+			$res = $zip->open(dirname(__DIR__) . '/install.zip');
+			if ($res === true) {
+				for ($i = 0; $i < $zip->numFiles; $i++) {
 	    			$name = $zip->getNameIndex($i);
 		    		if (strpos($name, $source . '/') !== 0) continue;
 				    $file = dirname(__DIR__) . '/' . substr($name, strlen($source) + 1);
-    				if (substr($file, -1) != '/') {
-    					if (!is_dir(dirname($file))) mkdir(dirname($file), 0777, true);
-    					$fread  = $zip->getStream($name);
-    					$fwrite = fopen($file, 'w');
-    					while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
-    					fclose($fread);
-    					fclose($fwrite);
-    				}
-    			}
-    			$zip->close();
+					if (substr($file, -1) != '/') {
+						if (!is_dir(dirname($file))) mkdir(dirname($file), 0777, true);
+						$fread  = $zip->getStream($name);
+						$fwrite = fopen($file, 'w');
+						while ($data = fread($fread, 1024)) {fwrite($fwrite, $data);}
+						fclose($fread);
+						fclose($fwrite);
+					}
+				}
+				$zip->close();
 			
-    			// Delete the following files
-    			unlink(dirname(__DIR__) . '/install.zip');
-    			unlink(dirname(__DIR__) . '/README.md');
-    			unlink(dirname(__DIR__) . '/.gitignore');
-    			unlink(dirname(__DIR__) . '/install.php');
+				// Delete the following files
+				unlink(dirname(__DIR__) . '/install.zip');
+				unlink(dirname(__DIR__) . '/README.md');
+				unlink(dirname(__DIR__) . '/.gitignore');
+				unlink(dirname(__DIR__) . '/install.php');
 
 				$ini = update_config($repBranch, $_SESSION['branches'][$repBranch]['sha']);
 
@@ -170,8 +222,9 @@
 
 				$_SESSION['results'] = 'Application Updated Successfully!';
 
-    			// If '$redirectURL' variable exists, redirect page to that URL
-    			if ($redirectURL) echo "<meta http-equiv=refresh content='0; URL=" . $redirectURL . "'>";
+				// If '$redirectURL' variable exists, redirect page to that URL
+    			if ($redirectURL) header('Location: ' . $redirectURL . '?updated=' . date('YmdHis'));
+
     		} else {
     		    echo "Error Extracting Zip: Please <a href='" . $repository . "issues/new?title=Installation - Error Extracting'>submit an issue</a>.";
 				$_SESSION['results'] = 'Something went wrong!';
@@ -216,25 +269,32 @@
 		elseif (isset($ini['debug']))    {$debug    = $ini['debug'];}
 		else                             {$debug    = 'false';}
 
-		if (isset($branch))              {}
+		if (!empty($branch))             {}
 		elseif (isset($ini['branch']))   {$branch   = $ini['branch'];}
 		else                             {$branch   = '';}
 
-		if (isset($commit))              {}
+		if (!empty($commit))             {}
 		elseif (isset($ini['commit']))   {$commit   = $ini['commit'];}
 		else                             {$commit   = '';}
 
+		if (isset($_POST['port']))       {$port     = $_POST['port'];}
+		elseif (isset($ini['port']))     {$port     = $ini['port'];}
+		else                             {$port     = '';}
+
+        if (empty($port)) $port = 3306;
+
 		file_put_contents('../includes/config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
-				"dbname		= '" . $dbname   . "'\n" .
-				"host 		= '" . $host     . "'\n" .
-				"username 	= '" . $username . "'\n" .
-				"password 	= '" . $password . "'\n" .
-				"debug		= '" . $debug    . "'\n" .
-				"branch		= '" . $branch   . "'\n" .
-				"commit		= '" . $commit   . "'\n" .
-				"bitlyuser	= '" . ''        . "'\n" .
-				"bitlyAPI	= '" . ''        . "'\n" . 
+				"dbname    = '" . $dbname   . "'\n" .
+				"host      = '" . $host     . "'\n" .
+				"username  = '" . $username . "'\n" .
+				"password  = '" . $password . "'\n" .
+				"debug     = '" . $debug    . "'\n" .
+				"branch    = '" . $branch   . "'\n" .
+				"commit    = '" . $commit   . "'\n" .
+				"port      = '" . $port     . "'\n" .
+				"bitlyuser = '" . ''        . "'\n" .
+				"bitlyAPI  = '" . ''        . "'\n" . 
 			"*/\n?>"
 		);
 
@@ -267,36 +327,10 @@
 		</div>
 		<div id='mainContainer' class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
 			<div class='settings-header'>Settings</div><br/>
-			<button class='tablink width25' value='General'
-				<?php 
-					if(isset($dbChk) && strpos($dbChk, 'pass')){
-						echo "onclick=\"openTab('General', this, 'left')\"";
-						echo (!isset($_SESSION['settings']) ? " id='defaultOpen'" : '');
-					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
-				?> 
-			><span class='alt'>G</span>eneral</button>
-			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
-				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || (!isset($dbChk) || !strpos($dbChk, 'pass')) ? " id='defaultOpen'" : '');?>
-			><span class='alt'>D</span>atabase</button>
-			<button class='tablink width25' value='Owners'
-				<?php 
-					if(isset($dbChk) && strpos($dbChk, 'pass')){
-						echo "onclick=\"openTab('Owners', this, 'middle')\"";
-						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'owners') ? " id='defaultOpen'" : '');
-					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else {echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
-				?> 
-			><span class='alt'>O</span>wners</button>
-			<button class='tablink width25'	value='Users'
-				<?php 
-					if(isset($dbChk) && strpos($dbChk, 'pass')){
-						echo "onclick=\"openTab('Users', this, 'right')\"";
-						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'users') ? " id='defaultOpen'" : '');
-					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else {echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
-				?>
-			><span class='alt'>U</span>sers</button>
+			<button class='tablink width25' value='General' <?= $general_tab;?>><span class='alt'>G</span>eneral</button>
+			<button class='tablink width25' value='Database' <?= $database_tab;?>><span class='alt'>D</span>atabase</button>
+			<button class='tablink width25' value='Owners' <?= $owners_tab;?>><span class='alt'>O</span>wners</button>
+			<button class='tablink width25'	value='Users' <?= $users_tab;?>><span class='alt'>U</span>sers</button>
 			<div id='General' class='tabcontent'>
 				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings borderupdown'>
@@ -308,20 +342,20 @@
 								<?php
                                     // If the GitHub API JSON query has not happened during this session or it needs to be updated
 									if (!isset($_SESSION['branches'])) {
-										$branches = getJSON('branches');
+										$github_branches = getJSON('branches');
 
-										if ($ini['debug']) error_log('GitHub Branches: ' . json_encode($branches));
+										if ($ini['debug']) error_log('GitHub Branches: ' . json_encode($github_branches));
 
 										// If the GitHub API JSON query returned an error
-										if (isset($branches['message'])) {
-											if ($ini['debug']) error_log($branches['message']);
+										if (isset($github_branches['message'])) {
+											if ($ini['debug']) error_log($github_branches['message']);
 
-											if (str_starts_with($branches['message'], 'API rate limit exceeded')) {
+											if (str_starts_with($github_branches['message'], 'API rate limit exceeded')) {
 												$_SESSION['compare'] = 'Please check back later for the complete list of branches.';
 												$select_title        = ' title="' . $_SESSION['compare'] . '"';
 											} else {
-												$select_title = '';
-												$_SESSION['compare'] = $branches['message'];
+												$select_title = 'An error has occurred.';
+												$_SESSION['compare'] = $github_branches['message'];
 											}
 
 											echo '<select name="branch"' . $select_title . ' disabled>';
@@ -330,22 +364,21 @@
 
 										// Otherwise, if there's no error
 										} else {
-											$selected_branch        = $ini['branch'];
 											$selected_branch_exists = false;
 											$_SESSION['branches']   = array();
 
-											foreach ($branches as $branch) {
-												$branch_exists = false;
-												if ($branch['name'] == $selected_branch) $branch_exists = $selected_branch_exists = true;
-												$_SESSION['branches'][$branch['name']] = array(
-													'selected' => $branch_exists,
-													'sha'      => $branch['commit']['sha']
+											foreach ($github_branches as $github_branch) {
+												$branch_selected = false;
+												if ($github_branch['name'] == $ini['branch']) $branch_selected = $selected_branch_exists = true;
+												$_SESSION['branches'][$github_branch['name']] = array(
+													'selected' => $branch_selected,
+													'sha'      => $github_branch['commit']['sha']
 												);
 											}
 
     										if ($ini['debug']) error_log('New Session Branches: ' . json_encode($_SESSION['branches']));
 
-                                            if (!$selected_branch_exists) $selected_branch = 'master';
+                                            if (!$selected_branch_exists) $_SESSION['branches']['master']['selected'] = true;
 
 											echo '<select name="branch">';
 
@@ -438,7 +471,7 @@
 
 						echo "<input type='Submit' name='Save' value='Save'>";
 						
-						if ($dbExists) {echo (isset($button) ? $button : '');}
+						if ($check_database) echo $create_tables_button;
 
 					?>
 				</form>
@@ -446,10 +479,26 @@
 			<div id='Database' class='tabcontent'>
 				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings borderupdown'>
-						<tr><td>Host Address:</td><td><input name='host' type='textbox'<?= (isset($hostChk) ? $hostChk : '');?> value='<?= $ini['host'];?>'></td></tr>
-						<tr><td nowrap>Database Name:</td><td><input name='dbname' type='textbox'<?= (isset($dbChk) ? $dbChk : '');?> value='<?= $ini['dbname'];?>'></td></tr>
-						<tr><td>Username:</td><td><input name='username' type='textbox'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['username'];?>' autocomplete='username'></td></tr>
-						<tr><td>Password:</td><td><input name='password' type='password'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['password'];?>' autocomplete='current-password'></td></tr>
+						<tr>
+							<td>Host:</td>
+							<td><input name='host' type='textbox' <?= $host_textbox_attributes;?> value='<?= $ini['host'];?>' placeholder='e.g., localhost, server name, IP address, or URL'></td>
+						</tr>
+						<tr>
+							<td>Port:</td>
+							<td><input name='port' type='textbox' <?= $host_textbox_attributes;?> value='<?= $ini['port'];?>' placeholder='3306'></td>
+						</tr>
+						<tr>
+							<td>Database:</td>
+							<td><input name='dbname' type='textbox' <?= $database_textbox_attributes;?> value='<?= $ini['dbname'];?>'></td>
+						</tr>
+						<tr>
+							<td>Username:</td>
+							<td><input name='username' type='textbox' <?= $credentials_textbox_attributes;?> value='<?= $ini['username'];?>'></td>
+						</tr>
+						<tr>
+							<td>Password:</td>
+							<td><input name='password' type='password' <?= $credentials_textbox_attributes;?> value='<?= $ini['password'];?>'></td>
+						</tr>
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {
@@ -461,13 +510,13 @@
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
-						if ($dbExists) {echo (isset($button) ? $button : '');}
+						if ($check_database) echo $create_tables_button;
 					?>
 				</form>
 			</div>
 			<div id='Owners' class='tabcontent'>
 				<?php 
-					if ($dbExists && check_tables('owners')) {
+					if ($check_database && check_tables('owners')) {
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$oSelect->execute();
@@ -505,14 +554,13 @@
 			</div>
 			<div id='Users' class='tabcontent'>
  				<?php 
-				if($dbExists){
-					if(check_tables('users')){
+					if($check_database && check_tables('users')){
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$selectAllUsers->execute();
 						$users = $selectAllUsers->fetchAll(PDO::FETCH_ASSOC);
 					}
-				}?>
+				?>
 				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings'>
 						<tr><td>Username:</td><td><input id='newUsername' name='user' type='textbox' value=''></td></tr>
@@ -569,13 +617,12 @@
 	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
-			if($dbExists && check_tables('owners')) {
+			if($check_database && check_tables('owners')) {
 				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
 			}
 		?>
-
 		var usernames = <?= (isset($usernames) ? json_encode($usernames) : "''");?>;
 		$(document).ready(function() {
 			var txtUsername = $('#newUsername');
