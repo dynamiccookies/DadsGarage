@@ -30,37 +30,90 @@
 		$ini = parse_ini_file('../includes/config.ini.php');
 	}
 
-	$create_tables_button  = false;
+	$check_credentials     = false;
+	$check_database        = false;
+	$check_host            = false;
+	$create_tables_button  = '';
 	$user_message          = '';
 	$_SESSION['debug']     = filter_var($ini['debug'], FILTER_VALIDATE_BOOLEAN);
 	$_SESSION['inicommit'] = $ini['commit'];
+	$_SESSION['include']   = true;
+	require_once '../includes/initialize-database.php';
 
-	//Test validity of database, host, & credentials
-	if (!empty($ini['host'])) {
-		$_SESSION['include'] = true;
-		require_once '../includes/initialize-database.php';
+	// Database Textboxes
+	if ($ini['host']) {
+		$check_server      = check_server($ini);
+		$check_database    = check_database($ini);
+		$check_credentials = check_credentials($ini);
 
-		$hostChk = (isset($array['connTest']) && $array['connTest'] != 'Pass' ? $array['connTest'] : '');
-		$dbChk = (!$ini['dbname']?'Required Field':($array['dbTest']?($array['dbTest']!='Pass'?$array['dbTest']:''):''));
-		$dbChk = ($dbChk!=''?" class='required' title='".$dbChk."'":" class='pass' title='Database Connection Successful'");
-		$userChk = (!$ini['username']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
-		$userChk = ($userChk!=''?" class='required' title='".$userChk."'":" class='pass' title='Login Successful'");
-		$passChk = (!$ini['password']?'Required Field':($array['credTest']?($array['credTest']!='Pass'?$array['credTest']:''):''));
-		$passChk = ($passChk!=''?" class='required' title='".$passChk."'":" class='pass' title='Login Successful'");
-	} else {$hostChk = 'Required Field';}
-	$hostChk = ($hostChk!=''?" class='required' title='".$hostChk."'":" class='pass' title='Host Connection Successful'");
+		if ($check_server) {
+			$host_textbox_attributes = "class='pass' title='Host Connection Successful'";
+		} else {
+			$host_textbox_attributes = "class='required' title='Fail - Cannot connect to " . $ini['host'] . ":" . $ini['port'] . "'";
+		}
+
+		if (!$ini['username'] || !$ini['password']) {
+			$credentials_textbox_attributes = "class='required' title='Username & Password Required'";
+		} elseif ($check_credentials) {
+			$credentials_textbox_attributes = "class='pass' title='Login Successful'";
+		} else {
+			if ($check_server) {
+				$credentials_textbox_attributes = "class='required' title='Login Failed - Check your username & password.'";
+			} else {
+				$credentials_textbox_attributes = "class='required' title='Cannot Login - Host is invalid.'";
+			}
+		}
+
+		if (!$ini['dbname']) {
+			$database_textbox_attributes = "class='required' title='Required Field'";
+		} elseif ($check_database) {
+			$database_textbox_attributes = "class='pass' title='Database Connection Successful'";
+		} else {
+			if ($check_credentials) {
+				$database_textbox_attributes = "class='required' title='Fail - " . $ini['dbname'] . " database does not exist.'";
+			} elseif ($check_server) {
+				$database_textbox_attributes = "class='required' title='Fail - Check your username & password.'";
+			} else {
+				$database_textbox_attributes = "class='required' title='Fail - Double check host address.'";
+			}
+		}
+	} else {
+		$credentials_textbox_attributes = '';
+		$database_textbox_attributes    = '';
+		$host_textbox_attributes        = "class='required' title='Host is a required field'";
+	}
+
+	// Tabs
+	if ($check_database) {
+		$general_tab  = "onclick=\"openTab('General', this, 'left')\"";
+		$database_tab = "onclick=\"openTab('Database', this, 'middle')\"";
+		$owners_tab   = "onclick=\"openTab('Owners', this, 'middle')\"";
+		$users_tab    = "onclick=\"openTab('Users', this, 'right')\"";
+
+		if (isset($_SESSION['settings'])) {
+			if ($_SESSION['settings'] == 'database') $database_tab  .= " id='defaultOpen'";
+			if ($_SESSION['settings'] == 'owners')   $owners_tab    .= " id='defaultOpen'";
+			if ($_SESSION['settings'] == 'users')    $users_tab     .= " id='defaultOpen'";
+		} else {
+			$general_tab .= " id='defaultOpen'";
+		}
+	} else {
+		$database_tab = "onclick=\"openTab('Database', this, 'middle')\" id='defaultOpen'";
+		$general_tab  = $owners_tab = $users_tab = "title='Database information is missing.' style='cursor:not-allowed;'";
+	}
+
 
 	// Check existence/create database tables
-	if (strpos($hostChk, 'pass') && strpos($dbChk, 'pass') && strpos($userChk, 'pass') && strpos($passChk, 'pass')) {
-		$dbExists = true;
-
+	if ($check_database) {
 		if (!check_tables()) {
 			if (isset($_POST['createTables'])) {
 				$createdTables = createTables();
 			} else {
-				$dbChk  = str_replace('pass', 'warn', $dbChk);
-				$dbChk  = str_replace('Database Connection Successful', 'One or more tables are missing from the database.', $dbChk);
-				$create_tables_button = " <input type='Submit' name='createTables' value='Create Table(s)'>";
+				$create_tables_button        = " <input type='Submit' name='createTables' value='Create Table(s)'>";
+				$database_textbox_attributes = "class='warn' title='One or more tables are missing from the database.'";
+
+				$database_tab = " id='defaultOpen'";
+				$general_tab  = $owners_tab = $users_tab = "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";
 			}
 		}
 
@@ -78,13 +131,11 @@
 				$user_message = 'The username or password is incorrect.<br/><br/>';
 			} else {$user_message = $adminExists;}
 		}
-	} else {$database_exists = false;}
+	}
 
-	if ($dbExists) {
-		if (check_tables('users')) {
-			$_SESSION['include'] = true;
-			require_once '../includes/include.php';
-		}
+	if ($check_database && check_tables('users')) {
+		$_SESSION['include'] = true;
+		require_once '../includes/include.php';
 	}
 	if (!isset($_POST['ownerAdd']) && !isset($_POST['userAdd']) && !isset($_POST['Update'])) {unset($_SESSION['settings']);}
 	if (isset($_POST['ownerAdd'])) {
@@ -226,6 +277,12 @@
 		elseif (isset($ini['commit']))   {$commit   = $ini['commit'];}
 		else                             {$commit   = '';}
 
+		if (isset($_POST['port']))       {$port     = $_POST['port'];}
+		elseif (isset($ini['port']))     {$port     = $ini['port'];}
+		else                             {$port     = '';}
+
+        if (empty($port)) $port = 3306;
+
 		file_put_contents('../includes/config.ini.php', 
 			"<?php \n/*;\n[connection]\n" .
 				"dbname    = '" . $dbname   . "'\n" .
@@ -235,6 +292,7 @@
 				"debug     = '" . $debug    . "'\n" .
 				"branch    = '" . $branch   . "'\n" .
 				"commit    = '" . $commit   . "'\n" .
+				"port      = '" . $port     . "'\n" .
 				"bitlyuser = '" . ''        . "'\n" .
 				"bitlyAPI  = '" . ''        . "'\n" . 
 			"*/\n?>"
@@ -269,36 +327,10 @@
 		</div>
 		<div id='mainContainer' class='bgblue bord5 b-rad15 m-lrauto center m-top25'>
 			<div class='settings-header'>Settings</div><br/>
-			<button class='tablink width25' value='General'
-				<?php 
-					if(isset($dbChk) && strpos($dbChk, 'pass')){
-						echo "onclick=\"openTab('General', this, 'left')\"";
-						echo (!isset($_SESSION['settings']) ? " id='defaultOpen'" : '');
-					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else { echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
-				?> 
-			><span class='alt'>G</span>eneral</button>
-			<button class='tablink width25' value='Database' onclick="openTab('Database', this, 'middle')"	
-				<?= ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'database') || (!isset($dbChk) || !strpos($dbChk, 'pass')) ? " id='defaultOpen'" : '');?>
-			><span class='alt'>D</span>atabase</button>
-			<button class='tablink width25' value='Owners'
-				<?php 
-					if(isset($dbChk) && strpos($dbChk, 'pass')){
-						echo "onclick=\"openTab('Owners', this, 'middle')\"";
-						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'owners') ? " id='defaultOpen'" : '');
-					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else {echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
-				?> 
-			><span class='alt'>O</span>wners</button>
-			<button class='tablink width25'	value='Users'
-				<?php 
-					if(isset($dbChk) && strpos($dbChk, 'pass')){
-						echo "onclick=\"openTab('Users', this, 'right')\"";
-						echo ((isset($_SESSION['settings']) && $_SESSION['settings'] == 'users') ? " id='defaultOpen'" : '');
-					} elseif(isset($dbChk) && strpos($dbChk, 'required')) { echo "title='The Database information is required first.' style='cursor:not-allowed;'";
-					} else {echo "title='One or more tables are missing from the database.' style='cursor:not-allowed;'";}
-				?>
-			><span class='alt'>U</span>sers</button>
+			<button class='tablink width25' value='General' <?= $general_tab;?>><span class='alt'>G</span>eneral</button>
+			<button class='tablink width25' value='Database' <?= $database_tab;?>><span class='alt'>D</span>atabase</button>
+			<button class='tablink width25' value='Owners' <?= $owners_tab;?>><span class='alt'>O</span>wners</button>
+			<button class='tablink width25'	value='Users' <?= $users_tab;?>><span class='alt'>U</span>sers</button>
 			<div id='General' class='tabcontent'>
 				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings borderupdown'>
@@ -439,7 +471,7 @@
 
 						echo "<input type='Submit' name='Save' value='Save'>";
 						
-						if ($database_exists) echo ($create_tables_button ?: '');
+						if ($check_database) echo $create_tables_button;
 
 					?>
 				</form>
@@ -447,10 +479,26 @@
 			<div id='Database' class='tabcontent'>
 				<form action='<?= htmlspecialchars($_SERVER['PHP_SELF']);?>' method='post'>
 					<table class='settings borderupdown'>
-						<tr><td>Host Address:</td><td><input name='host' type='textbox'<?= (isset($hostChk) ? $hostChk : '');?> value='<?= $ini['host'];?>'></td></tr>
-						<tr><td nowrap>Database Name:</td><td><input name='dbname' type='textbox'<?= (isset($dbChk) ? $dbChk : '');?> value='<?= $ini['dbname'];?>'></td></tr>
-						<tr><td>Username:</td><td><input name='username' type='textbox'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['username'];?>' autocomplete='username'></td></tr>
-						<tr><td>Password:</td><td><input name='password' type='password'<?= (isset($userChk) ? $userChk : '');?> value='<?= $ini['password'];?>' autocomplete='current-password'></td></tr>
+						<tr>
+							<td>Host:</td>
+							<td><input name='host' type='textbox' <?= $host_textbox_attributes;?> value='<?= $ini['host'];?>' placeholder='e.g., localhost, server name, IP address, or URL'></td>
+						</tr>
+						<tr>
+							<td>Port:</td>
+							<td><input name='port' type='textbox' <?= $host_textbox_attributes;?> value='<?= $ini['port'];?>' placeholder='3306'></td>
+						</tr>
+						<tr>
+							<td>Database:</td>
+							<td><input name='dbname' type='textbox' <?= $database_textbox_attributes;?> value='<?= $ini['dbname'];?>'></td>
+						</tr>
+						<tr>
+							<td>Username:</td>
+							<td><input name='username' type='textbox' <?= $credentials_textbox_attributes;?> value='<?= $ini['username'];?>'></td>
+						</tr>
+						<tr>
+							<td>Password:</td>
+							<td><input name='password' type='password' <?= $credentials_textbox_attributes;?> value='<?= $ini['password'];?>'></td>
+						</tr>
 					</table><br/>
 					<?php 
 						if (isset($_SESSION['run'])) {
@@ -462,13 +510,13 @@
 								'Tables created successfully.<br/>' : 'There was a problem creating the table(s).<br/>') : '');
 						echo $user_message;
 						echo "<input type='Submit' name='Save' value='Save'>&nbsp;";
-						if ($database_exists) echo ($create_tables_button ?: '');
+						if ($check_database) echo $create_tables_button;
 					?>
 				</form>
 			</div>
 			<div id='Owners' class='tabcontent'>
 				<?php 
-					if ($database_exists && check_tables('owners')) {
+					if ($check_database && check_tables('owners')) {
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$oSelect->execute();
@@ -506,7 +554,7 @@
 			</div>
 			<div id='Users' class='tabcontent'>
  				<?php 
-					if($database_exists && check_tables('users')){
+					if($check_database && check_tables('users')){
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$selectAllUsers->execute();
@@ -569,13 +617,12 @@
 	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
-			if($database_exists && check_tables('owners')) {
+			if($check_database && check_tables('owners')) {
 				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);
 			}
 		?>
-
 		var usernames = <?= (isset($usernames) ? json_encode($usernames) : "''");?>;
 		$(document).ready(function() {
 			var txtUsername = $('#newUsername');
