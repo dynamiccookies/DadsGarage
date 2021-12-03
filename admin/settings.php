@@ -8,8 +8,10 @@
 	//Create/update config.ini.php on page load/save
 	if (!file_exists('../includes/config.ini.php') || isset($_POST['Save'])) {
 
-		unset($_SESSION['branches']);
-		unset($_SESSION['compare']);
+		if (isset($_SESSION)) {
+			unset($_SESSION['branches']);
+			unset($_SESSION['compare']);
+		}
 
 		if (isset($_POST['branch'])) {
 			$branch = $_POST['branch'];
@@ -105,9 +107,9 @@
 
 	// Check existence/create database tables
 	if ($check_database) {
-		if (!check_tables()) {
+		if (!check_tables($ini)) {
 			if (isset($_POST['createTables'])) {
-				$createdTables = createTables();
+				$createdTables = create_tables($ini);
 			} else {
 				$create_tables_button        = " <input type='Submit' name='createTables' value='Create Table(s)'>";
 				$database_textbox_attributes = "class='warn' title='One or more tables are missing from the database.'";
@@ -118,22 +120,22 @@
 		}
 
 		// Create/check default Admin user
-		$adminExists = adminExists();
- 		if ($adminExists === true) {
+		$admin_exists = admin_exists($ini);
+ 		if ($admin_exists === true) {
 			$user_message = "The default username and password are 'admin'.<br/><a href='../admin'>Change the password</a>.<br/><br/>";
-		} elseif ($adminExists === false) {
+		} elseif ($admin_exists === false) {
 			$_SESSION['include'] = true;
 			require_once '../admin/secure.php';
 		} else {
-			if (strpos($adminExists, 'Base table or view not found')) {
+			if (strpos($admin_exists, 'Base table or view not found')) {
 				$user_message = 'The Users table does not exist.<br/>Please click the Create Table(s) button to create it.<br/><br/>';
-			} elseif (strpos($adminExists, "Access denied for user '" . $_POST['username'] . "'")) {
+			} elseif (strpos($admin_exists, "Access denied for user '" . $_POST['username'] . "'")) {
 				$user_message = 'The username or password is incorrect.<br/><br/>';
-			} else {$user_message = $adminExists;}
+			} else {$user_message = $admin_exists;}
 		}
 	}
 
-	if ($check_database && check_tables('users')) {
+	if ($check_database && check_tables($ini, 'users')) {
 		$_SESSION['include'] = true;
 		require_once '../includes/include.php';
 	}
@@ -176,7 +178,26 @@
 	
 	//Update Application from GitHub
 	if (isset($_POST['Update'])) {
-		try {
+		if (isset($_POST['branch']))   {$branch = $_POST['branch'];}
+		elseif (isset($ini['branch'])) {$branch = $ini['branch'];}
+		else                           {$branch = 'master';}
+
+		$updated = update_application($branch);
+		
+		if ($updated) {
+			$ini                 = update_config($branch, $_SESSION['branches'][$branch]['sha']);
+			$_SESSION['results'] = 'Application Updated Successfully!';
+
+			unset($_SESSION['branches']);
+			unset($_SESSION['compare']);
+
+			// Reload settings.php page
+			header('Location: ../admin/settings.php?updated=' . date('YmdHis'));
+		} else {
+			$_SESSION['results'] = 'Application update failed - Please review the logs';
+		}
+
+/* 		try {
 			ini_set('allow_url_fopen', 1);
 			$repository  = 'https://github.com/dynamiccookies/DadsGarage/';
 			$repBranch   = (isset($_POST['branch']) ? $_POST['branch'] : 'master');
@@ -229,9 +250,10 @@
     		    echo "Error Extracting Zip: Please <a href='" . $repository . "issues/new?title=Installation - Error Extracting'>submit an issue</a>.";
 				$_SESSION['results'] = 'Something went wrong!';
     		}
-		} catch (Exception $e) {$_SESSION['results'] = 'Something went wrong!<br/>'.$e;}
+		} catch (Exception $e) {$_SESSION['results'] = 'Something went wrong!<br/>'.$e;} */
 	}
 
+	// WHAT IS THIS??
 	if (isset($_SESSION['results']) && !isset($_SESSION['run'])) {
 		$_SESSION['run'] = 1;
 	} elseif (isset($_SESSION['run']) && $_SESSION['run'] == 3) {
@@ -239,7 +261,7 @@
 		unset($_SESSION['run']);
 	}
 
-	//(Re)Create config.ini.php file
+/* 	//(Re)Create config.ini.php file
 	function update_config($branch = null, $commit = null) {
 
 		if (file_exists('../includes/config.ini.php')) {
@@ -284,7 +306,7 @@
         if (empty($port)) $port = 3306;
 
 		file_put_contents('../includes/config.ini.php', 
-			"<?php \n/*;\n[connection]\n" .
+			"<?php \n;\n[connection]\n" .
 				"dbname    = '" . $dbname   . "'\n" .
 				"host      = '" . $host     . "'\n" .
 				"username  = '" . $username . "'\n" .
@@ -295,13 +317,14 @@
 				"port      = '" . $port     . "'\n" .
 				"bitlyuser = '" . ''        . "'\n" .
 				"bitlyAPI  = '" . ''        . "'\n" . 
-			"*/\n?>"
-		);
+			"\n?>"
+ 		);
 
 		return parse_ini_file('../includes/config.ini.php');
-	}
+	} 
+*/
 
-	//Pull branch info from GitHub
+/* 	//Pull branch info from GitHub
 	function getJSON($url) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/dynamiccookies/dadsgarage/' . $url); 
@@ -310,7 +333,7 @@
 		$results = json_decode(curl_exec($ch), true);
 		curl_close($ch);
 		return $results;
-	}
+	} */
 ?>
 <body class='settings darkbg'>
 	<div id='adminSidenav' class='adminsidenav'>
@@ -516,7 +539,7 @@
 			</div>
 			<div id='Owners' class='tabcontent'>
 				<?php 
-					if ($check_database && check_tables('owners')) {
+					if ($check_database && check_tables($ini, 'owners')) {
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$oSelect->execute();
@@ -554,7 +577,7 @@
 			</div>
 			<div id='Users' class='tabcontent'>
  				<?php 
-					if($check_database && check_tables('users')){
+					if($check_database && check_tables($ini, 'users')){
 						$_SESSION['include'] = true;
 						require_once '../includes/include.php';
 						$selectAllUsers->execute();
@@ -617,7 +640,7 @@
 	<script src='../scripts/admin.js'></script>
 	<script>
 		<?php
-			if($check_database && check_tables('owners')) {
+			if($check_database && check_tables($ini, 'owners')) {
 				$selectAllUsernames = $db->prepare('SELECT username FROM users ORDER BY fname ASC');
 				$selectAllUsernames->execute();
 				$usernames = $selectAllUsernames->fetchAll(PDO::FETCH_ASSOC);

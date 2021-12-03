@@ -79,8 +79,8 @@
 			// Create a new PDO instance
 			try {
 				$conn           = new PDO($dsn, $username, $password, $options);
-				$statement      = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $database . "'");
-				$database_found = $statement->fetchColumn();
+				$database_found = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $database . "'");
+				$database_found = $database_found->fetchColumn();
 				$conn           = null;
 
 				if ($database_found) {
@@ -100,40 +100,48 @@
 	}
 
 	// Check if admin exists
- 	function adminExists() {
-		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
+ 	function admin_exists($ini) {
+		$dsn = 'mysql:host=' . $ini['host'] . ';dbname=' . $ini['dbname'] . ';port=' . $ini['port'];
 		// Set options
 		$options = array(
 			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_PERSISTENT         => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		);
+
 		// Create a new PDO instance
 		try {
-			$conn        = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
-			$adminExists = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
-			
-			$adminExists = $adminExists->fetchColumn();
-			if($adminExists == 0) {
- 				$createAdmin = $conn->prepare("INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) VALUES ('admin','" . 
-					password_hash('admin', PASSWORD_DEFAULT) . "','System','Account',1)");
-				$createAdmin->execute(); 
-				return TRUE;
+			$conn   = new PDO($dsn, $ini['username'], $ini['password'], $options);
+			$admins = $conn->query("SELECT COUNT(*) FROM users WHERE isadmin = 1");
+			$admins = $admins->fetchColumn();
+
+			if ($admins == 0) {
+ 				$create = $conn->prepare(
+					"INSERT INTO `users` (`username`,`hash`,`fname`,`lname`,`isadmin`) " .
+					"VALUES ('admin','" . password_hash('admin', PASSWORD_DEFAULT) . "','System','Account',1)"
+				);
+				$create->execute();
+				$conn = null;
+
+				return true;
 			} else {
-   				$findAdmin = $conn->prepare("SELECT * FROM users WHERE username='admin'");
-				$findAdmin->execute();
-				$findAdmin = $findAdmin->fetchAll(PDO::FETCH_ASSOC);
-				if(!empty($findAdmin) && password_verify('admin', $findAdmin[0]['hash'])) {return TRUE;}
-				else {return FALSE;}
+   				$search = $conn->prepare("SELECT * FROM users WHERE username='admin'");
+				$search->execute();
+				$search = $search->fetchAll(PDO::FETCH_ASSOC);
+				$conn   = null;
+
+				if(!empty($search) && password_verify('admin', $search[0]['hash'])) {return true;}
+				else {return false;}
+
  				return 'How did you get here?';
 			}
 		}
 		catch (PDOException $e) {return 'There was a problem: ' . $e;}
 	}
 
-	function check_tables(...$tables) {
+	function check_tables($ini, ...$tables) {
         if (!$tables) {$tables = array('customers', 'expenses', 'files', 'owners', 'photos', 'users', 'vehicles');}
-		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
+		$dsn = 'mysql:host=' . $ini['host'] . ';dbname=' . $ini['dbname'] . ';port=' . $ini['port'];
 
 		// Set PDO options
 		$options = array(
@@ -144,19 +152,21 @@
 
 		//Create a new PDO instance
 		try {
-			$conn = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
+			$conn = new PDO($dsn, $ini['username'], $ini['password'], $options);
 			foreach ($tables as $table) {$conn->query('SELECT 1 FROM ' . $table . ' LIMIT 1');}
+			$conn = null;
 
 			return true;
 		}
 		catch (PDOException $e) {
-			error_log("\n\nERROR in check_tables(): " . $e . "\n\n", 3, 'error_log');
+			error_log('ERROR in check_tables(): ' . $e->getMessage());
+			
 			return false;
 		}
 	}
 
 	//create missing tables
-	function createTables() {
+	function create_tables($ini) {
 		$sql = "
 			CREATE TABLE IF NOT EXISTS `customers` (
 				`id` int(11) AUTO_INCREMENT NOT NULL,
@@ -228,9 +238,8 @@
 				PRIMARY KEY (`id`));
 		";
 
-		$dsn = 'mysql:host=' . $GLOBALS['server'] . ';dbname=' . $GLOBALS['dbName'] . ';port=' . $GLOBALS['port'];
+		$dsn = 'mysql:host=' . $ini['host'] . ';dbname=' . $ini['dbname'] . ';port=' . $ini['port'];
 
-		// Set options
 		$options = array(
 			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_PERSISTENT         => true,
@@ -239,12 +248,11 @@
 
 		//Create a new PDO instance
 		try {
-			$conn = new PDO($dsn, $GLOBALS['dbUsername'], $GLOBALS['dbPassword'], $options);
-			$stmt = $conn->prepare($sql);
-			$stmt->execute();
+			$conn   = new PDO($dsn, $ini['username'], $ini['password'], $options);
+			$create = $conn->prepare($sql);
+			$create->execute();
+			$conn   = null;
+
 			return true;
-		} 
-		catch (PDOException $e) {
-			return $e->getMessage();
-		}
+		} catch (PDOException $e) {return $e->getMessage();}
 	}
